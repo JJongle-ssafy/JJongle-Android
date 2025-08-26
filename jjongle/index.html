@@ -1,0 +1,77 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Firebase Google 로그인</title>
+</head>
+<body>
+
+  <button onclick="login()">구글로그인</button>
+  <button onclick="logout()">로그아웃</button>
+
+
+  <!-- Firebase App (브라우저용 CDN, compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <!-- Firebase Auth (브라우저용 CDN, compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // 내 Firebase config 정보 (본인 정보 복붙)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuG2yCrg9znhdL_ICtbeYOq_rAQdj--k4",
+      authDomain: "jjongle.firebaseapp.com",
+      projectId: "jjongle",
+      storageBucket: "jjongle.firebasestorage.app",
+      messagingSenderId: "395354045513",
+      appId: "1:395354045513:web:ca12ec6d8adcd5e7429398",
+      measurementId: "G-XZTTY50W1G"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+
+    // 구글 로그인 구현 함수
+    // function login() {
+    //   const provider = new firebase.auth.GoogleAuthProvider();
+    //   firebase.auth().signInWithPopup(provider)
+    //     .then((result) => {
+    //       return firebase.auth().currentUser.getIdToken();
+    //     })
+    //     .then((idToken) => {
+    //       console.log("firebaseIdToken:", idToken);
+    //       alert(idToken);
+    //     })
+    //     .catch((error) => {
+    //       console.error("로그인 중 오류 발생:", error);
+    //       alert("로그인 오류: " + error.message);
+    //     });
+    // }
+    function login() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({
+    prompt: 'select_account' // 계정 선택 창을 항상 띄움
+  });
+  firebase.auth().signInWithPopup(provider)
+    .then((result) => {
+      return firebase.auth().currentUser.getIdToken();
+    })
+    .then((idToken) => {
+      console.log("firebaseIdToken:", idToken);
+      alert(idToken);
+    })
+    .catch((error) => {
+      console.error("로그인 중 오류 발생:", error);
+      alert("로그인 오류: " + error.message);
+    });
+  } 
+    function logout() {
+    firebase.auth().signOut()
+      .then(() => {
+        alert("로그아웃 되었습니다.");
+      });
+  }
+  </script>
+
+</body>
+</html>
