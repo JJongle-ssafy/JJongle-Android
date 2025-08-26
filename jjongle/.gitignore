@@ -1,0 +1,71 @@
+# Android
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+**/build/
+*/build/
+build/
+.gradle
+local.properties
+.navigation/
+captures/
+output.json
+**/google-services.json
+google-services.json
+
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Unity IL2CPP
+**/Il2CppOutputProject/
+Il2CppOutputProject/
+**/il2cppOutput/
+il2cppOutput/
+
+# Unity Native Library
+**/jniLibs/
+jniLibs/
+**/jniStaticLibs/
+jniStaticLibs/
+**/symbols/
+symbols/
+*.so
+*.a
+
+# Unity Generated
+**/src/main/Il2CppOutputProject/
+**/src/main/assets/bin/
+**/libs/unity-classes.jar
+unity-classes.jar
+
+# Android Studio
+.idea/
+*.iml
+.externalNativeBuild
+.cxx/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Local configuration files
+gradle.properties.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
