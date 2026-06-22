@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.jjongle.presentation.navigation.NavGraph
 import com.ssafy.jjongle.presentation.navigation.Screen
+import com.ssafy.jjongle.presentation.ui.layout.DesignCanvas
 import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
 import com.ssafy.jjongle.presentation.viewmodel.NavigationViewModel
 import com.ssafy.jjongle.domain.usecase.SaveAuthTokensUseCase
@@ -52,12 +53,14 @@ class MainActivity : ComponentActivity() {
 
                     Log.d("MainActivity", "Current Route: $currentRoute")
 
-                    NavGraph(
-                        navController = navController,
-                        startDestination = Screen.Splash.route,
+                    DesignCanvas(modifier = Modifier.fillMaxSize()) {
+                        NavGraph(
+                            navController = navController,
+                            startDestination = Screen.Splash.route,
 //                        startDestination = Screen.Camera.route,
-                        navigationViewModel = navigationViewModel
-                    )
+                            navigationViewModel = navigationViewModel
+                        )
+                    }
 
                     // ✅ 액티비티 최초 진입 인텐트 처리
                     //    (setContent 이후에 한 번만 처리되면 충분)

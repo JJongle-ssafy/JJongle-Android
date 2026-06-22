@@ -1,96 +1,96 @@
 package com.ssafy.jjongle.presentation.ui.layout
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import kotlin.math.min
 
-fun calculateCompactUiScale(
-    widthDp: Float,
-    heightDp: Float,
-    baselineShortSideDp: Float = 800f,
-    minScale: Float = 0.72f,
-    maxScale: Float = 1f
-): Float {
-    require(widthDp > 0f) { "widthDp must be greater than 0." }
-    require(heightDp > 0f) { "heightDp must be greater than 0." }
-    require(baselineShortSideDp > 0f) { "baselineShortSideDp must be greater than 0." }
-    require(minScale > 0f) { "minScale must be greater than 0." }
-    require(maxScale >= minScale) { "maxScale must be greater than or equal to minScale." }
+const val DESIGN_CANVAS_WIDTH_DP = 1280f
+const val DESIGN_CANVAS_HEIGHT_DP = 800f
 
-    return (min(widthDp, heightDp) / baselineShortSideDp).coerceIn(minScale, maxScale)
+data class DesignCanvasMetrics(
+    val scale: Float,
+    val canvasWidthDp: Float,
+    val canvasHeightDp: Float,
+    val horizontalLetterboxDp: Float,
+    val verticalLetterboxDp: Float
+)
+
+fun calculateDesignCanvasMetrics(
+    containerWidthDp: Float,
+    containerHeightDp: Float,
+    designWidthDp: Float = DESIGN_CANVAS_WIDTH_DP,
+    designHeightDp: Float = DESIGN_CANVAS_HEIGHT_DP
+): DesignCanvasMetrics {
+    require(containerWidthDp > 0f) { "containerWidthDp must be greater than 0." }
+    require(containerHeightDp > 0f) { "containerHeightDp must be greater than 0." }
+    require(designWidthDp > 0f) { "designWidthDp must be greater than 0." }
+    require(designHeightDp > 0f) { "designHeightDp must be greater than 0." }
+
+    val scale = min(containerWidthDp / designWidthDp, containerHeightDp / designHeightDp)
+    val canvasWidthDp = designWidthDp * scale
+    val canvasHeightDp = designHeightDp * scale
+
+    return DesignCanvasMetrics(
+        scale = scale,
+        canvasWidthDp = canvasWidthDp,
+        canvasHeightDp = canvasHeightDp,
+        horizontalLetterboxDp = (containerWidthDp - canvasWidthDp) / 2f,
+        verticalLetterboxDp = (containerHeightDp - canvasHeightDp) / 2f
+    )
 }
 
 @Composable
-fun rememberCompactUiScale(): Float {
-    val configuration = LocalConfiguration.current
-    return remember(configuration.screenWidthDp, configuration.screenHeightDp) {
-        calculateCompactUiScale(
-            widthDp = configuration.screenWidthDp.toFloat(),
-            heightDp = configuration.screenHeightDp.toFloat()
-        )
+fun DesignCanvas(
+    modifier: Modifier = Modifier,
+    designSize: DpSize = DpSize(DESIGN_CANVAS_WIDTH_DP.dp, DESIGN_CANVAS_HEIGHT_DP.dp),
+    letterboxColor: Color = Color.Black,
+    content: @Composable () -> Unit
+) {
+    BoxWithConstraints(
+        modifier = modifier.background(letterboxColor),
+        contentAlignment = Alignment.Center
+    ) {
+        val parentDensity = LocalDensity.current
+        val metrics = remember(maxWidth, maxHeight, designSize) {
+            calculateDesignCanvasMetrics(
+                containerWidthDp = maxWidth.value,
+                containerHeightDp = maxHeight.value,
+                designWidthDp = designSize.width.value,
+                designHeightDp = designSize.height.value
+            )
+        }
+        val scaledDensity = remember(parentDensity, metrics.scale) {
+            Density(
+                density = parentDensity.density * metrics.scale,
+                fontScale = parentDensity.fontScale
+            )
+        }
+
+        Box(
+            modifier = Modifier.size(
+                width = metrics.canvasWidthDp.dp,
+                height = metrics.canvasHeightDp.dp
+            ),
+            contentAlignment = Alignment.TopStart
+        ) {
+            CompositionLocalProvider(LocalDensity provides scaledDensity) {
+                Box(modifier = Modifier.requiredSize(designSize.width, designSize.height)) {
+                    content()
+                }
+            }
+        }
     }
-}
-
-data class MypageLayoutMetrics(
-    val horizontalPadding: Float,
-    val topPadding: Float,
-    val contentTopPadding: Float,
-    val contentBottomPadding: Float,
-    val profileFrameSize: Float,
-    val profileImageSize: Float,
-    val profileNameGap: Float,
-    val nameTextSize: Float,
-    val sectionGap: Float,
-    val actionRowHeight: Float,
-    val bookButtonSize: Float,
-    val settingButtonWidth: Float,
-    val settingButtonHeight: Float,
-    val settingTextSize: Float
-)
-
-fun calculateMypageLayoutMetrics(
-    containerWidthDp: Float,
-    containerHeightDp: Float
-): MypageLayoutMetrics {
-    require(containerWidthDp > 0f) { "containerWidthDp must be greater than 0." }
-    require(containerHeightDp > 0f) { "containerHeightDp must be greater than 0." }
-
-    val scale = calculateCompactUiScale(containerWidthDp, containerHeightDp)
-    val compactCanvas = containerWidthDp < 520f || containerHeightDp < 520f
-    val profileMin = if (compactCanvas) 96f else 150f
-    val bookMin = if (compactCanvas) 88f else 120f
-    val profileHeightRatio = if (compactCanvas) 0.28f else 0.34f
-    val bookHeightRatio = if (compactCanvas) 0.26f else 0.30f
-
-    val profileFrameSize = minOf(
-        containerWidthDp * 0.23f,
-        containerHeightDp * profileHeightRatio,
-        320f * scale
-    ).coerceIn(profileMin, 320f)
-
-    val bookButtonSize = minOf(
-        containerWidthDp * 0.24f,
-        containerHeightDp * bookHeightRatio,
-        260f * scale
-    ).coerceIn(bookMin, 260f)
-
-    val settingButtonHeight = minOf(70f * scale, containerHeightDp * 0.12f).coerceIn(38f, 70f)
-
-    return MypageLayoutMetrics(
-        horizontalPadding = (30f * scale).coerceIn(14f, 30f),
-        topPadding = (24f * scale).coerceIn(12f, 24f),
-        contentTopPadding = (24f * scale).coerceIn(12f, 24f) + (56f * scale).coerceAtLeast(40f) + (8f * scale),
-        contentBottomPadding = (24f * scale).coerceIn(10f, 24f),
-        profileFrameSize = profileFrameSize,
-        profileImageSize = profileFrameSize * 0.70f,
-        profileNameGap = (8f * scale).coerceIn(4f, 8f),
-        nameTextSize = minOf(50f * scale, containerHeightDp * 0.085f).coerceIn(20f, 50f),
-        sectionGap = minOf(32f * scale, containerHeightDp * 0.04f).coerceIn(8f, 32f),
-        actionRowHeight = bookButtonSize + (12f * scale).coerceIn(8f, 12f),
-        bookButtonSize = bookButtonSize,
-        settingButtonWidth = minOf(180f * scale, containerWidthDp * 0.18f).coerceIn(92f, 180f),
-        settingButtonHeight = settingButtonHeight,
-        settingTextSize = minOf(26f * scale, settingButtonHeight * 0.42f).coerceIn(14f, 26f)
-    )
 }
