@@ -7,14 +7,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ssafy.jjongle.presentation.navigation.NavGraph
@@ -55,10 +53,7 @@ class MainActivity : ComponentActivity() {
 
                     Log.d("MainActivity", "Current Route: $currentRoute")
 
-                    DesignCanvas(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-                    ) {
+                    DesignCanvas(modifier = Modifier.fillMaxSize()) {
                         NavGraph(
                             navController = navController,
                             startDestination = Screen.Splash.route,
