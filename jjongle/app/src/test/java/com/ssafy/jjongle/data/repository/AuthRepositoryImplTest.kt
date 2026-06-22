@@ -1,134 +1,228 @@
 package com.ssafy.jjongle.data.repository
 
 import android.content.SharedPreferences
+import com.ssafy.jjongle.data.firebase.FirebaseAuthenticatedUser
+import com.ssafy.jjongle.data.firebase.FirebaseAuthDataSource
+import com.ssafy.jjongle.data.firebase.UserProfileDataSource
+import com.ssafy.jjongle.data.firebase.model.UserProfileDto
 import com.ssafy.jjongle.data.local.AuthDataSource
-import com.ssafy.jjongle.data.remote.AuthRemoteDataSource
-import com.ssafy.jjongle.data.remote.model.AuthTokenResponse
-import com.ssafy.jjongle.data.remote.model.LogInRequest
-import com.ssafy.jjongle.data.remote.model.SignUpRequest
-import com.ssafy.jjongle.data.remote.model.UserUpdateRequest
-import okhttp3.Headers
-import okhttp3.ResponseBody.Companion.toResponseBody
+import com.ssafy.jjongle.domain.entity.AuthException
+import com.ssafy.jjongle.domain.entity.UserAlreadyExistsAuthError
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import retrofit2.Response
 
 class AuthRepositoryImplTest {
+
     @Test
-    fun login_persistsTokensFromRemoteResponseHeaders() = kotlinx.coroutines.test.runTest {
-        val authDataSource = AuthDataSource(InMemorySharedPreferences())
-        val repository = AuthRepositoryImpl(
-            authRemoteDataSource = FakeAuthRemoteDataSource(
-                loginResponse = Response.success(
-                    AuthTokenResponse(nickname = "몽이", profileImage = "MONGI"),
-                    authHeaders(accessToken = "access-token", refreshToken = "refresh-token")
-                )
-            ),
-            authDataSource = authDataSource
-        )
+    fun login_returnsUnauthenticated_whenFirestoreProfileIsMissing() = runTest {
+        val repository = createRepository()
 
         val result = repository.login("firebase-token")
 
         assertTrue(result.isSuccess)
-        assertEquals("access-token", authDataSource.getAccessToken())
-        assertEquals("refresh-token", authDataSource.getRefreshToken())
+        assertFalse(result.getOrThrow().isAuthenticated)
+    }
+
+    @Test
+    fun login_restoresFirestoreProfileAndCachesLocalProfile() = runTest {
+        val authDataSource = AuthDataSource(InMemorySharedPreferences())
+        val userProfileDataSource = FakeUserProfileDataSource(
+            profiles = mutableMapOf(
+                "uid-1" to UserProfileDto(
+                    nickname = "몽이",
+                    profileImage = "MONGI"
+                )
+            )
+        )
+        val repository = createRepository(
+            authDataSource = authDataSource,
+            userProfileDataSource = userProfileDataSource
+        )
+
+        val result = repository.login("firebase-token")
+
+        val state = result.getOrThrow()
+        assertTrue(state.isAuthenticated)
+        assertNull(state.accessToken)
+        assertNull(state.refreshToken)
+        assertEquals("몽이", state.user?.nickname)
+        assertEquals("child@example.com", state.user?.email)
+        assertEquals("MONGI", state.user?.profileImage)
+        assertEquals("uid-1", authDataSource.getUserId())
         assertEquals("몽이", authDataSource.getNickname())
         assertEquals("MONGI", authDataSource.getProfileImage())
-        assertTrue(result.getOrThrow().isAuthenticated)
     }
 
     @Test
-    fun reissue_persistsTokensFromRemoteResponseHeaders() = kotlinx.coroutines.test.runTest {
-        val authDataSource = AuthDataSource(InMemorySharedPreferences())
-        authDataSource.saveTokens("old-access", "old-refresh")
-        val repository = AuthRepositoryImpl(
-            authRemoteDataSource = FakeAuthRemoteDataSource(
-                reissueResponse = Response.success(
-                    Unit,
-                    authHeaders(accessToken = "new-access", refreshToken = "new-refresh")
-                )
-            ),
-            authDataSource = authDataSource
+    fun signup_createsFirestoreProfileAndAuthenticates() = runTest {
+        val userProfileDataSource = FakeUserProfileDataSource()
+        val repository = createRepository(userProfileDataSource = userProfileDataSource)
+
+        val result = repository.signup(
+            idToken = "firebase-token",
+            nickname = "토비",
+            profileImage = "TOBY"
         )
 
-        val result = repository.reissue("old-refresh")
-
-        assertTrue(result.isSuccess)
-        assertEquals("new-access", authDataSource.getAccessToken())
-        assertEquals("new-refresh", authDataSource.getRefreshToken())
-        assertEquals("new-access", result.getOrThrow().accessToken)
-        assertEquals("new-refresh", result.getOrThrow().refreshToken)
+        val state = result.getOrThrow()
+        assertTrue(state.isAuthenticated)
+        assertEquals("토비", state.user?.nickname)
+        assertEquals("TOBY", state.user?.profileImage)
+        assertEquals(
+            UserProfileDto(
+                nickname = "토비",
+                profileImage = "TOBY",
+                email = "child@example.com"
+            ),
+            userProfileDataSource.profiles["uid-1"]
+        )
     }
 
     @Test
-    fun login_failsWithoutPersistingTokens_whenHeadersHaveNoTokens() = kotlinx.coroutines.test.runTest {
-        val authDataSource = AuthDataSource(InMemorySharedPreferences())
-        val repository = AuthRepositoryImpl(
-            authRemoteDataSource = FakeAuthRemoteDataSource(
-                loginResponse = Response.success(
-                    AuthTokenResponse(nickname = "몽이", profileImage = "MONGI"),
-                    Headers.headersOf()
+    fun signup_fails_whenFirestoreProfileAlreadyExists() = runTest {
+        val userProfileDataSource = FakeUserProfileDataSource(
+            profiles = mutableMapOf(
+                "uid-1" to UserProfileDto(
+                    nickname = "몽이",
+                    profileImage = "MONGI"
                 )
-            ),
-            authDataSource = authDataSource
+            )
+        )
+        val repository = createRepository(userProfileDataSource = userProfileDataSource)
+
+        val result = repository.signup(
+            idToken = "firebase-token",
+            nickname = "토비",
+            profileImage = "TOBY"
         )
 
-        val result = repository.login("firebase-token")
-
-        assertTrue(result.isFailure)
-        assertEquals(null, authDataSource.getAccessToken())
-        assertEquals(null, authDataSource.getRefreshToken())
+        val error = result.exceptionOrNull()
+        assertTrue(error is AuthException)
+        assertTrue((error as AuthException).error is UserAlreadyExistsAuthError)
     }
 
     @Test
-    fun login_usesVisibleFallbacks_whenResponseBodyFieldsAreMissing() = kotlinx.coroutines.test.runTest {
+    fun updateProfile_updatesFirestoreAndLocalCache() = runTest {
         val authDataSource = AuthDataSource(InMemorySharedPreferences())
-        val repository = AuthRepositoryImpl(
-            authRemoteDataSource = FakeAuthRemoteDataSource(
-                loginResponse = Response.success(
-                    AuthTokenResponse(),
-                    authHeaders(accessToken = "access-token", refreshToken = "refresh-token")
+        val userProfileDataSource = FakeUserProfileDataSource(
+            profiles = mutableMapOf(
+                "uid-1" to UserProfileDto(
+                    nickname = "몽이",
+                    profileImage = "MONGI",
+                    email = "stored@example.com"
                 )
-            ),
-            authDataSource = authDataSource
+            )
+        )
+        val repository = createRepository(
+            authDataSource = authDataSource,
+            userProfileDataSource = userProfileDataSource
         )
 
-        val result = repository.login("firebase-token")
+        repository.updateProfile(nickname = "루나", profileImage = "LUNA")
 
-        assertTrue(result.isSuccess)
-        assertEquals("[MISSING_SERVER_FIELD:auth.nickname]", result.getOrThrow().user?.nickname)
-        assertEquals("[MISSING_SERVER_FIELD:auth.profileImage]", result.getOrThrow().user?.profileImage)
-        assertEquals("[MISSING_SERVER_FIELD:auth.nickname]", authDataSource.getNickname())
-        assertEquals("[MISSING_SERVER_FIELD:auth.profileImage]", authDataSource.getProfileImage())
+        assertEquals(
+            UserProfileDto(
+                nickname = "루나",
+                profileImage = "LUNA",
+                email = "stored@example.com"
+            ),
+            userProfileDataSource.profiles["uid-1"]
+        )
+        assertEquals("uid-1", authDataSource.getUserId())
+        assertEquals("루나", authDataSource.getNickname())
+        assertEquals("LUNA", authDataSource.getProfileImage())
     }
 
-    private fun authHeaders(accessToken: String, refreshToken: String): Headers =
-        Headers.headersOf(
-            "Authorization",
-            accessToken,
-            "Set-Cookie",
-            "refreshToken=$refreshToken; Path=/; HttpOnly"
+    @Test
+    fun withdraw_deletesFirestoreProfileAndSignsOut() = runTest {
+        val firebaseAuthDataSource = FakeFirebaseAuthDataSource()
+        val userProfileDataSource = FakeUserProfileDataSource(
+            profiles = mutableMapOf(
+                "uid-1" to UserProfileDto(
+                    nickname = "몽이",
+                    profileImage = "MONGI"
+                )
+            )
+        )
+        val repository = createRepository(
+            firebaseAuthDataSource = firebaseAuthDataSource,
+            userProfileDataSource = userProfileDataSource
         )
 
-    private class FakeAuthRemoteDataSource(
-        private val loginResponse: Response<AuthTokenResponse> =
-            Response.error(500, "".toResponseBody()),
-        private val signupResponse: Response<AuthTokenResponse> =
-            Response.error(500, "".toResponseBody()),
-        private val reissueResponse: Response<Unit> =
-            Response.error(500, "".toResponseBody())
-    ) : AuthRemoteDataSource {
-        override suspend fun login(request: LogInRequest): Response<AuthTokenResponse> = loginResponse
+        repository.withdraw()
 
-        override suspend fun signup(request: SignUpRequest): Response<AuthTokenResponse> = signupResponse
+        assertFalse(userProfileDataSource.profiles.containsKey("uid-1"))
+        assertTrue(firebaseAuthDataSource.signOutCalled)
+    }
 
-        override suspend fun reissue(refreshToken: String): Response<Unit> = reissueResponse
+    @Test
+    fun checkAuthStatus_usesCachedProfile_whenFirestoreReadFails() = runTest {
+        val authDataSource = AuthDataSource(InMemorySharedPreferences())
+        authDataSource.saveUserProfile("캐시닉", "DEFAULT")
+        val repository = createRepository(
+            authDataSource = authDataSource,
+            userProfileDataSource = FakeUserProfileDataSource(
+                getProfileError = IllegalStateException("offline")
+            )
+        )
 
-        override suspend fun updateUser(body: UserUpdateRequest): Response<Unit> =
-            Response.success(Unit)
+        val state = repository.checkAuthStatus()
 
-        override suspend fun deleteUser(): Response<Unit> = Response.success(Unit)
+        assertTrue(state.isAuthenticated)
+        assertEquals("캐시닉", state.user?.nickname)
+        assertEquals("DEFAULT", state.user?.profileImage)
+        assertEquals("offline", state.error)
+    }
+
+    private fun createRepository(
+        firebaseAuthDataSource: FakeFirebaseAuthDataSource = FakeFirebaseAuthDataSource(),
+        userProfileDataSource: FakeUserProfileDataSource = FakeUserProfileDataSource(),
+        authDataSource: AuthDataSource = AuthDataSource(InMemorySharedPreferences())
+    ): AuthRepositoryImpl {
+        return AuthRepositoryImpl(
+            firebaseAuthDataSource = firebaseAuthDataSource,
+            userProfileDataSource = userProfileDataSource,
+            authDataSource = authDataSource
+        )
+    }
+
+    private class FakeFirebaseAuthDataSource(
+        private var currentFirebaseUser: FirebaseAuthenticatedUser? = FirebaseAuthenticatedUser(
+            uid = "uid-1",
+            email = "child@example.com",
+            displayName = "구글닉"
+        )
+    ) : FirebaseAuthDataSource {
+        var signOutCalled: Boolean = false
+
+        override fun getCurrentUser(): FirebaseAuthenticatedUser? = currentFirebaseUser
+
+        override fun signOut() {
+            signOutCalled = true
+            currentFirebaseUser = null
+        }
+    }
+
+    private class FakeUserProfileDataSource(
+        val profiles: MutableMap<String, UserProfileDto> = mutableMapOf(),
+        private val getProfileError: Exception? = null
+    ) : UserProfileDataSource {
+        override suspend fun getProfile(uid: String): UserProfileDto? {
+            getProfileError?.let { throw it }
+            return profiles[uid]
+        }
+
+        override suspend fun saveProfile(uid: String, profile: UserProfileDto) {
+            profiles[uid] = profile
+        }
+
+        override suspend fun deleteProfile(uid: String) {
+            profiles.remove(uid)
+        }
     }
 
     private class InMemorySharedPreferences : SharedPreferences {

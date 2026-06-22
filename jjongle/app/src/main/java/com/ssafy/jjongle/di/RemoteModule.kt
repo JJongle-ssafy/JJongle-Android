@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+@Suppress("DEPRECATION")
 @Module
 @InstallIn(SingletonComponent::class)
 object RemoteModule {

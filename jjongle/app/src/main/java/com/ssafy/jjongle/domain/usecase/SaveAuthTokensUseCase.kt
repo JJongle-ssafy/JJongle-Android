@@ -6,6 +6,7 @@ import com.ssafy.jjongle.domain.entity.MissingTokenAuthError
 import com.ssafy.jjongle.domain.repository.AuthRepository
 import javax.inject.Inject
 
+@Deprecated("Legacy backend token use case retained for Unity/backend migration compatibility.")
 class SaveAuthTokensUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {

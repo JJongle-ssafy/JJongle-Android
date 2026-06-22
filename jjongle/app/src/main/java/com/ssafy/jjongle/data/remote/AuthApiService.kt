@@ -12,8 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 
 
-// retrofit 인터페이스 정의
-// API 요청을 정의하는 인터페이스
+@Deprecated("Legacy backend auth API retained during serverless renewal. Use Firebase Auth + Firestore user profile data source.")
 interface AuthApiService {
 
     @POST("auth/login")

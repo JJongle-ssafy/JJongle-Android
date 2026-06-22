@@ -6,6 +6,7 @@ import com.ssafy.jjongle.data.remote.model.SignUpRequest
 import com.ssafy.jjongle.data.remote.model.UserUpdateRequest
 import retrofit2.Response
 
+@Deprecated("Legacy backend auth data source retained during serverless renewal. Use FirebaseAuthDataSource and UserProfileDataSource.")
 interface AuthRemoteDataSource {
     suspend fun login(request: LogInRequest): Response<AuthTokenResponse>
     suspend fun signup(request: SignUpRequest): Response<AuthTokenResponse>     // retrofit의 Response 타입을 사용하여 HTTP 상태 코드와 헤더를 포함

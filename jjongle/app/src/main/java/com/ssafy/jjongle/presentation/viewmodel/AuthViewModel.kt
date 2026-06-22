@@ -32,9 +32,7 @@ class AuthViewModel @Inject constructor(
         checkAuthStatus()
     }
 
-    // 🔐 서버 로그인 요청
-    // - 구글 로그인으로 받은 idToken을 서버에 보내 인증 요청
-    // - 성공 시 토큰 저장 및 로그인 상태 갱신
+    // Google/Firebase 로그인 후 Firestore 사용자 프로필 존재 여부로 인증 상태를 갱신
     fun login(
         idToken: String,
         onSuccess: () -> Unit,
@@ -47,7 +45,7 @@ class AuthViewModel @Inject constructor(
             val result = authRepository.login(idToken)
             result.onSuccess { newState ->
                 _authState.value = newState.copy(isLoading = false, error = null)
-                Log.d("AuthViewModel", "로그인 성공. hasAccessToken=${!newState.accessToken.isNullOrBlank()}")
+                Log.d("AuthViewModel", "로그인 결과. isAuthenticated=${newState.isAuthenticated}")
 
                 if (newState.isAuthenticated) {
                     Log.d(
@@ -122,9 +120,7 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    // 📝 서버 회원가입 요청
-    // - 닉네임 + 캐릭터 이미지 + idToken을 보내 회원가입 처리
-    // - 서버에서 토큰을 응답받아 로그인 상태 갱신
+    // Firestore 사용자 프로필을 생성해 회원가입 처리
     fun signUp(
         idToken: String,
         nickname: String,
@@ -170,8 +166,8 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    // 🚪 로그아웃 처리
-    // - 저장된 토큰 삭제 및 상태 초기화
+    // 로그아웃 처리
+    // - Firebase 세션과 로컬 인증 캐시 초기화
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
@@ -228,9 +224,8 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    // 🔎 자동 로그인 여부 확인
-    // - SharedPref에 access/refresh token이 있는지 확인
-    // - 있으면 로그인 상태로 전환
+    // 자동 로그인 여부 확인
+    // - Firebase current user와 Firestore 프로필을 기준으로 로그인 상태 복원
     fun checkAuthStatus() {
         viewModelScope.launch {
             try {

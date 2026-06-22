@@ -15,6 +15,7 @@ import javax.inject.Named
 // 이걸 막으려면 재발급은 한 번만 수행하고, 나머지는 결과를 공유해야 한다
 private val refreshMutex = kotlinx.coroutines.sync.Mutex()
 
+@Deprecated("Legacy backend token interceptor retained during serverless renewal.")
 class AuthInterceptor @Inject constructor(
     private val authDataSource: AuthDataSource,
     @Named("refresh") private val api: AuthApiService
@@ -89,4 +90,3 @@ class AuthInterceptor @Inject constructor(
         return chain.proceed(retry)
     }
 }
-

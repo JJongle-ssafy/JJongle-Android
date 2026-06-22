@@ -8,6 +8,7 @@ import com.ssafy.jjongle.data.remote.model.UserUpdateRequest
 import retrofit2.Response
 
 
+@Deprecated("Legacy backend auth data source retained during serverless renewal. Use FirebaseAuthDataSource and UserProfileDataSource.")
 class AuthRemoteDataSourceImpl(
     private val authApiService: AuthApiService
 ) : AuthRemoteDataSource {
