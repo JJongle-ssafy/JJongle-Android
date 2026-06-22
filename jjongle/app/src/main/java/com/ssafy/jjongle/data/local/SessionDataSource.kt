@@ -14,7 +14,7 @@ class SessionDataSource @Inject constructor(
 ) {
     companion object {
         private const val KEY_SESSION_KEY = "session_key"
-        private const val KEY_USER_ID = "user_id"
+        private const val KEY_SESSION_USER_ID = "session_user_id"
         private const val KEY_GAME_START_TIME = "game_start_time"
     }
 
@@ -40,7 +40,7 @@ class SessionDataSource @Inject constructor(
      */
     fun saveUserId(userId: Int) {
         sharedPreferences.edit {
-            putInt(KEY_USER_ID, userId)
+            putInt(KEY_SESSION_USER_ID, userId)
         }
     }
 
@@ -48,7 +48,7 @@ class SessionDataSource @Inject constructor(
      * 유저 ID 조회
      */
     fun getUserId(): Int {
-        return sharedPreferences.getInt(KEY_USER_ID, -1)
+        return sharedPreferences.getInt(KEY_SESSION_USER_ID, -1)
     }
 
     /**
@@ -62,7 +62,11 @@ class SessionDataSource @Inject constructor(
      * 세션 정보 모두 삭제
      */
     fun clearSession() {
-        sharedPreferences.edit { clear() }
+        sharedPreferences.edit {
+            remove(KEY_SESSION_KEY)
+            remove(KEY_SESSION_USER_ID)
+            remove(KEY_GAME_START_TIME)
+        }
     }
 
     /**
