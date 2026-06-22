@@ -1,8 +1,10 @@
 package com.ssafy.jjongle.data.game
 
 import com.ssafy.jjongle.domain.entity.GameStartEvent
+import com.ssafy.jjongle.domain.entity.GameScore
 import com.ssafy.jjongle.domain.entity.OX
 import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.domain.entity.QuizResult
 import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.domain.entity.QuizSession
 import com.ssafy.jjongle.domain.entity.SubmitResultEvent
@@ -79,6 +81,25 @@ class LocalOXGameEngine @Inject constructor(
                     answer = submission.quiz.answer.toOX()
                 )
             }
+    }
+
+    fun buildGameScore(): GameScore {
+        val session = currentSession
+        val quizResults = submissions.values.map { submission ->
+            QuizResult(
+                quizId = submission.quiz.id,
+                correctAnswer = submission.quiz.answer.uppercase(),
+                correctCount = submission.correctUserPositions.size,
+                totalParticipants = submission.totalParticipantCount,
+                correctUserIds = submission.correctUserPositions.map { it.userId }
+            )
+        }
+        return GameScore(
+            totalQuizzes = session?.quizzes?.size ?: 0,
+            completedQuizzes = quizResults.size,
+            totalCorrectAnswers = quizResults.sumOf { it.correctCount },
+            quizResults = quizResults
+        )
     }
 
     fun clear() {

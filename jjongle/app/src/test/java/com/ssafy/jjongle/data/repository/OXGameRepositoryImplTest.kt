@@ -3,6 +3,10 @@ package com.ssafy.jjongle.data.repository
 import android.content.SharedPreferences
 import com.ssafy.jjongle.data.game.LocalOXGameEngine
 import com.ssafy.jjongle.data.local.SessionDataSource
+import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryDao
+import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryEntity
+import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryWithNotes
+import com.ssafy.jjongle.data.local.oxgame.OXWrongAnswerNoteEntity
 import com.ssafy.jjongle.domain.entity.GameConnectionState
 import com.ssafy.jjongle.domain.entity.GameStartEvent
 import com.ssafy.jjongle.domain.entity.Quiz
@@ -73,12 +77,49 @@ class OXGameRepositoryImplTest {
         resultJob.cancel()
     }
 
+    @Test
+    fun finishOXGame_savesLocalHistoryWithWrongAnswerNotes() = runBlocking {
+        val historyDao = FakeOXGameHistoryDao()
+        val repository = createRepository(historyDao = historyDao)
+        val startDeferred = CompletableDeferred<GameStartEvent>()
+        val startJob = launch(start = CoroutineStart.UNDISPATCHED) {
+            repository.gameEvents.filterIsInstance<GameStartEvent>().collect { event ->
+                startDeferred.complete(event)
+            }
+        }
+        repository.connectWebSocket()
+        val start = withTimeout(2_000) { startDeferred.await() }
+        val resultDeferred = CompletableDeferred<SubmitResultEvent>()
+        val resultJob = launch(start = CoroutineStart.UNDISPATCHED) {
+            repository.gameEvents.filterIsInstance<SubmitResultEvent>().collect { event ->
+                resultDeferred.complete(event)
+            }
+        }
+        repository.sendSubmitAnswer(
+            sessionKey = start.sessionKey,
+            quizId = 1,
+            oAreaUserPositions = listOf(UserPosition(userId = 1, x = 0.2, y = 0.3)),
+            xAreaUserPositions = listOf(UserPosition(userId = 2, x = 0.8, y = 0.3))
+        )
+        withTimeout(2_000) { resultDeferred.await() }
+        repository.finishOXGame(start.sessionKey)
+
+        assertEquals(1, historyDao.histories.size)
+        assertEquals(1, historyDao.notes.size)
+        assertEquals("하늘은 파란색이다", historyDao.notes.first().question)
+        assertEquals("O", historyDao.notes.first().answer)
+        startJob.cancel()
+        resultJob.cancel()
+    }
+
     private fun createRepository(
-        sessionDataSource: SessionDataSource = SessionDataSource(InMemorySharedPreferences())
+        sessionDataSource: SessionDataSource = SessionDataSource(InMemorySharedPreferences()),
+        historyDao: OXGameHistoryDao = FakeOXGameHistoryDao()
     ): OXGameRepositoryImpl {
         return OXGameRepositoryImpl(
             sessionDataSource = sessionDataSource,
-            localGameEngine = LocalOXGameEngine(FakeOXQuizRepository())
+            localGameEngine = LocalOXGameEngine(FakeOXQuizRepository()),
+            historyDao = historyDao
         )
     }
 
@@ -91,6 +132,41 @@ class OXGameRepositoryImplTest {
                 description = "맑은 날 하늘은 파랗게 보입니다."
             )
         )
+    }
+
+    private class FakeOXGameHistoryDao : OXGameHistoryDao {
+        val histories = mutableListOf<OXGameHistoryEntity>()
+        val notes = mutableListOf<OXWrongAnswerNoteEntity>()
+        private var nextHistoryId = 1L
+
+        override suspend fun insertHistory(history: OXGameHistoryEntity): Long {
+            val id = nextHistoryId++
+            histories += history.copy(id = id)
+            return id
+        }
+
+        override suspend fun insertWrongAnswerNotes(notes: List<OXWrongAnswerNoteEntity>) {
+            this.notes += notes
+        }
+
+        override suspend fun countHistories(): Int = histories.size
+
+        override suspend fun getHistories(limit: Int, offset: Int): List<OXGameHistoryWithNotes> {
+            return histories.drop(offset).take(limit).map { history ->
+                OXGameHistoryWithNotes(
+                    history = history,
+                    notes = notes.filter { it.historyId == history.id }
+                )
+            }
+        }
+
+        override suspend fun getHistory(historyId: Long): OXGameHistoryWithNotes? {
+            val history = histories.firstOrNull { it.id == historyId } ?: return null
+            return OXGameHistoryWithNotes(
+                history = history,
+                notes = notes.filter { it.historyId == historyId }
+            )
+        }
     }
 
     private class InMemorySharedPreferences : SharedPreferences {

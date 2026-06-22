@@ -2,6 +2,9 @@ package com.ssafy.jjongle.data.repository
 
 import com.ssafy.jjongle.data.game.LocalOXGameEngine
 import com.ssafy.jjongle.data.local.SessionDataSource
+import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryDao
+import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryEntity
+import com.ssafy.jjongle.data.local.oxgame.toEntity
 import com.ssafy.jjongle.domain.entity.GameConnectionState
 import com.ssafy.jjongle.domain.entity.GameErrorEvent
 import com.ssafy.jjongle.domain.entity.GameEvent
@@ -21,7 +24,8 @@ import javax.inject.Inject
 
 class OXGameRepositoryImpl @Inject constructor(
     private val sessionDataSource: SessionDataSource,
-    private val localGameEngine: LocalOXGameEngine
+    private val localGameEngine: LocalOXGameEngine,
+    private val historyDao: OXGameHistoryDao
 ) : OXGameRepository {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -102,5 +106,19 @@ class OXGameRepositoryImpl @Inject constructor(
 
     override suspend fun finishOXGame(sessionKey: String) {
         require(sessionKey.isNotBlank()) { "OX 게임 세션 키가 비어 있습니다." }
+        val score = localGameEngine.buildGameScore()
+        val historyId = historyDao.insertHistory(
+            OXGameHistoryEntity(
+                playedAtEpochMillis = System.currentTimeMillis(),
+                totalQuizzes = score.totalQuizzes,
+                completedQuizzes = score.completedQuizzes,
+                totalCorrectAnswers = score.totalCorrectAnswers
+            )
+        )
+        val notes = localGameEngine.buildWrongAnswerNotes()
+            .map { it.toEntity(historyId) }
+        if (notes.isNotEmpty()) {
+            historyDao.insertWrongAnswerNotes(notes)
+        }
     }
 }
