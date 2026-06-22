@@ -12,6 +12,8 @@ import com.ssafy.jjongle.domain.entity.UserPosition
 import com.ssafy.jjongle.domain.usecase.GameActionUseCase
 import com.ssafy.jjongle.domain.usecase.StartOXGameUseCase
 import com.ssafy.jjongle.domain.usecase.TTSUseCase
+import com.ssafy.jjongle.domain.usecase.CalculateOXRankingsUseCase
+import com.ssafy.jjongle.domain.usecase.UpdateOXScoreUseCase
 import com.ssafy.jjongle.presentation.state.GameState
 import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.vision.OXAnswerArea
@@ -33,7 +35,9 @@ import javax.inject.Inject
 class OXGameViewModel @Inject constructor(
     private val startGameUseCase: StartOXGameUseCase,
     private val gameActionUseCase: GameActionUseCase,
-    private val ttsUseCase: TTSUseCase
+    private val ttsUseCase: TTSUseCase,
+    private val updateOXScoreUseCase: UpdateOXScoreUseCase,
+    private val calculateOXRankingsUseCase: CalculateOXRankingsUseCase
 ) : ViewModel() {
 
     // 게임 상태
@@ -240,20 +244,17 @@ class OXGameViewModel @Inject constructor(
         correctAnswer: String,
         correctUserPositions: List<UserPosition>
     ) {
-        val newResult = QuizResult(
+        val session = _quizSession.value ?: return
+        val scoreUpdate = updateOXScoreUseCase(
+            session = session,
+            currentResults = _quizResults.value,
             quizId = quizId,
             correctAnswer = correctAnswer,
-            correctCount = correctUserPositions.size,
-            totalParticipants = _latestTrackedFaces.value.size,
-            correctUserIds = correctUserPositions.map { it.userId }
+            correctUserPositions = correctUserPositions,
+            totalParticipants = _latestTrackedFaces.value.size
         )
-
-        val currentResults = _quizResults.value.toMutableList()
-        currentResults.add(newResult)
-        _quizResults.value = currentResults
-
-        // 전체 게임 점수 업데이트
-        updateGameScore()
+        _quizResults.value = scoreUpdate.quizResults
+        _gameScore.value = scoreUpdate.gameScore
     }
 
     /**
@@ -294,38 +295,10 @@ class OXGameViewModel @Inject constructor(
     }
 
     /**
-     * 전체 게임 점수 업데이트
-     */
-    private fun updateGameScore() {
-        val session = _quizSession.value ?: return
-        val results = _quizResults.value
-
-        val totalCorrect = results.sumOf { it.correctCount }
-        val completed = results.size
-
-        _gameScore.value = GameScore(
-            totalQuizzes = session.quizzes.size,
-            completedQuizzes = completed,
-            totalCorrectAnswers = totalCorrect,
-            quizResults = results
-        )
-    }
-
-    /**
      * 순위 계산 (상위 3명의 사용자 ID)
      */
     fun getTop3Rankings(): List<Pair<Int, Int>> { // (userId, 맞은 문제 수)
-        val userScores = mutableMapOf<Int, Int>()
-
-        _quizResults.value.forEach { result ->
-            result.correctUserIds.forEach { userId ->
-                userScores[userId] = userScores.getOrDefault(userId, 0) + 1
-            }
-        }
-
-        return userScores.toList()
-            .sortedByDescending { it.second }
-            .take(3)
+        return calculateOXRankingsUseCase(_quizResults.value)
     }
 
     /**
