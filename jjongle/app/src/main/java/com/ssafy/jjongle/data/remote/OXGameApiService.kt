@@ -10,6 +10,7 @@ import com.ssafy.jjongle.data.remote.model.FinishOXGameRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+@Deprecated("Legacy backend OX game API retained during serverless renewal. Use Room-backed local OX history.")
 interface OXGameApiService {
 
     @GET("/group-game/histories")

@@ -16,6 +16,7 @@ import com.ssafy.jjongle.domain.entity.SubmitResultEvent
 import com.ssafy.jjongle.domain.entity.UnknownGameEvent
 import javax.inject.Inject
 
+@Deprecated("Legacy backend WebSocket event parser retained during OX serverless renewal. Use local domain events.")
 class GameWebSocketEventParser @Inject constructor(
     private val gson: Gson
 ) {

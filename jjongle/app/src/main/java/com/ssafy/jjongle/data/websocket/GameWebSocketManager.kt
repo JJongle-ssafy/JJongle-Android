@@ -30,6 +30,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Deprecated("Legacy backend WebSocket game transport retained during OX serverless renewal. Use the local OX game engine.")
 class GameWebSocketManager @Inject constructor(
     private val okHttpClient: OkHttpClient,
     private val authDataSource: AuthDataSource,
