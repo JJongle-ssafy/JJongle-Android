@@ -4,17 +4,11 @@ import android.util.Log
 import com.google.gson.Gson
 import com.ssafy.jjongle.BuildConfig
 import com.ssafy.jjongle.data.local.AuthDataSource
-import com.ssafy.jjongle.data.model.AnalysisResultResponse
 import com.ssafy.jjongle.data.model.BaseRequest
-import com.ssafy.jjongle.data.model.BaseResponse
 import com.ssafy.jjongle.data.model.GameFinishData
-import com.ssafy.jjongle.data.model.GameFinishResponse
-import com.ssafy.jjongle.data.model.GameStartResponse
 import com.ssafy.jjongle.data.model.ImageAnalysisData
 import com.ssafy.jjongle.data.model.PositionSubmitData
-import com.ssafy.jjongle.data.model.SubmitResultResponse
 import com.ssafy.jjongle.data.model.UserPositionDto
-import com.ssafy.jjongle.data.model.toDomain
 import com.ssafy.jjongle.domain.entity.GameConnectionState
 import com.ssafy.jjongle.domain.entity.GameEvent
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +33,8 @@ import javax.inject.Singleton
 class GameWebSocketManager @Inject constructor(
     private val okHttpClient: OkHttpClient,
     private val authDataSource: AuthDataSource,
-    private val gson: Gson // Gson 주입
+    private val gson: Gson,
+    private val eventParser: GameWebSocketEventParser
 ) {
     private companion object {
         private const val TAG = "GameWebSocket" // 로그 태그 추가
@@ -61,14 +56,20 @@ class GameWebSocketManager @Inject constructor(
     private val _gameEvents = MutableSharedFlow<GameEvent>()
     val gameEvents = _gameEvents.asSharedFlow()
 
-    val accessToken =
-        authDataSource.getAccessToken() ?: throw IllegalStateException("Access token is null")
-
     fun connect() {
         if (_connectionState.value == GameConnectionState.CONNECTED || _connectionState.value == GameConnectionState.CONNECTING) {
             Log.d(TAG, "이미 연결 중이거나 연결됨. 재연결 시도 중단.")
             return
         }
+        val accessToken = authDataSource.getAccessToken()
+        if (accessToken.isNullOrBlank()) {
+            _connectionState.value = GameConnectionState.ERROR
+            scope.launch {
+                _gameEvents.emit(GameEvent.Error("Access token is missing."))
+            }
+            return
+        }
+
         isDisconnectingManually = false // 연결 시도 시 플래그 초기화
         _connectionState.value = GameConnectionState.CONNECTING
         val request = Request.Builder()
@@ -181,41 +182,9 @@ class GameWebSocketManager @Inject constructor(
      */
     private suspend fun parseAndEmitGameEvent(json: String) {
         try {
-            val baseResponse = gson.fromJson(json, BaseResponse::class.java)
-            val event = when (baseResponse.type) {
-
-                "GAME_START" -> {
-                    val response = gson.fromJson(json, GameStartResponse::class.java)
-                    GameEvent.GameStart(
-                        quizzes = response.data.quizList.map { it.toDomain() },
-                        sessionKey = response.data.sessionKey
-                    )
-                }
-
-                "SUBMIT_RESULT" -> {
-                    val response = gson.fromJson(json, SubmitResultResponse::class.java)
-                    GameEvent.SubmitResult(
-                        response.data.quizId,
-                        response.data.correctAnswer,
-                        response.data.correctUserPositions.map { it.toDomain() }
-                    )
-                }
-
-                "ANALYSIS_RESULT" -> {
-                    val response = gson.fromJson(json, AnalysisResultResponse::class.java)
-                    GameEvent.AnalysisResult(response.data)
-                }
-
-                "GAME_FINISH_RESULT" -> {
-                    val response = gson.fromJson(json, GameFinishResponse::class.java)
-                    GameEvent.GameFinish(response.data.userImages.map { it.toDomain() })
-                }
-
-
-                else -> {
-                    Log.w(TAG, "파싱: 알 수 없는 이벤트 타입: ${baseResponse.type}")
-                    GameEvent.Unknown // 알 수 없는 타입 처리
-                }
+            val event = eventParser.parse(json)
+            if (event == GameEvent.Unknown) {
+                Log.w(TAG, "파싱: 알 수 없는 이벤트 타입")
             }
             _gameEvents.emit(event)
         } catch (e: Exception) {
