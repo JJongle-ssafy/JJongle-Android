@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.presentation.navigation
 
-import com.ssafy.jjongle.presentation.media.BgmGroup
+import com.ssafy.jjongle.domain.entity.BgmGroup
 
 fun routeToBgmGroup(route: String?): BgmGroup? = when {
     route == null -> null

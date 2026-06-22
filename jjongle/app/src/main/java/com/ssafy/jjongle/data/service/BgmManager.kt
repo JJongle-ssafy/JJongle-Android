@@ -8,8 +8,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import com.ssafy.jjongle.R
+import com.ssafy.jjongle.domain.entity.BgmGroup
+import com.ssafy.jjongle.domain.repository.BgmRepository
 import com.ssafy.jjongle.domain.repository.SettingsRepository
-import com.ssafy.jjongle.presentation.media.BgmGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,7 +26,7 @@ class BgmManager @Inject constructor(
     private val app: Context,
     private val player: ExoPlayer,
     private val settingsRepository: SettingsRepository
-) {
+) : BgmRepository {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var currentGroup: BgmGroup? = null
     private var fadeJob: Job? = null
@@ -41,7 +42,7 @@ class BgmManager @Inject constructor(
         BgmGroup.MYPAGE -> MediaItem.fromUri(uri(R.raw.bgm_mypage))
     }
 
-    fun playFor(group: BgmGroup) {
+    override fun playFor(group: BgmGroup) {
         scope.launch {
             val bgmEnabled = settingsRepository.getBgmEnabled().first()
             if (!bgmEnabled) return@launch
@@ -52,15 +53,15 @@ class BgmManager @Inject constructor(
         }
     }
 
-    fun pause() {
+    override fun pause() {
         player.playWhenReady = false
     }
 
-    fun resume() {
+    override fun resume() {
         player.playWhenReady = true
     }
 
-    fun stop() {
+    override fun stop() {
         player.stop()
     }
 

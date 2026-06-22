@@ -2,9 +2,9 @@ package com.ssafy.jjongle.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.data.service.BgmManager
+import com.ssafy.jjongle.domain.entity.BgmGroup
+import com.ssafy.jjongle.domain.repository.BgmRepository
 import com.ssafy.jjongle.domain.repository.SettingsRepository
-import com.ssafy.jjongle.presentation.media.BgmGroup
 import com.ssafy.jjongle.presentation.navigation.routeToBgmGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MusicViewModel @Inject constructor(
-    private val bgm: BgmManager,
+    private val bgm: BgmRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 

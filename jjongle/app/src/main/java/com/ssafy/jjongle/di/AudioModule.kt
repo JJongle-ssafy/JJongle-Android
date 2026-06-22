@@ -6,6 +6,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.ssafy.jjongle.data.service.BgmManager
+import com.ssafy.jjongle.domain.repository.BgmRepository
 import com.ssafy.jjongle.domain.repository.SettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -38,5 +39,5 @@ object AudioModule {
         @ApplicationContext ctx: Context,
         player: ExoPlayer,
         settingsRepository: SettingsRepository
-    ): BgmManager = BgmManager(ctx, player, settingsRepository)
+    ): BgmRepository = BgmManager(ctx, player, settingsRepository)
 }

@@ -4,17 +4,17 @@ import android.app.Application
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.ssafy.jjongle.data.service.BgmManager
+import com.ssafy.jjongle.domain.repository.BgmRepository
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
 class JjongleApplication : Application(), DefaultLifecycleObserver {
 
-    // BgmManager를 주입받아 앱의 생명주기에 따라 배경음악을 제어합니다.
+    // BGM 인터페이스를 주입받아 앱 생명주기에 따라 배경음악을 제어합니다.
     // 백그라운드로 가면 일시정지, 다시 포그라운드면 재개
     @Inject
-    lateinit var bgm: BgmManager
+    lateinit var bgm: BgmRepository
 
     override fun onCreate() {
         super<Application>.onCreate()

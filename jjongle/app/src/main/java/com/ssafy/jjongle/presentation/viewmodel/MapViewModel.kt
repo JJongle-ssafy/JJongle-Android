@@ -3,9 +3,9 @@ package com.ssafy.jjongle.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.data.service.BgmManager
+import com.ssafy.jjongle.domain.entity.BgmGroup
+import com.ssafy.jjongle.domain.repository.BgmRepository
 import com.ssafy.jjongle.domain.repository.SettingsRepository
-import com.ssafy.jjongle.presentation.media.BgmGroup
 import com.ssafy.jjongle.presentation.state.MapState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val bgmManager: BgmManager,
+    private val bgmRepository: BgmRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
@@ -68,9 +68,9 @@ class MapViewModel @Inject constructor(
             settingsRepository.setBgmEnabled(newBgmState)
             
             if (newBgmState) {
-                bgmManager.playFor(BgmGroup.WORLD)
+                bgmRepository.playFor(BgmGroup.WORLD)
             } else {
-                bgmManager.pause()
+                bgmRepository.pause()
             }
         }
     }
