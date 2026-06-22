@@ -3,6 +3,8 @@ package com.ssafy.jjongle.presentation.ui.layout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -56,11 +58,14 @@ fun calculateDesignCanvasMetrics(
 fun DesignCanvas(
     modifier: Modifier = Modifier,
     designSize: DpSize = DpSize(DESIGN_CANVAS_WIDTH_DP.dp, DESIGN_CANVAS_HEIGHT_DP.dp),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     letterboxColor: Color = Color.Black,
     content: @Composable () -> Unit
 ) {
     BoxWithConstraints(
-        modifier = modifier.background(letterboxColor),
+        modifier = modifier
+            .background(letterboxColor)
+            .padding(contentPadding),
         contentAlignment = Alignment.Center
     ) {
         val parentDensity = LocalDensity.current
