@@ -14,10 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// 프로젝트의 색상 테마에 맞춰 따로 정의해두면 더 좋습니다.
-val JjongleBrown = Color(0xFF572405)
-val JjongleWhite = Color.White
+import com.ssafy.jjongle.presentation.ui.theme.JjongleBrown
+import com.ssafy.jjongle.presentation.ui.theme.JjongleWhite
 
 @Composable
 fun BaseButton(
