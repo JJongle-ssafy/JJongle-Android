@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.model.CharacterType
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.ui.components.ProfileDialog
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 import com.ssafy.jjongle.presentation.viewmodel.ProfileViewModel
@@ -59,11 +60,10 @@ fun SettingScreen(
 
     Box(Modifier.fillMaxSize()) {
         // 배경
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(R.drawable.mypage_bg),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // SignupScreen과 동일한 다이얼로그 재사용

@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -37,6 +36,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.ssafy.jjongle.R
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 
 @Composable
@@ -108,11 +108,10 @@ fun LoginScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.login_bg),
             contentDescription = "Login Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         Column(

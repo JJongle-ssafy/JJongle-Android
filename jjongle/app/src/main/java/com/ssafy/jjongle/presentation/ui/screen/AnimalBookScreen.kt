@@ -59,6 +59,7 @@ import com.ssafy.jjongle.R
 import com.ssafy.jjongle.domain.entity.AnimalType
 import com.ssafy.jjongle.presentation.state.AnimalSlot
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.ui.mapper.toImageRes
 import com.ssafy.jjongle.presentation.viewmodel.AnimalBookViewModel
 
@@ -113,11 +114,10 @@ fun AnimalBookScreen(
     Box(Modifier.fillMaxSize()) {
 
         // 배경
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(R.drawable.mypage_bg),
             contentDescription = "MyPage background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // 닫기(뒤로가기) 버튼 - 앨범 우상단

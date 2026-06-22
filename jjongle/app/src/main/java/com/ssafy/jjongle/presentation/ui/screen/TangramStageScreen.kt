@@ -2,9 +2,9 @@ package com.ssafy.jjongle.presentation.ui.screen
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -15,12 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.MainCharacter
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.calculateFitBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.TangramStageViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -99,39 +100,65 @@ fun TangramStageScreen(
         modifier = modifier.fillMaxSize()
     ) {
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = backgroundImagePainter,
             contentDescription = "$gameName 배경 이미지",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
-        // 투명한 발판 터치 영역들
-        stagePositions.forEach { stage ->
-            Box(
-                modifier = Modifier
-                    .offset((stage.x + 110).dp, (stage.y + 170).dp)
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                        if (!isCharacterMoving) {
-                            // 스테이지 접근 가능 여부 확인
-                            if (stage.stageId <= currentChallengeStageId) {
-                                if (stage.stageId == currentStage) {
-                                    // 현재 스테이지를 터치한 경우 바로 게임 시작
-                                    onStartGameClick(
-                                        stage.stageId,
-                                        authTokens?.accessToken,
-                                        authTokens?.refreshToken
-                                    )
-                                } else {
-                                    // 다른 스테이지로 이동
-                                    targetStageId = stage.stageId
-                                    viewModel.moveToStage(stage.stageId)
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val backgroundLayout = calculateFitBackgroundLayout(
+                containerWidth = maxWidth.value,
+                containerHeight = maxHeight.value,
+                imageWidth = TANGRAM_STAGE_BACKGROUND_WIDTH_PX,
+                imageHeight = TANGRAM_STAGE_BACKGROUND_HEIGHT_PX
+            )
+
+            fun stageX(value: Float) = value * TANGRAM_STAGE_BACKGROUND_WIDTH_PX / TANGRAM_STAGE_DESIGN_WIDTH
+            fun stageY(value: Float) = value * TANGRAM_STAGE_BACKGROUND_HEIGHT_PX / TANGRAM_STAGE_DESIGN_HEIGHT
+
+            // 투명한 발판 터치 영역들
+            stagePositions.forEach { stage ->
+                Box(
+                    modifier = Modifier
+                        .offset(
+                            x = backgroundLayout.x(stageX(stage.x + 110f)).dp,
+                            y = backgroundLayout.y(stageY(stage.y + 170f)).dp
+                        )
+                        .size(backgroundLayout.scale(stageX(100f)).dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            if (!isCharacterMoving) {
+                                // 스테이지 접근 가능 여부 확인
+                                if (stage.stageId <= currentChallengeStageId) {
+                                    if (stage.stageId == currentStage) {
+                                        // 현재 스테이지를 터치한 경우 바로 게임 시작
+                                        onStartGameClick(
+                                            stage.stageId,
+                                            authTokens?.accessToken,
+                                            authTokens?.refreshToken
+                                        )
+                                    } else {
+                                        // 다른 스테이지로 이동
+                                        targetStageId = stage.stageId
+                                        viewModel.moveToStage(stage.stageId)
+                                    }
                                 }
                             }
                         }
-                    }
+                )
+            }
+
+            // 몽이 캐릭터
+            MainCharacter(
+                modifier = Modifier
+                    .offset(
+                        x = backgroundLayout.x(stageX(animatedCharacterX.value)).dp,
+                        y = backgroundLayout.y(stageY(animatedCharacterY.value)).dp
+                    ),
+                isWalking = isCharacterMoving,
+                assetName = "mongi_walk.json",
+                size = backgroundLayout.scale(stageX(300f)).dp,
             )
         }
 
@@ -155,13 +182,10 @@ fun TangramStageScreen(
                 .padding(end = 30.dp, bottom = 30.dp)
         )
 
-        // 몽이 캐릭터
-        MainCharacter(
-            modifier = Modifier
-                .offset(animatedCharacterX.value.dp, animatedCharacterY.value.dp),
-            isWalking = isCharacterMoving,
-            assetName = "mongi_walk.json",
-            size = 300.dp,
-        )
     }
 }
+
+private const val TANGRAM_STAGE_BACKGROUND_WIDTH_PX = 2800f
+private const val TANGRAM_STAGE_BACKGROUND_HEIGHT_PX = 1752f
+private const val TANGRAM_STAGE_DESIGN_WIDTH = 1280f
+private const val TANGRAM_STAGE_DESIGN_HEIGHT = 800f

@@ -25,14 +25,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.MainCharacter
-import com.ssafy.jjongle.presentation.ui.layout.calculateCropBackgroundLayout
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.calculateFitBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.MapViewModel
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -66,15 +66,14 @@ fun MapScreen(
         modifier = Modifier.fillMaxSize()
 
     ) {
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.main_map),
             contentDescription = "Map Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val backgroundLayout = calculateCropBackgroundLayout(
+            val backgroundLayout = calculateFitBackgroundLayout(
                 containerWidth = maxWidth.value,
                 containerHeight = maxHeight.value,
                 imageWidth = MAP_BACKGROUND_WIDTH_PX,

@@ -41,6 +41,7 @@ import com.ssafy.jjongle.R
 import com.ssafy.jjongle.domain.entity.OX
 import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.viewmodel.QuizNoteViewModel
 import java.time.LocalDateTime
 
@@ -59,11 +60,10 @@ fun QuizNoteScreen(
 
     Box(Modifier.fillMaxSize()) {
         // 배경
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(R.drawable.mypage_bg),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // 상단 뒤로가기 (오버레이보다 위)

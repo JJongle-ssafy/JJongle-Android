@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.viewmodel.TutorialViewModel
 import com.ssafy.jjongle.util.AudioPlayer
 import kotlinx.coroutines.delay
@@ -52,11 +53,10 @@ fun TangramTutorialScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.tangram_tutorial_background),
             contentDescription = "Tangram Tutorial Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // 가운데 튜토리얼 이미지

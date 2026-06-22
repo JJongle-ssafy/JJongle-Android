@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.viewmodel.TutorialViewModel
 import com.ssafy.jjongle.util.AudioPlayer
 import kotlinx.coroutines.delay
@@ -48,11 +49,10 @@ fun OXTutorialScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.ox_tutorial_background),
             contentDescription = "tutorial background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // 중앙 튜토리얼 이미지
@@ -118,5 +118,4 @@ fun OXTutorialScreen(
         }
     }
 }
-
 

@@ -1,6 +1,5 @@
 package com.ssafy.jjongle.presentation.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +11,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 
 @Composable
 fun BeforeTangramTutorialScreen(
@@ -24,11 +23,10 @@ fun BeforeTangramTutorialScreen(
     onSkipTutorial: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.before_tangram_tutorial),
             contentDescription = "Before Tangram Tutorial Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
         
         Column(

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 
 
@@ -60,11 +61,10 @@ fun MypageScreen(
     ) {
 
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.mypage_bg),
             contentDescription = "Mypage Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // 뒤로가기 버튼

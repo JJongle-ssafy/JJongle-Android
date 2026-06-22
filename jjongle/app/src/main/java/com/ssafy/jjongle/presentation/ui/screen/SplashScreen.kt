@@ -22,13 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.ui.theme.JalnanFont
 import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
@@ -68,11 +68,10 @@ fun SplashScreen(
                 }
             }
     ) {
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.login_bg),
             contentDescription = "Login Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
         Column(
             modifier = Modifier

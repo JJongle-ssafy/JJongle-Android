@@ -68,7 +68,8 @@ import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.CameraComponent
-import com.ssafy.jjongle.presentation.ui.layout.calculateCropBackgroundLayout
+import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.calculateFitBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.OXGameViewModel
 import com.ssafy.jjongle.presentation.vision.OXTrackedFace
 import com.ssafy.jjongle.util.AudioPlayer
@@ -349,11 +350,10 @@ fun GameStartContent(
         modifier = Modifier.fillMaxSize()
     ) {
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.ox_start_content_bg),
             contentDescription = "게임 시작 배경",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         // 버튼을 상단 오른쪽에 배치
@@ -381,11 +381,10 @@ fun QuizGameContent(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.ox_game_camera_background),
             contentDescription = "게임 카메라 배경",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         Column(
@@ -533,16 +532,15 @@ fun GameResultContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 결과 배경
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.ox_game_result_background),
             contentDescription = "result bg",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
 
         val rankedWithProfile = top3Rankings
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val backgroundLayout = calculateCropBackgroundLayout(
+            val backgroundLayout = calculateFitBackgroundLayout(
                 containerWidth = maxWidth.value,
                 containerHeight = maxHeight.value,
                 imageWidth = OX_RESULT_BACKGROUND_WIDTH_PX,
@@ -887,11 +885,10 @@ fun QuizExplanationContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경 이미지
-        Image(
+        ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.ox_game_background),
             contentDescription = "해설 배경",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxSize()
         )
         val oxResult = if (quiz.answer == "O") {
             R.drawable.ox_o
