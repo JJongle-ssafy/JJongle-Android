@@ -3,11 +3,15 @@ package com.ssafy.jjongle.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.jjongle.domain.entity.GameConnectionState
-import com.ssafy.jjongle.domain.entity.GameEvent
+import com.ssafy.jjongle.domain.entity.GameErrorEvent
+import com.ssafy.jjongle.domain.entity.GameFinishEvent
+import com.ssafy.jjongle.domain.entity.GameStartEvent
 import com.ssafy.jjongle.domain.entity.GameScore
 import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.domain.entity.QuizResult
 import com.ssafy.jjongle.domain.entity.QuizSession
+import com.ssafy.jjongle.domain.entity.SubmitResultEvent
+import com.ssafy.jjongle.domain.entity.UnknownGameEvent
 import com.ssafy.jjongle.domain.entity.UserPosition
 import com.ssafy.jjongle.domain.usecase.GameActionUseCase
 import com.ssafy.jjongle.domain.usecase.StartOXGameUseCase
@@ -363,7 +367,7 @@ class OXGameViewModel @Inject constructor(
         viewModelScope.launch {
             gameEvents.collect { event ->
                 when (event) {
-                    is GameEvent.GameStart -> {
+                    is GameStartEvent -> {
                         val session = QuizSession(
                             quizzes = event.quizzes,
                             sessionKey = event.sessionKey
@@ -377,7 +381,7 @@ class OXGameViewModel @Inject constructor(
                         _isLoading.value = false
                     }
 
-                    is GameEvent.SubmitResult -> {
+                    is SubmitResultEvent -> {
                         println("DEBUG: SUBMIT_RESULT 이벤트 수신 - 퀴즈 ID: ${event.quizId}, 정답: ${event.correctAnswer}, 정답자 수: ${event.correctUserPositions.size}")
                         // 퀴즈 결과 이벤트 처리 - 성적 기록
                         recordQuizResult(
@@ -393,15 +397,15 @@ class OXGameViewModel @Inject constructor(
                         _isAnswerSubmitted.value = true
                     }
 
-                    is GameEvent.Error -> {
+                    is GameErrorEvent -> {
                         handleGameError(event.message)
                     }
 
-                    GameEvent.Unknown -> {
+                    UnknownGameEvent -> {
                         // 알 수 없는 이벤트
                     }
 
-                    is GameEvent.GameFinish -> {
+                    is GameFinishEvent -> {
                         println("DEBUG: GAME_FINISH 이벤트 수신")
                         // 더 이상 얼굴 추적/타이머가 동작하지 않도록 즉시 중지
                         stopLiveStreaming()
@@ -475,7 +479,7 @@ class OXGameViewModel @Inject constructor(
     /**
      * 서버에서 받은 GameFinish 이벤트에서 프로필 맵을 구성합니다.
      */
-    private fun buildProfilesMap(event: GameEvent.GameFinish): Map<Int, String> {
+    private fun buildProfilesMap(event: GameFinishEvent): Map<Int, String> {
         return event.profiles
             .filter { it.base64.isNotBlank() }
             .associate { it.userId to it.base64 }

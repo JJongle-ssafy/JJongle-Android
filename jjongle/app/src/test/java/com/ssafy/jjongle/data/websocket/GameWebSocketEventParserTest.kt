@@ -1,7 +1,10 @@
 package com.ssafy.jjongle.data.websocket
 
 import com.google.gson.Gson
-import com.ssafy.jjongle.domain.entity.GameEvent
+import com.ssafy.jjongle.domain.entity.GameFinishEvent
+import com.ssafy.jjongle.domain.entity.GameStartEvent
+import com.ssafy.jjongle.domain.entity.SubmitResultEvent
+import com.ssafy.jjongle.domain.entity.UnknownGameEvent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -31,8 +34,8 @@ class GameWebSocketEventParserTest {
 
         val event = parser.parse(json)
 
-        assertTrue(event is GameEvent.GameStart)
-        event as GameEvent.GameStart
+        assertTrue(event is GameStartEvent)
+        event as GameStartEvent
         assertEquals("session-1", event.sessionKey)
         assertEquals(1, event.quizzes.size)
         assertEquals(10, event.quizzes.first().id)
@@ -55,8 +58,8 @@ class GameWebSocketEventParserTest {
 
         val event = parser.parse(json)
 
-        assertTrue(event is GameEvent.SubmitResult)
-        event as GameEvent.SubmitResult
+        assertTrue(event is SubmitResultEvent)
+        event as SubmitResultEvent
         assertEquals(10, event.quizId)
         assertEquals("X", event.correctAnswer)
         assertEquals(7, event.correctUserPositions.first().userId)
@@ -66,22 +69,22 @@ class GameWebSocketEventParserTest {
     fun parse_unknownTypeReturnsUnknownEvent() {
         val event = parser.parse("""{"type":"NEW_EVENT","data":{}}""")
 
-        assertEquals(GameEvent.Unknown, event)
+        assertEquals(UnknownGameEvent, event)
     }
 
     @Test
     fun parse_missingTypeReturnsUnknownEvent() {
         val event = parser.parse("""{"data":{}}""")
 
-        assertEquals(GameEvent.Unknown, event)
+        assertEquals(UnknownGameEvent, event)
     }
 
     @Test
     fun parse_gameStartWithMissingDataUsesFallbackSession() {
         val event = parser.parse("""{"type":"GAME_START"}""")
 
-        assertTrue(event is GameEvent.GameStart)
-        event as GameEvent.GameStart
+        assertTrue(event is GameStartEvent)
+        event as GameStartEvent
         assertEquals("[MISSING_SERVER_FIELD:gameStart.sessionKey]", event.sessionKey)
         assertEquals(emptyList<Any>(), event.quizzes)
     }
@@ -90,8 +93,8 @@ class GameWebSocketEventParserTest {
     fun parse_submitResultWithMissingDataUsesFallbacks() {
         val event = parser.parse("""{"type":"SUBMIT_RESULT"}""")
 
-        assertTrue(event is GameEvent.SubmitResult)
-        event as GameEvent.SubmitResult
+        assertTrue(event is SubmitResultEvent)
+        event as SubmitResultEvent
         assertEquals(-1, event.quizId)
         assertEquals("[MISSING_SERVER_FIELD:submitResult.correctAnswer]", event.correctAnswer)
         assertEquals(emptyList<Any>(), event.correctUserPositions)
@@ -113,8 +116,8 @@ class GameWebSocketEventParserTest {
 
         val event = parser.parse(json)
 
-        assertTrue(event is GameEvent.GameFinish)
-        event as GameEvent.GameFinish
+        assertTrue(event is GameFinishEvent)
+        event as GameFinishEvent
         assertEquals(1, event.profiles.size)
         assertEquals(-1, event.profiles.first().userId)
         assertEquals("[MISSING_SERVER_FIELD:gameFinish.base64]", event.profiles.first().base64)

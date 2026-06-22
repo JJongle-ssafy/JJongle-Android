@@ -9,7 +9,11 @@ import com.ssafy.jjongle.data.model.orMissingServerField
 import com.ssafy.jjongle.data.model.orMissingServerId
 import com.ssafy.jjongle.data.model.toDomainProfiles
 import com.ssafy.jjongle.data.model.toDomain
+import com.ssafy.jjongle.domain.entity.GameFinishEvent
 import com.ssafy.jjongle.domain.entity.GameEvent
+import com.ssafy.jjongle.domain.entity.GameStartEvent
+import com.ssafy.jjongle.domain.entity.SubmitResultEvent
+import com.ssafy.jjongle.domain.entity.UnknownGameEvent
 import javax.inject.Inject
 
 class GameWebSocketEventParser @Inject constructor(
@@ -17,14 +21,14 @@ class GameWebSocketEventParser @Inject constructor(
 ) {
     fun parse(json: String): GameEvent {
         val baseResponse = gson.fromJson(json, BaseResponse::class.java)
-            ?: return GameEvent.Unknown
+            ?: return UnknownGameEvent
 
         return when (baseResponse.type) {
             "GAME_START" -> {
                 val session = gson.fromJson(json, GameStartResponse::class.java)
                     ?.toDomain()
                     ?: GameStartResponse().toDomain()
-                GameEvent.GameStart(
+                GameStartEvent(
                     quizzes = session.quizzes,
                     sessionKey = session.sessionKey
                 )
@@ -32,7 +36,7 @@ class GameWebSocketEventParser @Inject constructor(
 
             "SUBMIT_RESULT" -> {
                 val response = gson.fromJson(json, SubmitResultResponse::class.java)
-                GameEvent.SubmitResult(
+                SubmitResultEvent(
                     quizId = response?.data?.quizId.orMissingServerId(),
                     correctAnswer = response?.data?.correctAnswer
                         .orMissingServerField("submitResult.correctAnswer"),
@@ -44,10 +48,10 @@ class GameWebSocketEventParser @Inject constructor(
 
             "GAME_FINISH_RESULT" -> {
                 val response = gson.fromJson(json, GameFinishResponse::class.java)
-                GameEvent.GameFinish(response?.toDomainProfiles().orEmpty())
+                GameFinishEvent(response?.toDomainProfiles().orEmpty())
             }
 
-            else -> GameEvent.Unknown
+            else -> UnknownGameEvent
         }
     }
 }

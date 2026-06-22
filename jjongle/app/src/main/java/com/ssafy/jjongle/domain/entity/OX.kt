@@ -1,3 +1,6 @@
 package com.ssafy.jjongle.domain.entity
 
-sealed interface GameEvent
+enum class OX {
+    O,
+    X
+}

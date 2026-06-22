@@ -1,12 +1,10 @@
-package com.ssafy.jjongle.data.remote.mapper
+package com.ssafy.jjongle.data.remote.model
 
-import com.ssafy.jjongle.data.remote.model.TangramDetailResponse
-import com.ssafy.jjongle.data.remote.model.TangramHistoryItemDto
 import com.ssafy.jjongle.domain.entity.AnimalType
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class TangramMappersTest {
+class TangramDtoMappingTest {
     @Test
     fun tangramHistoryItemDto_toDomain_mapsAllFields() {
         val domain = TangramHistoryItemDto(

@@ -1,6 +1,7 @@
 package com.ssafy.jjongle.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.ssafy.jjongle.domain.entity.GameProfileImage
 
 /**
  * GAME_FINISH 응답으로 전달되는 유저 프로필 이미지 정보
@@ -10,3 +11,9 @@ data class GameFinishProfile(
     @SerializedName("base64") val base64: String? = null
 )
 
+fun GameFinishProfile.toDomain(): GameProfileImage {
+    return GameProfileImage(
+        userId = userId.orMissingServerId(),
+        base64 = base64.orMissingServerField("gameFinish.base64")
+    )
+}

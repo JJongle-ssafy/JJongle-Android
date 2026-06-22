@@ -1,6 +1,7 @@
 package com.ssafy.jjongle.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.ssafy.jjongle.domain.entity.Quiz
 
 data class QuizResponse(
     @SerializedName("quizId")
@@ -15,3 +16,12 @@ data class QuizResponse(
     @SerializedName("description")
     val description: String? = null
 )
+
+fun QuizResponse.toDomain(): Quiz {
+    return Quiz(
+        id = quizId.orMissingServerId(),
+        question = question.orMissingServerField("quiz.question"),
+        answer = answer.orMissingServerField("quiz.answer"),
+        description = description.orMissingServerField("quiz.description")
+    )
+}

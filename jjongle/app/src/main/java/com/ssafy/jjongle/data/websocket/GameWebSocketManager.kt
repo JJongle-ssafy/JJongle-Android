@@ -8,7 +8,9 @@ import com.ssafy.jjongle.data.model.BaseRequest
 import com.ssafy.jjongle.data.model.PositionSubmitData
 import com.ssafy.jjongle.data.model.UserPositionDto
 import com.ssafy.jjongle.domain.entity.GameConnectionState
+import com.ssafy.jjongle.domain.entity.GameErrorEvent
 import com.ssafy.jjongle.domain.entity.GameEvent
+import com.ssafy.jjongle.domain.entity.UnknownGameEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -63,7 +65,7 @@ class GameWebSocketManager @Inject constructor(
         if (accessToken.isNullOrBlank()) {
             _connectionState.value = GameConnectionState.ERROR
             scope.launch {
-                _gameEvents.emit(GameEvent.Error("Access token is missing."))
+                _gameEvents.emit(GameErrorEvent("Access token is missing."))
             }
             return
         }
@@ -157,13 +159,13 @@ class GameWebSocketManager @Inject constructor(
     private suspend fun parseAndEmitGameEvent(json: String) {
         try {
             val event = eventParser.parse(json)
-            if (event == GameEvent.Unknown) {
+            if (event == UnknownGameEvent) {
                 Log.w(TAG, "파싱: 알 수 없는 이벤트 타입")
             }
             _gameEvents.emit(event)
         } catch (e: Exception) {
             Log.e(TAG, "JSON 파싱 실패: ${e.message}, 원본 JSON: $json", e)
-            _gameEvents.emit(GameEvent.Error("JSON 파싱 실패: ${e.message}"))
+            _gameEvents.emit(GameErrorEvent("JSON 파싱 실패: ${e.message}"))
         }
     }
 

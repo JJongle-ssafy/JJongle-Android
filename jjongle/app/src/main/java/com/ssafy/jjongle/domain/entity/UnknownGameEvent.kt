@@ -1,3 +1,3 @@
 package com.ssafy.jjongle.domain.entity
 
-sealed interface GameEvent
+data object UnknownGameEvent : GameEvent

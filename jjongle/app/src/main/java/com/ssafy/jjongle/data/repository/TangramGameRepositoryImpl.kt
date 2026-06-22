@@ -1,7 +1,7 @@
 package com.ssafy.jjongle.data.repository
 
 import com.ssafy.jjongle.data.remote.TangramGameApiService
-import com.ssafy.jjongle.data.remote.mapper.toDomain
+import com.ssafy.jjongle.data.remote.model.toDomain
 import com.ssafy.jjongle.domain.entity.AnimalType
 import com.ssafy.jjongle.domain.entity.TangramDetail
 import com.ssafy.jjongle.domain.entity.TangramHistory

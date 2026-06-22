@@ -3,10 +3,11 @@ package com.ssafy.jjongle.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.domain.entity.AuthError
 import com.ssafy.jjongle.domain.entity.AuthException
 import com.ssafy.jjongle.domain.entity.AuthState
+import com.ssafy.jjongle.domain.entity.MissingTokenAuthError
 import com.ssafy.jjongle.domain.entity.UserInfo
+import com.ssafy.jjongle.domain.entity.UserAlreadyExistsAuthError
 import com.ssafy.jjongle.domain.repository.AuthRepository
 import com.ssafy.jjongle.domain.repository.GoogleAuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -90,7 +91,7 @@ class AuthViewModel @Inject constructor(
                     val firebaseIdToken = googleUser.idToken
                     if (firebaseIdToken.isNullOrBlank()) {
                         val error = AuthException(
-                            AuthError.MissingToken,
+                            MissingTokenAuthError,
                             "Firebase ID 토큰을 가져오지 못했습니다."
                         )
                         _authState.value = _authState.value.copy(
@@ -148,7 +149,7 @@ class AuthViewModel @Inject constructor(
                     "회원가입 onFailure. Throwable: ${throwable::class.java.name}, Message: ${throwable.message}",
                     throwable
                 )
-                if (throwable is AuthException && throwable.error is AuthError.UserAlreadyExists) {
+                if (throwable is AuthException && throwable.error is UserAlreadyExistsAuthError) {
                     Log.w("AuthViewModel", "이미 가입된 유저. 로그인 유도")
                     _authState.value = _authState.value.copy(
                         isLoading = false,

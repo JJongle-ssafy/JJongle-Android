@@ -7,11 +7,15 @@ import com.ssafy.jjongle.data.remote.AuthRemoteDataSource
 import com.ssafy.jjongle.data.remote.model.LogInRequest
 import com.ssafy.jjongle.data.remote.model.SignUpRequest
 import com.ssafy.jjongle.data.remote.model.UserUpdateRequest
-import com.ssafy.jjongle.domain.entity.AuthError
 import com.ssafy.jjongle.domain.entity.AuthException
 import com.ssafy.jjongle.domain.entity.AuthState
 import com.ssafy.jjongle.domain.entity.AuthTokens
+import com.ssafy.jjongle.domain.entity.HttpAuthError
+import com.ssafy.jjongle.domain.entity.InvalidRefreshTokenAuthError
+import com.ssafy.jjongle.domain.entity.MissingTokenAuthError
+import com.ssafy.jjongle.domain.entity.UnknownAuthError
 import com.ssafy.jjongle.domain.entity.UserInfo
+import com.ssafy.jjongle.domain.entity.UserAlreadyExistsAuthError
 import com.ssafy.jjongle.domain.repository.AuthRepository
 import retrofit2.Response
 import javax.inject.Inject
@@ -35,7 +39,7 @@ class AuthRepositoryImpl @Inject constructor(
             val accessToken = authDataSource.getAccessToken()
             val refreshToken = authDataSource.getRefreshToken()
             if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-                throw AuthException(AuthError.MissingToken, "로그인 응답에 토큰이 없습니다.")
+                throw AuthException(MissingTokenAuthError, "로그인 응답에 토큰이 없습니다.")
             }
 
             val nickname = body.nickname.orMissingServerField("auth.nickname")
@@ -57,7 +61,7 @@ class AuthRepositoryImpl @Inject constructor(
 
             Result.success(state)
         } catch (e: AuthException) {
-            val httpError = e.error as? AuthError.Http
+            val httpError = e.error as? HttpAuthError
             if (httpError?.code == 401) {
                 Log.w("AuthRepositoryImpl", "로그인 시 신규회원으로 처리: ${e.message}")
                 return Result.success(AuthState(isAuthenticated = false, isLoading = false))
@@ -93,7 +97,7 @@ class AuthRepositoryImpl @Inject constructor(
                     "Signup API 에러: ${response.code()} ${response.message()}"
                 )
                 throw if (response.code() == 409) {
-                    AuthException(AuthError.UserAlreadyExists, "이미 가입된 사용자입니다.")
+                    AuthException(UserAlreadyExistsAuthError, "이미 가입된 사용자입니다.")
                 } else {
                     response.toAuthException()
                 }
@@ -104,7 +108,7 @@ class AuthRepositoryImpl @Inject constructor(
             val accessToken = authDataSource.getAccessToken()
             val refreshToken = authDataSource.getRefreshToken()
             if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-                throw AuthException(AuthError.MissingToken, "회원가입 응답에 토큰이 없습니다.")
+                throw AuthException(MissingTokenAuthError, "회원가입 응답에 토큰이 없습니다.")
             }
             Log.d("AuthRemoteDataSource", "Tokens saved")
 
@@ -143,7 +147,7 @@ class AuthRepositoryImpl @Inject constructor(
             Log.w("AuthRepositoryImpl", "저장된 리프레시 토큰이 없거나 일치하지 않아 재발급 요청을 중단합니다.")
             logout() // 안전하게 로그아웃 처리
             return Result.failure(
-                AuthException(AuthError.InvalidRefreshToken, "유효한 리프레시 토큰이 없습니다.")
+                AuthException(InvalidRefreshTokenAuthError, "유효한 리프레시 토큰이 없습니다.")
             )
         }
 
@@ -169,7 +173,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (newAccessToken.isNullOrBlank() || newRefreshToken.isNullOrBlank()) {
                 Log.e("AuthRepositoryImpl", "🚫 토큰 재발급 후 토큰 없음")
                 if (response.code() == 401 || response.code() == 403) logout() // 재발급 실패로 간주하고 로그아웃
-                throw AuthException(AuthError.MissingToken, "토큰 재발급 후 서버로부터 토큰을 받지 못했습니다.")
+                throw AuthException(MissingTokenAuthError, "토큰 재발급 후 서버로부터 토큰을 받지 못했습니다.")
             }
 
             val updatedState = AuthState(
@@ -184,7 +188,7 @@ class AuthRepositoryImpl @Inject constructor(
 
         } catch (e: AuthException) {
             Log.e("AuthRepositoryImpl", "토큰 재발급 중 인증 오류 발생: ${e.message}", e)
-            val httpError = e.error as? AuthError.Http
+            val httpError = e.error as? HttpAuthError
             if (httpError?.code == 401 || httpError?.code == 403) {
                 logout() // 토큰이 더 이상 유효하지 않으므로 로그아웃
             }
@@ -268,7 +272,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun saveTokens(tokens: AuthTokens) {
         if (!tokens.isValid) {
-            throw AuthException(AuthError.MissingToken, "저장할 인증 토큰이 비어 있습니다.")
+            throw AuthException(MissingTokenAuthError, "저장할 인증 토큰이 비어 있습니다.")
         }
         authDataSource.saveTokens(tokens.accessToken, tokens.refreshToken)
     }
@@ -292,7 +296,7 @@ class AuthRepositoryImpl @Inject constructor(
             ?: response.headers()["Refresh-Token"]
 
         if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-            throw AuthException(AuthError.MissingToken, "인증 응답 헤더에 토큰이 없습니다.")
+            throw AuthException(MissingTokenAuthError, "인증 응답 헤더에 토큰이 없습니다.")
         }
 
         authDataSource.saveTokens(accessToken, refreshToken)
@@ -301,7 +305,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     private fun Response<*>.toAuthException(): AuthException {
         return AuthException(
-            error = AuthError.Http(code(), message()),
+            error = HttpAuthError(code(), message()),
             message = "인증 요청 실패: ${code()} ${message()}".trim()
         )
     }
@@ -310,7 +314,7 @@ class AuthRepositoryImpl @Inject constructor(
         return if (this is AuthException) {
             this
         } else {
-            AuthException(AuthError.Unknown(message), message ?: defaultMessage, this)
+            AuthException(UnknownAuthError(message), message ?: defaultMessage, this)
         }
     }
 }

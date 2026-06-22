@@ -4,7 +4,7 @@ import com.ssafy.jjongle.domain.entity.UserPosition
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class DataToDomainMapperTest {
+class DtoMappingTest {
     @Test
     fun userPositionDto_toDomain_mapsAllFields() {
         val dto = UserPositionDto(userId = 7, x = 0.25, y = 0.75)

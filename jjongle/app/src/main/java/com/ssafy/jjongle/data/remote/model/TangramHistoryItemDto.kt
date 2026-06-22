@@ -1,25 +1,20 @@
-package com.ssafy.jjongle.data.remote.mapper
+package com.ssafy.jjongle.data.remote.model
 
-import com.ssafy.jjongle.data.model.orMissingServerField
 import com.ssafy.jjongle.data.model.orMissingServerId
 import com.ssafy.jjongle.data.model.orMissingServerLongId
-import com.ssafy.jjongle.data.remote.model.TangramDetailResponse
-import com.ssafy.jjongle.data.remote.model.TangramHistoryItemDto
 import com.ssafy.jjongle.domain.entity.AnimalType
-import com.ssafy.jjongle.domain.entity.TangramDetail
 import com.ssafy.jjongle.domain.entity.TangramHistory
+
+data class TangramHistoryItemDto(
+    val stage: Int? = null,
+    val tangramId: Long? = null,
+    val animal: String? = null
+)
 
 fun TangramHistoryItemDto.toDomain() = TangramHistory(
     stage = stage.orMissingServerId(),
     tangramId = tangramId.orMissingServerLongId(),
     animal = animal.toAnimalTypeOrFallback()
-)
-
-
-fun TangramDetailResponse.toDomain(id: Long, type: AnimalType) = TangramDetail(
-    tangramId = id,
-    animal = type,
-    story = story.orMissingServerField("tangram.story")
 )
 
 private fun String?.toAnimalTypeOrFallback(): AnimalType {
