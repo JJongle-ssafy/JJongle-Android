@@ -15,6 +15,7 @@ import android.util.Base64
 import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -108,6 +109,7 @@ fun CameraComponent(
 }
 
 @Composable
+@OptIn(ExperimentalGetImage::class)
 private fun CameraPreview(
     modifier: Modifier = Modifier,
     context: Context,

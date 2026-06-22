@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -161,7 +162,7 @@ fun CameraScreen(
 
                 // 1) 카메라 프레임 캡처
                 var base: Bitmap? = pv.bitmap
-                if (base == null) {
+                if (base == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     // SurfaceView( COMPATIBLE ) 모드일 때 PixelCopy로 폴백
                     val act = context as Activity
                     val bmp = Bitmap.createBitmap(pv.width, pv.height, Bitmap.Config.ARGB_8888)

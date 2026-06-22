@@ -40,6 +40,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -145,6 +146,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.7.1")
     implementation("androidx.media3:media3-session:1.7.1")
     implementation("androidx.media3:media3-datasource:1.7.1") // RawResourceDataSource 용
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
     releaseImplementation(project(":MainApp.androidlib"))
     releaseImplementation(project(":unityLibrary"))

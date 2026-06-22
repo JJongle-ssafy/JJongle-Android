@@ -1,8 +1,6 @@
 package com.ssafy.jjongle.presentation.ui.screen
 
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +44,6 @@ import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.viewmodel.QuizNoteViewModel
 import java.time.LocalDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun QuizNoteScreen(
     onBackClick: () -> Unit,
@@ -138,7 +135,6 @@ fun QuizNoteScreen(
 
 private data class NoteUi(val id: Long, val recordedAt: LocalDateTime)
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun NotesRow(
     notes: List<NoteUi>,
@@ -326,7 +322,6 @@ private fun EmptyNoteCta(
 }
 
 /* ---------- 유틸 ---------- */
-@RequiresApi(Build.VERSION_CODES.O)
 private fun formatNoteText(dt: LocalDateTime): String {
     val d = "${dt.monthValue}월 ${dt.dayOfMonth}일"
     val t = "${dt.hour}시 ${dt.minute}분"
