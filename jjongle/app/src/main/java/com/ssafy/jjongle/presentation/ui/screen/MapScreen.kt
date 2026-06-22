@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.MainCharacter
+import com.ssafy.jjongle.presentation.ui.layout.calculateCropBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.MapViewModel
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlin.math.min
 
 
 // Map 화면 구성
@@ -74,23 +74,24 @@ fun MapScreen(
         )
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val mapScale = min(
-                maxWidth.value / MAP_DESIGN_WIDTH_DP,
-                maxHeight.value / MAP_DESIGN_HEIGHT_DP
+            val backgroundLayout = calculateCropBackgroundLayout(
+                containerWidth = maxWidth.value,
+                containerHeight = maxHeight.value,
+                imageWidth = MAP_BACKGROUND_WIDTH_PX,
+                imageHeight = MAP_BACKGROUND_HEIGHT_PX
             )
-
-            fun scaledDp(value: Float) = (value * mapScale).dp
-            val contentOriginX = (maxWidth - scaledDp(MAP_DESIGN_WIDTH_DP)) / 2
-            val contentOriginY = (maxHeight - scaledDp(MAP_DESIGN_HEIGHT_DP)) / 2
 
             // 쫑글탐험대 표지판
             Image(
                 modifier = Modifier
                     .offset(
-                        x = contentOriginX + scaledDp(TANGRAM_PANEL_X),
-                        y = contentOriginY + scaledDp(TANGRAM_PANEL_Y)
+                        x = backgroundLayout.x(TANGRAM_PANEL_X).dp,
+                        y = backgroundLayout.y(TANGRAM_PANEL_Y).dp
                     )
-                    .size(width = scaledDp(MAP_PANEL_WIDTH), height = scaledDp(MAP_PANEL_HEIGHT))
+                    .size(
+                        width = backgroundLayout.scale(MAP_PANEL_WIDTH).dp,
+                        height = backgroundLayout.scale(MAP_PANEL_HEIGHT).dp
+                    )
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
@@ -127,10 +128,13 @@ fun MapScreen(
             Image(
                 modifier = Modifier
                     .offset(
-                        x = contentOriginX + scaledDp(OX_PANEL_X),
-                        y = contentOriginY + scaledDp(OX_PANEL_Y)
+                        x = backgroundLayout.x(OX_PANEL_X).dp,
+                        y = backgroundLayout.y(OX_PANEL_Y).dp
                     )
-                    .size(width = scaledDp(MAP_PANEL_WIDTH), height = scaledDp(MAP_PANEL_HEIGHT))
+                    .size(
+                        width = backgroundLayout.scale(MAP_PANEL_WIDTH).dp,
+                        height = backgroundLayout.scale(MAP_PANEL_HEIGHT).dp
+                    )
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
@@ -166,10 +170,13 @@ fun MapScreen(
             Image(
                 modifier = Modifier
                     .offset(
-                        x = contentOriginX + scaledDp(MYPAGE_PANEL_X),
-                        y = contentOriginY + scaledDp(MYPAGE_PANEL_Y)
+                        x = backgroundLayout.x(MYPAGE_PANEL_X).dp,
+                        y = backgroundLayout.y(MYPAGE_PANEL_Y).dp
                     )
-                    .size(width = scaledDp(MAP_PANEL_WIDTH), height = scaledDp(MAP_PANEL_HEIGHT))
+                    .size(
+                        width = backgroundLayout.scale(MAP_PANEL_WIDTH).dp,
+                        height = backgroundLayout.scale(MAP_PANEL_HEIGHT).dp
+                    )
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
@@ -204,12 +211,12 @@ fun MapScreen(
             MainCharacter(
                 modifier = Modifier
                     .offset(
-                        x = contentOriginX + scaledDp(x.value),
-                        y = contentOriginY + scaledDp(y.value)
+                        x = backgroundLayout.x(x.value).dp,
+                        y = backgroundLayout.y(y.value).dp
                     ),
                 isWalking = mapState.isWalking,
                 assetName = "mongi_walk.json",
-                size = scaledDp(MAP_CHARACTER_SIZE),
+                size = backgroundLayout.scale(MAP_CHARACTER_SIZE).dp,
                 mirrorHorizontally = x.targetValue < x.value
             )
         }
@@ -242,26 +249,26 @@ fun MapScreen(
     }
 }
 
-private const val MAP_DESIGN_WIDTH_DP = 1280f
-private const val MAP_DESIGN_HEIGHT_DP = 800f
-private const val MAP_PANEL_WIDTH = 347f
-private const val MAP_PANEL_HEIGHT = 233f
-private const val MAP_CHARACTER_SIZE = 300f
+private const val MAP_BACKGROUND_WIDTH_PX = 2800f
+private const val MAP_BACKGROUND_HEIGHT_PX = 1752f
+private const val MAP_PANEL_WIDTH = 759.062f
+private const val MAP_PANEL_HEIGHT = 510.27f
+private const val MAP_CHARACTER_SIZE = 656.25f
 
-private const val TANGRAM_PANEL_X = 200f
-private const val TANGRAM_PANEL_Y = 75f
-private const val TANGRAM_CHARACTER_X = 128f
-private const val TANGRAM_CHARACTER_Y = 140f
+private const val TANGRAM_PANEL_X = 437.5f
+private const val TANGRAM_PANEL_Y = 164.25f
+private const val TANGRAM_CHARACTER_X = 280f
+private const val TANGRAM_CHARACTER_Y = 306.6f
 
-private const val OX_PANEL_X = 800f
-private const val OX_PANEL_Y = 130f
-private const val OX_CHARACTER_X = 730f
-private const val OX_CHARACTER_Y = 180f
+private const val OX_PANEL_X = 1750f
+private const val OX_PANEL_Y = 284.7f
+private const val OX_CHARACTER_X = 1596.875f
+private const val OX_CHARACTER_Y = 394.2f
 
-private const val MYPAGE_PANEL_X = 330f
-private const val MYPAGE_PANEL_Y = 370f
-private const val MYPAGE_CHARACTER_X = 170f
-private const val MYPAGE_CHARACTER_Y = 310f
+private const val MYPAGE_PANEL_X = 721.875f
+private const val MYPAGE_PANEL_Y = 810.3f
+private const val MYPAGE_CHARACTER_X = 371.875f
+private const val MYPAGE_CHARACTER_Y = 678.9f
 
 
 //@Preview(

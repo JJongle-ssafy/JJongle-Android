@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -66,6 +68,7 @@ import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.CameraComponent
+import com.ssafy.jjongle.presentation.ui.layout.calculateCropBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.OXGameViewModel
 import com.ssafy.jjongle.presentation.vision.OXTrackedFace
 import com.ssafy.jjongle.util.AudioPlayer
@@ -537,83 +540,87 @@ fun GameResultContent(
             contentScale = ContentScale.Crop
         )
 
-        Column(
+        val rankedWithProfile = top3Rankings
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val backgroundLayout = calculateCropBackgroundLayout(
+                containerWidth = maxWidth.value,
+                containerHeight = maxHeight.value,
+                imageWidth = OX_RESULT_BACKGROUND_WIDTH_PX,
+                imageHeight = OX_RESULT_BACKGROUND_HEIGHT_PX
+            )
+
+            fun profileModifier(centerX: Float, centerY: Float, size: Float): Modifier {
+                return Modifier.offset(
+                    x = backgroundLayout.leftForCenter(centerX, size).dp,
+                    y = backgroundLayout.topForCenter(centerY, size).dp
+                )
+            }
+
+            rankedWithProfile.getOrNull(0)?.let { first ->
+                RankedProfile(
+                    rank = 1,
+                    base64 = profiles[first.first],
+                    score = first.second,
+                    size = backgroundLayout.scale(OX_RESULT_FIRST_PROFILE_SIZE).dp,
+                    fontFamily = playfulFont,
+                    modifier = profileModifier(
+                        OX_RESULT_FIRST_PROFILE_CENTER_X,
+                        OX_RESULT_FIRST_PROFILE_CENTER_Y,
+                        OX_RESULT_FIRST_PROFILE_SIZE
+                    )
+                )
+            }
+
+            rankedWithProfile.getOrNull(1)?.let { second ->
+                RankedProfile(
+                    rank = 2,
+                    base64 = profiles[second.first],
+                    score = second.second,
+                    size = backgroundLayout.scale(OX_RESULT_SECOND_PROFILE_SIZE).dp,
+                    fontFamily = playfulFont,
+                    modifier = profileModifier(
+                        OX_RESULT_SECOND_PROFILE_CENTER_X,
+                        OX_RESULT_SECOND_PROFILE_CENTER_Y,
+                        OX_RESULT_SECOND_PROFILE_SIZE
+                    )
+                )
+            }
+
+            rankedWithProfile.getOrNull(2)?.let { third ->
+                RankedProfile(
+                    rank = 3,
+                    base64 = profiles[third.first],
+                    score = third.second,
+                    size = backgroundLayout.scale(OX_RESULT_THIRD_PROFILE_SIZE).dp,
+                    fontFamily = playfulFont,
+                    modifier = profileModifier(
+                        OX_RESULT_THIRD_PROFILE_CENTER_X,
+                        OX_RESULT_THIRD_PROFILE_CENTER_Y,
+                        OX_RESULT_THIRD_PROFILE_SIZE
+                    )
+                )
+            }
+        }
+
+        // 하단 버튼: 항상 바닥에 위치
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            BaseButton(
+                text = "다시 게임",
+                onClick = onRestartGame,
+                modifier = Modifier.weight(1f)
+            )
 
-
-            // 중앙 영역: 배경에 시상대가 포함되어 있으므로,
-            // 프로필 이미지 + 정답 개수 배지만 지정 위치에 오버레이
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                val rankedWithProfile = top3Rankings
-                val first = rankedWithProfile.getOrNull(0)
-                val second = rankedWithProfile.getOrNull(1)
-                val third = rankedWithProfile.getOrNull(2)
-
-                // 1위: 가운데 상단
-                if (first != null) {
-                    RankedProfile(
-                        base64 = profiles[first.first],
-                        score = first.second,
-                        size = 180.dp,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .offset(y = 140.dp)
-                    )
-                }
-
-                // 2위: 오른쪽 중간
-                if (second != null) {
-                    RankedProfile(
-                        base64 = profiles[second.first],
-                        score = second.second,
-                        size = 160.dp,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .offset(x = 210.dp)
-                    )
-                }
-
-                // 3위: 왼쪽 살짝 아래
-                if (third != null) {
-                    RankedProfile(
-                        base64 = profiles[third.first],
-                        score = third.second,
-                        size = 150.dp,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .offset(x = (-210).dp)
-                    )
-                }
-            }
-
-            // 하단 버튼: 항상 바닥에 위치
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                BaseButton(
-                    text = "다시 게임",
-                    onClick = onRestartGame,
-                    modifier = Modifier.weight(1f)
-                )
-
-                BaseButton(
-                    text = "메인으로",
-                    onClick = onBackToMenu,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            BaseButton(
+                text = "메인으로",
+                onClick = onBackToMenu,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
@@ -675,64 +682,156 @@ private fun ProfileImageCircle(base64: String?) {
 
 @Composable
 private fun RankedProfile(
+    rank: Int,
     base64: String?,
     score: Int,
     size: Dp,
+    fontFamily: FontFamily,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-        // 프로필 이미지
-        val bmp = remember(base64) { decodeBase64ToBitmapOrNull(base64) }
+    val bmp = remember(base64) { decodeBase64ToBitmapOrNull(base64) }
+    val style = remember(rank) { OXRankFrameStyle.forRank(rank) }
+    val ringPadding = (size.value * 0.085f).dp
+    val ribbonFontSize = (size.value * 0.105f).sp
+    val rankFontSize = (size.value * 0.13f).sp
+    val placeholderFontSize = (size.value * 0.28f).sp
+
+    Box(
+        modifier = modifier.size(width = size, height = size + (size.value * 0.28f).dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
         Box(
             modifier = Modifier
                 .size(size)
-                .clip(CircleShape)
-                .border(4.dp, Color.White, CircleShape)
-                .background(Color(0x22000000), CircleShape)
-                .align(Alignment.Center)
+                .shadow(elevation = 12.dp, shape = CircleShape, clip = false)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color.White, style.innerGlow, style.outerColor)
+                    ),
+                    shape = CircleShape
+                )
+                .border(width = 5.dp, color = style.strokeColor, shape = CircleShape)
+                .padding(ringPadding),
+            contentAlignment = Alignment.Center
         ) {
-            if (bmp != null) {
-                Image(
-                    bitmap = bmp.asImageBitmap(),
-                    contentDescription = "profile",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Text(
-                    text = "?",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .background(Color(0xFFFDF6DD), CircleShape)
+                    .border(3.dp, Color.White, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                if (bmp != null) {
+                    Image(
+                        bitmap = bmp.asImageBitmap(),
+                        contentDescription = "profile",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(
+                        text = "?",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = style.strokeColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = placeholderFontSize,
+                        fontFamily = fontFamily,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
 
-        // 점수 배지 (상단)
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .offset(y = (-12).dp)
+                .offset(y = (-10).dp)
+                .background(style.strokeColor, RoundedCornerShape(18.dp))
+                .border(2.dp, Color.White, RoundedCornerShape(18.dp))
+                .padding(horizontal = 12.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "${rank}등",
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                fontSize = rankFontSize,
+                fontFamily = fontFamily
+            )
+        }
+
+        // 점수 리본
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = size - (size.value * 0.18f).dp)
                 .background(
                     brush = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFFFFD54F), Color(0xFFFF8A65))
+                        colors = listOf(style.ribbonStart, style.ribbonEnd)
                     ),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(22.dp)
                 )
-                .padding(horizontal = 10.dp, vertical = 4.dp)
+                .border(2.dp, Color.White, RoundedCornerShape(22.dp))
+                .padding(horizontal = 12.dp, vertical = 5.dp)
         ) {
             Text(
                 text = "정답 ${score}개",
-                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color.White,
+                fontSize = ribbonFontSize,
+                fontFamily = fontFamily
             )
         }
     }
 }
+
+private data class OXRankFrameStyle(
+    val outerColor: Color,
+    val innerGlow: Color,
+    val strokeColor: Color,
+    val ribbonStart: Color,
+    val ribbonEnd: Color
+) {
+    companion object {
+        fun forRank(rank: Int): OXRankFrameStyle = when (rank) {
+            1 -> OXRankFrameStyle(
+                outerColor = Color(0xFFFFC928),
+                innerGlow = Color(0xFFFFF4A3),
+                strokeColor = Color(0xFF8A4B00),
+                ribbonStart = Color(0xFFFFD54F),
+                ribbonEnd = Color(0xFFFF8A00)
+            )
+
+            2 -> OXRankFrameStyle(
+                outerColor = Color(0xFFDCE4EA),
+                innerGlow = Color(0xFFFFFFFF),
+                strokeColor = Color(0xFF55636D),
+                ribbonStart = Color(0xFFB0BEC5),
+                ribbonEnd = Color(0xFF78909C)
+            )
+
+            else -> OXRankFrameStyle(
+                outerColor = Color(0xFFD58A35),
+                innerGlow = Color(0xFFFFD59B),
+                strokeColor = Color(0xFF6F3A12),
+                ribbonStart = Color(0xFFD68A3A),
+                ribbonEnd = Color(0xFFB85E1A)
+            )
+        }
+    }
+}
+
+private const val OX_RESULT_BACKGROUND_WIDTH_PX = 2800f
+private const val OX_RESULT_BACKGROUND_HEIGHT_PX = 1752f
+private const val OX_RESULT_FIRST_PROFILE_CENTER_X = 1400f
+private const val OX_RESULT_FIRST_PROFILE_CENTER_Y = 1222.02f
+private const val OX_RESULT_FIRST_PROFILE_SIZE = 385f
+private const val OX_RESULT_SECOND_PROFILE_CENTER_X = 1837.5f
+private const val OX_RESULT_SECOND_PROFILE_CENTER_Y = 1335.9f
+private const val OX_RESULT_SECOND_PROFILE_SIZE = 301.875f
+private const val OX_RESULT_THIRD_PROFILE_CENTER_X = 940.625f
+private const val OX_RESULT_THIRD_PROFILE_CENTER_Y = 1368.75f
+private const val OX_RESULT_THIRD_PROFILE_SIZE = 301.875f
 
 private fun decodeBase64ToBitmapOrNull(raw: String?): android.graphics.Bitmap? {
     if (raw.isNullOrBlank()) return null
