@@ -45,20 +45,10 @@ class MapViewModel @Inject constructor(
         Log.d("MapViewModel", "moveCharacterTo: $x, $y")
     }
 
-    fun stopWalking() {
-        _mapState.value = _mapState.value.copy(
-            isWalking = false
-        )
-    }
-
     fun startWalking() {
         _mapState.value = _mapState.value.copy(
             isWalking = true
         )
-    }
-
-    fun setError(error: String?) {
-        _mapState.value = _mapState.value.copy(error = error)
     }
 
     fun toggleBgm() {

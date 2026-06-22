@@ -34,13 +34,4 @@ class NavigationViewModel @Inject constructor( // Hilt 사용 시 @Inject
         }
     }
 
-    fun clearNavigationState() {
-        viewModelScope.launch {
-            navigationStateRepository.clearNavigationState()
-            _currentRoute.value = null // UI 즉시 반영 (선택적)
-        }
-    }
-    fun getStartDestination(): String {
-        return currentRoute.value ?: "splash"
-    }
 }

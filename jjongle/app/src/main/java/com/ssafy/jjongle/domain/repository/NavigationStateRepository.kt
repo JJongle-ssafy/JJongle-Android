@@ -22,9 +22,4 @@ interface NavigationStateRepository {
      */
     suspend fun getCurrentRoute(): String?
 
-    /**
-     * Clears any saved navigation state.
-     * 저장된 내비게이션 상태를 모두 삭제합니다.
-     */
-    suspend fun clearNavigationState()
 }

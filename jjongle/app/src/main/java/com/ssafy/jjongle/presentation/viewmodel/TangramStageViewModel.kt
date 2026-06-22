@@ -219,12 +219,6 @@ class TangramStageViewModel @Inject constructor(
 
 
 
-    // API에서 현재 도전 가능한 스테이지 ID 설정
-    fun updateCurrentChallengeStageId(stageId: Int) {
-        _currentChallengeStageId.value = stageId
-        updateGameState()
-    }
-
     fun refreshAuthTokens() {
         _authTokens.value = getAuthTokensUseCase()
     }

@@ -33,14 +33,6 @@ class NavigationStateRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun clearNavigationState() {
-        withContext(Dispatchers.IO) {
-            sharedPreferences.edit {
-                remove(KEY_CURRENT_ROUTE)
-            }
-        }
-    }
-
     companion object {
         private const val KEY_CURRENT_ROUTE = "current_navigation_route"
     }

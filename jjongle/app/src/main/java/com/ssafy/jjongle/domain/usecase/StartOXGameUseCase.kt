@@ -7,17 +7,6 @@ class StartOXGameUseCase @Inject constructor(
     private val oxGameRepository: OXGameRepository
 ) {
     /**
-     * 저장된 세션 키로 WebSocket 연결을 시도합니다.
-     */
-    fun connectWebSocketWithSavedSession() {
-        val sessionKey = oxGameRepository.getSessionKey()
-        if (sessionKey != null) {
-            oxGameRepository.connectWebSocket()
-        }
-        // 세션 키가 없는 경우는 ViewModel에서 처리 (예: 에러 메시지)
-    }
-
-    /**
      * 주어진 세션 키로 WebSocket에 연결합니다.
      */
     fun connectWebSocket() {
