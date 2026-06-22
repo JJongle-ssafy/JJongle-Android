@@ -43,53 +43,6 @@
             </intent-filter>
         </activity>
 
-        <!-- 앱 내부에서 쓰는 화면이면 유지 -->
-        <activity
-            android:name=".presentation.ui.activity.UnityGameActivity"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:exported="false"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.Jjongle" />
-
-        <!-- 🎯 Unity를 띄울 커스텀 액티비티 (네가 만든 것) -->
-        <activity
-            android:name="com.ssafy.jjongle.CustomUnityActivity"
-            android:exported="true"
-            android:process=":Unity"
-            android:theme="@style/Theme.Jjongle"
-            android:hardwareAccelerated="false"
-            android:screenOrientation="fullSensor"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density" />
-
-        <!-- ⛏️ 라이브러리 쪽에 남아 있을 수 있는 런처/액티비티들 비활성화 -->
-        <activity
-            android:name="com.unity3d.player.UnityPlayerActivity"
-            tools:replace="android:exported"
-            android:exported="false">
-            <intent-filter tools:node="removeAll" />
-        </activity>
-
-        <activity
-            android:name="com.unity3d.player.UnityPlayerGameActivity"
-            tools:replace="android:exported"
-            android:exported="false">
-            <intent-filter tools:node="removeAll" />
-        </activity>
-
-        <activity
-            android:name="com.unity.mynativeapp.MainUnityActivity"
-            tools:replace="android:exported"
-            android:exported="false">
-            <intent-filter tools:node="removeAll" />
-        </activity>
-
-        <activity
-            android:name="com.unity3d.player.MainUnityActivity"
-            tools:replace="android:exported"
-            android:exported="false">
-            <intent-filter tools:node="removeAll" />
-        </activity>
-
         <!-- FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
