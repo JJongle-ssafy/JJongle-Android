@@ -3,6 +3,7 @@ package com.ssafy.jjongle.presentation.ui.screen
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -12,9 +13,12 @@ import android.os.Looper
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.view.PixelCopy
+import android.view.Surface
+import android.view.WindowManager
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
@@ -126,14 +130,6 @@ fun CameraScreen(
 
     val analyzerExecutor = remember { Executors.newSingleThreadExecutor() }
     DisposableEffect(Unit) { onDispose { analyzerExecutor.shutdown() } }
-
-    val analysis = remember {
-        ImageAnalysis.Builder()
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
-            .setTargetResolution(android.util.Size(480, 360))
-            .build()
-    }
 
     val animalRes = remember(animal) { animalToDrawable(animal) }
 
@@ -271,9 +267,25 @@ fun CameraScreen(
                         try {
                             cameraProvider.unbindAll()
 
-                            val preview = androidx.camera.core.Preview.Builder().build().also {
-                                it.setSurfaceProvider(previewView.surfaceProvider)
-                            }
+                            val windowManager = ctx.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
+                            @Suppress("DEPRECATION")
+                            val targetRotation = previewView.display?.rotation
+                                ?: windowManager?.defaultDisplay?.rotation
+                                ?: Surface.ROTATION_90
+
+                            val preview = Preview.Builder()
+                                .setTargetRotation(targetRotation)
+                                .build()
+                                .also {
+                                    it.setSurfaceProvider(previewView.surfaceProvider)
+                                }
+
+                            val analysis = ImageAnalysis.Builder()
+                                .setTargetRotation(targetRotation)
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+                                .setTargetResolution(android.util.Size(480, 360))
+                                .build()
 
                             analysis.setAnalyzer(analyzerExecutor) { imageProxy ->
                                 val now = SystemClock.elapsedRealtime()
