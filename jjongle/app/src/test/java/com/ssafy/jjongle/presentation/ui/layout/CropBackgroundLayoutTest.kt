@@ -47,7 +47,7 @@ class CropBackgroundLayoutTest {
     }
 
     @Test
-    fun `centered overlay returns top left position`() {
+    fun `podium overlay returns top left position above podium`() {
         val layout = calculateCropBackgroundLayout(
             containerWidth = 1280f,
             containerHeight = 800f,
@@ -55,7 +55,7 @@ class CropBackgroundLayoutTest {
             imageHeight = 1752f
         )
 
-        assertEquals(552f, layout.leftForCenter(centerX = 1400f, width = 385f), 0.001f)
-        assertEquals(470.181f, layout.topForCenter(centerY = 1222.02f, height = 385f), 0.001f)
+        assertEquals(553.143f, layout.leftForCenter(centerX = 1400f, width = 380f), 0.001f)
+        assertEquals(196.114f, layout.topForCenter(centerY = 620f, height = 380f), 0.001f)
     }
 }

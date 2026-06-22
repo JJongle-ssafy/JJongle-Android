@@ -692,9 +692,14 @@ private fun RankedProfile(
     val bmp = remember(base64) { decodeBase64ToBitmapOrNull(base64) }
     val style = remember(rank) { OXRankFrameStyle.forRank(rank) }
     val ringPadding = (size.value * 0.085f).dp
-    val ribbonFontSize = (size.value * 0.105f).sp
-    val rankFontSize = (size.value * 0.13f).sp
+    val ribbonFontSize = (size.value * 0.092f).sp
+    val rankFontSize = (size.value * 0.112f).sp
     val placeholderFontSize = (size.value * 0.28f).sp
+    val rankBadgeHorizontalPadding = (size.value * 0.08f).dp
+    val rankBadgeVerticalPadding = (size.value * 0.032f).dp
+    val ribbonHorizontalPadding = (size.value * 0.11f).dp
+    val ribbonVerticalPadding = (size.value * 0.038f).dp
+    val ribbonMinWidth = (size.value * 0.72f).dp
 
     Box(
         modifier = modifier.size(width = size, height = size + (size.value * 0.28f).dp),
@@ -749,7 +754,10 @@ private fun RankedProfile(
                 .offset(y = (-10).dp)
                 .background(style.strokeColor, RoundedCornerShape(18.dp))
                 .border(2.dp, Color.White, RoundedCornerShape(18.dp))
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .padding(
+                    horizontal = rankBadgeHorizontalPadding,
+                    vertical = rankBadgeVerticalPadding
+                )
         ) {
             Text(
                 text = "${rank}등",
@@ -772,7 +780,12 @@ private fun RankedProfile(
                     shape = RoundedCornerShape(22.dp)
                 )
                 .border(2.dp, Color.White, RoundedCornerShape(22.dp))
-                .padding(horizontal = 12.dp, vertical = 5.dp)
+                .widthIn(min = ribbonMinWidth)
+                .padding(
+                    horizontal = ribbonHorizontalPadding,
+                    vertical = ribbonVerticalPadding
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "정답 ${score}개",
@@ -824,14 +837,14 @@ private data class OXRankFrameStyle(
 private const val OX_RESULT_BACKGROUND_WIDTH_PX = 2800f
 private const val OX_RESULT_BACKGROUND_HEIGHT_PX = 1752f
 private const val OX_RESULT_FIRST_PROFILE_CENTER_X = 1400f
-private const val OX_RESULT_FIRST_PROFILE_CENTER_Y = 1222.02f
-private const val OX_RESULT_FIRST_PROFILE_SIZE = 385f
+private const val OX_RESULT_FIRST_PROFILE_CENTER_Y = 620f
+private const val OX_RESULT_FIRST_PROFILE_SIZE = 380f
 private const val OX_RESULT_SECOND_PROFILE_CENTER_X = 1837.5f
-private const val OX_RESULT_SECOND_PROFILE_CENTER_Y = 1335.9f
-private const val OX_RESULT_SECOND_PROFILE_SIZE = 301.875f
+private const val OX_RESULT_SECOND_PROFILE_CENTER_Y = 830f
+private const val OX_RESULT_SECOND_PROFILE_SIZE = 320f
 private const val OX_RESULT_THIRD_PROFILE_CENTER_X = 940.625f
-private const val OX_RESULT_THIRD_PROFILE_CENTER_Y = 1368.75f
-private const val OX_RESULT_THIRD_PROFILE_SIZE = 301.875f
+private const val OX_RESULT_THIRD_PROFILE_CENTER_Y = 910f
+private const val OX_RESULT_THIRD_PROFILE_SIZE = 290f
 
 private fun decodeBase64ToBitmapOrNull(raw: String?): android.graphics.Bitmap? {
     if (raw.isNullOrBlank()) return null
