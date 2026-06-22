@@ -1,6 +1,8 @@
 package com.ssafy.jjongle.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.ssafy.jjongle.data.mapping.orMissingServerCoordinate
+import com.ssafy.jjongle.data.mapping.orMissingServerId
 import com.ssafy.jjongle.domain.entity.UserPosition
 
 /**

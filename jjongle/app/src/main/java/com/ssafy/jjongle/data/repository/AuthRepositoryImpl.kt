@@ -2,7 +2,7 @@ package com.ssafy.jjongle.data.repository
 
 import android.util.Log
 import com.ssafy.jjongle.data.local.AuthDataSource
-import com.ssafy.jjongle.data.model.orMissingServerField
+import com.ssafy.jjongle.data.mapping.orMissingServerField
 import com.ssafy.jjongle.data.remote.AuthRemoteDataSource
 import com.ssafy.jjongle.data.remote.model.LogInRequest
 import com.ssafy.jjongle.data.remote.model.SignUpRequest

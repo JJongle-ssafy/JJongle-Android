@@ -1,7 +1,7 @@
 package com.ssafy.jjongle.data.remote.model.oxgame
 
-import com.ssafy.jjongle.data.model.missingServerDateTime
-import com.ssafy.jjongle.data.model.orMissingServerLongId
+import com.ssafy.jjongle.data.mapping.missingServerDateTime
+import com.ssafy.jjongle.data.mapping.orMissingServerLongId
 import com.ssafy.jjongle.domain.entity.OXGameHistory
 import java.time.LocalDateTime
 import java.time.OffsetDateTime

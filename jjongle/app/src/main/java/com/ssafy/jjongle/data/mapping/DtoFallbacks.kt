@@ -1,4 +1,4 @@
-package com.ssafy.jjongle.data.model
+package com.ssafy.jjongle.data.mapping
 
 import java.time.LocalDateTime
 

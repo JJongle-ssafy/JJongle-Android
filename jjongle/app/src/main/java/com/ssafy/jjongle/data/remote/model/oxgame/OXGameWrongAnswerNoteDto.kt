@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.data.remote.model.oxgame
 
-import com.ssafy.jjongle.data.model.orMissingServerField
+import com.ssafy.jjongle.data.mapping.orMissingServerField
 import com.ssafy.jjongle.domain.entity.OX
 import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
 

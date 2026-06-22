@@ -5,8 +5,8 @@ import com.ssafy.jjongle.data.model.BaseResponse
 import com.ssafy.jjongle.data.model.GameFinishResponse
 import com.ssafy.jjongle.data.model.GameStartResponse
 import com.ssafy.jjongle.data.model.SubmitResultResponse
-import com.ssafy.jjongle.data.model.orMissingServerField
-import com.ssafy.jjongle.data.model.orMissingServerId
+import com.ssafy.jjongle.data.mapping.orMissingServerField
+import com.ssafy.jjongle.data.mapping.orMissingServerId
 import com.ssafy.jjongle.data.model.toDomainProfiles
 import com.ssafy.jjongle.data.model.toDomain
 import com.ssafy.jjongle.domain.entity.GameFinishEvent

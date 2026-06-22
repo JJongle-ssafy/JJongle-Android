@@ -1,7 +1,7 @@
 package com.ssafy.jjongle.data.remote.model
 
-import com.ssafy.jjongle.data.model.orMissingServerId
-import com.ssafy.jjongle.data.model.orMissingServerLongId
+import com.ssafy.jjongle.data.mapping.orMissingServerId
+import com.ssafy.jjongle.data.mapping.orMissingServerLongId
 import com.ssafy.jjongle.domain.entity.AnimalType
 import com.ssafy.jjongle.domain.entity.TangramHistory
 

@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.data.remote.model
 
-import com.ssafy.jjongle.data.model.orMissingServerField
+import com.ssafy.jjongle.data.mapping.orMissingServerField
 import com.ssafy.jjongle.domain.entity.AnimalType
 import com.ssafy.jjongle.domain.entity.TangramDetail
 
