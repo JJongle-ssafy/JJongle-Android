@@ -236,13 +236,10 @@ fun NavGraph(
 
         // 칠교놀이 타이틀 화면
         composable(Screen.TangramTitle.route) {
-            val context = LocalContext.current
             TangramTitleScreen(
                 gameName = "쫑글 탐험대",
                 backgroundImagePainter = painterResource(id = R.drawable.tangram_title_background),
                 onStartGameClick = {
-//                    val intent = Intent(context, UnityGameActivity::class.java)
-//                    context.startActivity(intent)
                     navController.navigate(Screen.TangramStage.route)
                 },
                 onGoMapClick = {
@@ -300,14 +297,10 @@ fun NavGraph(
 
         // 칠교놀이 인트로 화면
         composable(Screen.TangramIntro.route) {
-
-            val context = LocalContext.current
             IntroScreen(
                 gameName = "쫑글 탐험대",
                 pages = IntroPages.tangramGamePages,
                 onStartGameClick = {
-//                    val intent = Intent(context, UnityGameActivity::class.java)
-//                    context.startActivity(intent)
                     navController.navigate(Screen.TangramStage.route)
                 }
             )

@@ -363,11 +363,6 @@ class OXGameViewModel @Inject constructor(
         viewModelScope.launch {
             gameEvents.collect { event ->
                 when (event) {
-                    is GameEvent.ConnectionEstablished -> {
-                        _isLoading.value = false
-                        // 연결 성공. GAME_START 이벤트를 기다림
-                    }
-
                     is GameEvent.GameStart -> {
                         val session = QuizSession(
                             quizzes = event.quizzes,
@@ -396,10 +391,6 @@ class OXGameViewModel @Inject constructor(
 
                         // SUBMIT_ANSWER 응답을 받았으므로 다음 문제 버튼 활성화
                         _isAnswerSubmitted.value = true
-                    }
-
-                    is GameEvent.AnalysisResult -> {
-                        // 서버로부터 이미지 분석 결과 메시지 수신 (현재는 특별한 처리 없음)
                     }
 
                     is GameEvent.Error -> {

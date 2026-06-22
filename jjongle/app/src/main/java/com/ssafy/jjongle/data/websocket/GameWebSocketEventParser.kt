@@ -1,7 +1,6 @@
 package com.ssafy.jjongle.data.websocket
 
 import com.google.gson.Gson
-import com.ssafy.jjongle.data.model.AnalysisResultResponse
 import com.ssafy.jjongle.data.model.BaseResponse
 import com.ssafy.jjongle.data.model.GameFinishResponse
 import com.ssafy.jjongle.data.model.GameStartResponse
@@ -31,11 +30,6 @@ class GameWebSocketEventParser @Inject constructor(
                     correctAnswer = response.data.correctAnswer,
                     correctUserPositions = response.data.correctUserPositions.map { it.toDomain() }
                 )
-            }
-
-            "ANALYSIS_RESULT" -> {
-                val response = gson.fromJson(json, AnalysisResultResponse::class.java)
-                GameEvent.AnalysisResult(response.data)
             }
 
             "GAME_FINISH_RESULT" -> {

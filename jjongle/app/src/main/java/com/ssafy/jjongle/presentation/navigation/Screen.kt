@@ -9,7 +9,6 @@ sealed class Screen(val route: String) {
     object QuizNote : Screen("quiz_note")
     object AnimalBook : Screen("animal_book")
     object Setting : Screen("setting")
-    object UnityGame : Screen("unity_game")
     object OXGame : Screen("ox_game")
     object OXGameTitle : Screen("ox_game_title")
     object OXGameIntro : Screen("ox_game_intro")
