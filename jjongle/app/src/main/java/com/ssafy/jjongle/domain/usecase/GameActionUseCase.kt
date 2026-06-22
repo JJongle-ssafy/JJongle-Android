@@ -37,20 +37,6 @@ class GameActionUseCase @Inject constructor(
 
 
     /**
-     * 게임 세션을 완전히 종료합니다.
-     */
-    fun endGameSession() {
-        oxGameRepository.clearSession()
-    }
-
-    /**
-     * 이미지 분석 요청을 전송합니다.
-     */
-    fun sendImageAnalysis(sessionKey: String, quizId: Int, imageData: String) {
-        oxGameRepository.sendImageAnalysis(sessionKey, quizId, imageData)
-    }
-
-    /**
      * 최종 답변 제출 요청을 전송합니다.
      */
     fun sendSubmitAnswer(
@@ -65,13 +51,6 @@ class GameActionUseCase @Inject constructor(
             oAreaUserPositions = oAreaUserPositions,
             xAreaUserPositions = xAreaUserPositions
         )
-    }
-
-    /**
-     * 게임 종료 결과 요청(GAME_FINISH)을 전송합니다.
-     */
-    fun sendGameFinish(sessionKey: String, quizId: Int, imageData: String) {
-        oxGameRepository.sendGameFinish(sessionKey, quizId, imageData)
     }
 
     /**

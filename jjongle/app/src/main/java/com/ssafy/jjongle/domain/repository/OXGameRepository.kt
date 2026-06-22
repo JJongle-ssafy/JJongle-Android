@@ -19,15 +19,12 @@ interface OXGameRepository {
     val connectionState: StateFlow<GameConnectionState>
     val gameEvents: SharedFlow<GameEvent>
 
-    // WebSocket 메시지 전송
-    fun sendImageAnalysis(sessionKey: String, quizId: Int, imageData: String)
     fun sendSubmitAnswer(
         sessionKey: String,
         quizId: Int,
         oAreaUserPositions: List<UserPosition>,
         xAreaUserPositions: List<UserPosition>
     )
-    fun sendGameFinish(sessionKey: String, quizId: Int, imageData: String)
 
     // REST: 게임 종료 보고
     suspend fun finishOXGame(sessionKey: String)

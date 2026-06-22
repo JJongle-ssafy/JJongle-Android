@@ -5,8 +5,6 @@ import com.google.gson.Gson
 import com.ssafy.jjongle.BuildConfig
 import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.data.model.BaseRequest
-import com.ssafy.jjongle.data.model.GameFinishData
-import com.ssafy.jjongle.data.model.ImageAnalysisData
 import com.ssafy.jjongle.data.model.PositionSubmitData
 import com.ssafy.jjongle.data.model.UserPositionDto
 import com.ssafy.jjongle.domain.entity.GameConnectionState
@@ -91,17 +89,6 @@ class GameWebSocketManager @Inject constructor(
     }
 
     /**
-     * 이미지 분석 요청 전송
-     */
-    fun sendImageAnalysis(sessionKey: String, quizId: Int, base64Image: String) {
-        val data = ImageAnalysisData(sessionKey, quizId, base64Image)
-        val request = BaseRequest("IMAGE_ANALYSIS", data)
-        val jsonMessage = gson.toJson(request)
-        webSocket?.send(jsonMessage)
-//        Log.d(TAG, "메시지 전송 (IMAGE_ANALYSIS): $jsonMessage")
-    }
-
-    /**
      * 최종 답변 제출 요청 전송
      */
     fun sendSubmitAnswer(
@@ -120,19 +107,6 @@ class GameWebSocketManager @Inject constructor(
         val jsonMessage = gson.toJson(request)
         webSocket?.send(jsonMessage)
         Log.d(TAG, "메시지 전송 (SUBMIT_ANSWER): $jsonMessage")
-    }
-
-    /**
-     * 게임 종료 결과 요청 전송 (프로필 이미지 수신을 위해)
-     */
-    fun sendGameFinish(sessionKey: String, quizId: Int, base64Image: String) {
-        // Use the same payload shape as other requests to guarantee keys: sessionKey, quizId, imageBase64
-        val data = GameFinishData(sessionKey, quizId, base64Image)
-        val request = BaseRequest("GAME_FINISH", data)
-        val jsonMessage = gson.toJson(request)
-        webSocket?.send(jsonMessage)
-        //request.
-        Log.d(TAG, "메시지 전송 (GAME_FINISH): $jsonMessage")
     }
 
     private inner class GameWebSocketListener : WebSocketListener() {

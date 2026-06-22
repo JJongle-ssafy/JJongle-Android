@@ -53,10 +53,6 @@ class OXGameRepositoryImpl @Inject constructor(
         get() = webSocketManager.gameEvents
 
 
-    override fun sendImageAnalysis(sessionKey: String, quizId: Int, imageData: String) {
-        webSocketManager.sendImageAnalysis(sessionKey, quizId, imageData)
-    }
-
     override fun sendSubmitAnswer(
         sessionKey: String,
         quizId: Int,
@@ -69,10 +65,6 @@ class OXGameRepositoryImpl @Inject constructor(
             oAreaUserPositions = oAreaUserPositions.map { it.toDto() },
             xAreaUserPositions = xAreaUserPositions.map { it.toDto() }
         )
-    }
-
-    override fun sendGameFinish(sessionKey: String, quizId: Int, imageData: String) {
-        webSocketManager.sendGameFinish(sessionKey, quizId, imageData)
     }
 
     override suspend fun finishOXGame(sessionKey: String) {
