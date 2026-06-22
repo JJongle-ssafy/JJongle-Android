@@ -19,9 +19,9 @@ import com.ssafy.jjongle.presentation.navigation.NavGraph
 import com.ssafy.jjongle.presentation.navigation.Screen
 import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
 import com.ssafy.jjongle.presentation.viewmodel.NavigationViewModel
+import com.ssafy.jjongle.domain.usecase.SaveAuthTokensUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ssafy.jjongle.data.local.AuthDataSource
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authDataSource: AuthDataSource
+    lateinit var saveAuthTokensUseCase: SaveAuthTokensUseCase
 
     // 👇 onNewIntent에서도 navigation을 쓰기 위해 Activity 프로퍼티로 꺼냄
     private lateinit var navController: NavHostController
@@ -133,8 +133,11 @@ class MainActivity : ComponentActivity() {
             val jsonObject = JSONObject(payload)
             val accessToken = jsonObject.getString("accessToken")
             val refreshToken = jsonObject.getString("refreshToken")
-            
-            authDataSource.saveTokens(accessToken, refreshToken)
+
+            val result = saveAuthTokensUseCase(accessToken, refreshToken)
+            if (result.isFailure) {
+                throw result.exceptionOrNull() ?: IllegalStateException("토큰 업데이트 실패")
+            }
             Log.d(
                 "MainActivity",
                 "토큰 업데이트 완료. hasAccessToken=${accessToken.isNotBlank()}, hasRefreshToken=${refreshToken.isNotBlank()}"

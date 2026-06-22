@@ -1,10 +1,15 @@
 package com.ssafy.jjongle.presentation.viewmodel
 
 import com.ssafy.jjongle.domain.entity.AuthState
+import com.ssafy.jjongle.domain.entity.AuthTokens
+import com.ssafy.jjongle.domain.entity.GoogleUser
 import com.ssafy.jjongle.domain.entity.UserInfo
 import com.ssafy.jjongle.domain.repository.AuthRepository
+import com.ssafy.jjongle.domain.repository.GoogleAuthService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -46,7 +51,7 @@ class AuthViewModelTest {
             isLoading = false
         )
 
-        val viewModel = AuthViewModel(FakeAuthRepository(checkState = expected))
+        val viewModel = AuthViewModel(FakeAuthRepository(checkState = expected), FakeGoogleAuthService())
         advanceUntilIdle()
 
         assertEquals(expected, viewModel.authState.value)
@@ -66,7 +71,8 @@ class AuthViewModelTest {
             )
         )
         val viewModel = AuthViewModel(
-            FakeAuthRepository(loginResult = Result.success(authenticated))
+            FakeAuthRepository(loginResult = Result.success(authenticated)),
+            FakeGoogleAuthService()
         )
         advanceUntilIdle()
 
@@ -88,7 +94,8 @@ class AuthViewModelTest {
         val viewModel = AuthViewModel(
             FakeAuthRepository(
                 loginResult = Result.success(AuthState(isAuthenticated = false))
-            )
+            ),
+            FakeGoogleAuthService()
         )
         advanceUntilIdle()
 
@@ -107,6 +114,34 @@ class AuthViewModelTest {
     }
 
     @Test
+    fun loginWithGoogleIdToken_usesFirebaseTokenForServerLogin() = runTest {
+        val authenticated = AuthState(
+            isAuthenticated = true,
+            accessToken = "access",
+            refreshToken = "refresh"
+        )
+        val repository = FakeAuthRepository(loginResult = Result.success(authenticated))
+        val viewModel = AuthViewModel(
+            repository,
+            FakeGoogleAuthService(firebaseIdToken = "firebase-id-token")
+        )
+        advanceUntilIdle()
+
+        var successCalled = false
+        viewModel.loginWithGoogleIdToken(
+            googleIdToken = "google-id-token",
+            onSuccess = { successCalled = true },
+            onNeedSignUp = {},
+            onFailure = {}
+        )
+        advanceUntilIdle()
+
+        assertTrue(successCalled)
+        assertEquals("firebase-id-token", repository.loginIdToken)
+        assertEquals(authenticated.copy(isLoading = false, error = null), viewModel.authState.value)
+    }
+
+    @Test
     fun updateProfile_updatesOnlyViewModelStateAfterRepositorySucceeds() = runTest {
         val initial = AuthState(
             isAuthenticated = true,
@@ -120,7 +155,7 @@ class AuthViewModelTest {
             )
         )
         val repository = FakeAuthRepository(checkState = initial)
-        val viewModel = AuthViewModel(repository)
+        val viewModel = AuthViewModel(repository, FakeGoogleAuthService())
         advanceUntilIdle()
 
         var successCalled = false
@@ -148,8 +183,13 @@ class AuthViewModelTest {
             private set
         var updatedProfileImage: String? = null
             private set
+        var loginIdToken: String? = null
+            private set
 
-        override suspend fun login(idToken: String): Result<AuthState> = loginResult
+        override suspend fun login(idToken: String): Result<AuthState> {
+            loginIdToken = idToken
+            return loginResult
+        }
 
         override suspend fun signup(
             idToken: String,
@@ -170,5 +210,29 @@ class AuthViewModelTest {
         override suspend fun logout() = Unit
 
         override suspend fun checkAuthStatus(): AuthState = checkState
+
+        override fun getStoredTokens(): AuthTokens? = null
+
+        override fun saveTokens(tokens: AuthTokens) = Unit
+    }
+
+    private class FakeGoogleAuthService(
+        private val firebaseIdToken: String = "firebase-token"
+    ) : GoogleAuthService {
+        override suspend fun signIn(idToken: String): Result<GoogleUser> =
+            Result.success(
+                GoogleUser(
+                    id = "google-user",
+                    email = "child@example.com",
+                    displayName = "쫑글",
+                    idToken = firebaseIdToken
+                )
+            )
+
+        override suspend fun signOut() = Unit
+
+        override fun getCurrentUser(): Flow<GoogleUser?> = flowOf(null)
+
+        override suspend fun isSignedIn(): Boolean = false
     }
 }

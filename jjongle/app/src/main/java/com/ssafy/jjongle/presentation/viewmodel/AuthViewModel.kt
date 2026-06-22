@@ -3,20 +3,23 @@ package com.ssafy.jjongle.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.jjongle.domain.entity.AuthError
+import com.ssafy.jjongle.domain.entity.AuthException
 import com.ssafy.jjongle.domain.entity.AuthState
 import com.ssafy.jjongle.domain.entity.UserInfo
 import com.ssafy.jjongle.domain.repository.AuthRepository
+import com.ssafy.jjongle.domain.repository.GoogleAuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val googleAuthService: GoogleAuthService
 ) : ViewModel() {
 
     // 🔄 로그인 상태 관리용 StateFlow (Compose UI에 반영됨)
@@ -73,6 +76,50 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun loginWithGoogleIdToken(
+        googleIdToken: String,
+        onSuccess: () -> Unit,
+        onNeedSignUp: (String) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        viewModelScope.launch {
+            _authState.value = _authState.value.copy(isLoading = true, error = null)
+
+            googleAuthService.signIn(googleIdToken)
+                .onSuccess { googleUser ->
+                    val firebaseIdToken = googleUser.idToken
+                    if (firebaseIdToken.isNullOrBlank()) {
+                        val error = AuthException(
+                            AuthError.MissingToken,
+                            "Firebase ID 토큰을 가져오지 못했습니다."
+                        )
+                        _authState.value = _authState.value.copy(
+                            isLoading = false,
+                            isAuthenticated = false,
+                            error = error.message
+                        )
+                        onFailure(error)
+                        return@launch
+                    }
+
+                    login(
+                        idToken = firebaseIdToken,
+                        onSuccess = onSuccess,
+                        onNeedSignUp = { onNeedSignUp(firebaseIdToken) },
+                        onFailure = onFailure
+                    )
+                }
+                .onFailure { throwable ->
+                    _authState.value = _authState.value.copy(
+                        isLoading = false,
+                        isAuthenticated = false,
+                        error = throwable.message ?: "Google 인증에 실패했습니다."
+                    )
+                    onFailure(throwable)
+                }
+        }
+    }
+
 
     // 📝 서버 회원가입 요청
     // - 닉네임 + 캐릭터 이미지 + idToken을 보내 회원가입 처리
@@ -101,29 +148,14 @@ class AuthViewModel @Inject constructor(
                     "회원가입 onFailure. Throwable: ${throwable::class.java.name}, Message: ${throwable.message}",
                     throwable
                 )
-                if (throwable is HttpException) {
-                    val code = throwable.code()
-                    val errorBody =
-                        throwable.response()?.errorBody()?.string() // 에러 바디는 한 번만 읽을 수 있으므로 주의
-
-                    Log.e(
-                        "AuthViewModel", """
-                        ❌ 회원가입 실패 (HTTP)
-                        🔸 코드: $code
-                        🔹 메시지: ${throwable.message()}
-                        🔹 바디 (추정): $errorBody 
-                    """.trimIndent()
-                    ) // errorBody는 로깅 후에는 다시 읽을 수 없을 수 있음
-
-                    if (code == 409) { // 이미 가입된 유저 (서버 정책에 따름)
-                        Log.w("AuthViewModel", "❗️409 Conflict → 이미 가입된 유저. 로그인 유도")
-                        _authState.value = _authState.value.copy(
-                            isLoading = false,
-                            error = throwable.message() ?: "이미 가입된 사용자입니다. 로그인을 시도해주세요."
-                        )
-                        onNeedLogin()
-                        return@onFailure // 추가 처리 방지
-                    }
+                if (throwable is AuthException && throwable.error is AuthError.UserAlreadyExists) {
+                    Log.w("AuthViewModel", "이미 가입된 유저. 로그인 유도")
+                    _authState.value = _authState.value.copy(
+                        isLoading = false,
+                        error = throwable.message
+                    )
+                    onNeedLogin()
+                    return@onFailure
                 }
                 // 기타 HTTP 오류 또는 일반 오류
                 val errorMessage = throwable.message ?: "회원가입 중 알 수 없는 오류가 발생했습니다."
@@ -142,6 +174,7 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
+            googleAuthService.signOut()
             _authState.value = AuthState(isAuthenticated = false, isLoading = false)
             Log.d("AuthViewModel", "Logout completed")
         }

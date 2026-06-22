@@ -1,6 +1,7 @@
 package com.ssafy.jjongle.domain.repository
 
 import com.ssafy.jjongle.domain.entity.AuthState
+import com.ssafy.jjongle.domain.entity.AuthTokens
 
 interface AuthRepository {
     suspend fun login(idToken: String): Result<AuthState>
@@ -10,4 +11,6 @@ interface AuthRepository {
     suspend fun withdraw()
     suspend fun logout()
     suspend fun checkAuthStatus(): AuthState
+    fun getStoredTokens(): AuthTokens?
+    fun saveTokens(tokens: AuthTokens)
 }

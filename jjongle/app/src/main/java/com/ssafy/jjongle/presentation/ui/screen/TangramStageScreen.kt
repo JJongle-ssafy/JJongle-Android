@@ -46,6 +46,7 @@ fun TangramStageScreen(
     val isCharacterMoving by viewModel.isCharacterMoving.collectAsState()
     val currentStage by viewModel.currentStage.collectAsState()
     val currentChallengeStageId by viewModel.currentChallengeStageId.collectAsState()
+    val authTokens by viewModel.authTokens.collectAsState()
     
     // 스테이지 위치 데이터 (ViewModel에서 가져올 수도 있지만, UI 전용이므로 여기 유지)
     val stagePositions = remember {
@@ -85,15 +86,11 @@ fun TangramStageScreen(
         }
     }
 
-    // 토큰 가져오기
-    val accessToken = viewModel.getAccessToken()
-    val refreshToken = viewModel.getRefreshToken()
-
     // 이동 완료 후 스테이지 시작
     LaunchedEffect(isCharacterMoving) {
         if (!isCharacterMoving && targetStageId > 0) {
             delay(300)
-            onStartGameClick(targetStageId, accessToken, refreshToken)
+            onStartGameClick(targetStageId, authTokens?.accessToken, authTokens?.refreshToken)
             targetStageId = 0
         }
     }
@@ -122,7 +119,11 @@ fun TangramStageScreen(
                             if (stage.stageId <= currentChallengeStageId) {
                                 if (stage.stageId == currentStage) {
                                     // 현재 스테이지를 터치한 경우 바로 게임 시작
-                                    onStartGameClick(stage.stageId, accessToken, refreshToken)
+                                    onStartGameClick(
+                                        stage.stageId,
+                                        authTokens?.accessToken,
+                                        authTokens?.refreshToken
+                                    )
                                 } else {
                                     // 다른 스테이지로 이동
                                     targetStageId = stage.stageId

@@ -46,12 +46,18 @@ class GoogleAuthServiceImpl @Inject constructor(
                 return Result.failure(IllegalStateException("Firebase 사용자 정보 없음"))
             }
 
+            val firebaseIdToken = user.getIdToken(true).await().token.orEmpty()
+            if (firebaseIdToken.isBlank()) {
+                Log.e("GoogleAuth", "Firebase ID token 발급 실패")
+                return Result.failure(IllegalStateException("Firebase ID token 발급 실패"))
+            }
+
             // [5] GoogleUser로 wrapping
             val googleUser = GoogleUser(
                 id = user.uid,
                 email = user.email,
                 displayName = user.displayName,
-                idToken = idToken
+                idToken = firebaseIdToken
             )
 
             // [6] 상태 저장

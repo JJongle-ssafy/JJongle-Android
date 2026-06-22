@@ -2,7 +2,8 @@ package com.ssafy.jjongle.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.data.local.AuthDataSource
+import com.ssafy.jjongle.domain.entity.AuthTokens
+import com.ssafy.jjongle.domain.usecase.GetAuthTokensUseCase
 import com.ssafy.jjongle.domain.usecase.TangramGameUseCase
 import com.ssafy.jjongle.presentation.state.TangramGameState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,7 @@ data class StagePosition(
 @HiltViewModel
 class TangramStageViewModel @Inject constructor(
     private val tangramGameUseCase: TangramGameUseCase,
-    private val authDataSource: AuthDataSource
+    private val getAuthTokensUseCase: GetAuthTokensUseCase
 ) : ViewModel() {
 
     companion object {
@@ -80,9 +81,13 @@ class TangramStageViewModel @Inject constructor(
     private val _currentChallengeStageId = MutableStateFlow(1)
     val currentChallengeStageId: StateFlow<Int> = _currentChallengeStageId.asStateFlow()
 
+    private val _authTokens = MutableStateFlow<AuthTokens?>(null)
+    val authTokens: StateFlow<AuthTokens?> = _authTokens.asStateFlow()
+
     // 초기화
     init {
         initializeGame()
+        refreshAuthTokens()
     }
 
     private fun initializeGame() {
@@ -220,13 +225,8 @@ class TangramStageViewModel @Inject constructor(
         updateGameState()
     }
 
-    // 토큰 가져오기 메소드들
-    fun getAccessToken(): String? {
-        return authDataSource.getAccessToken()
-    }
-
-    fun getRefreshToken(): String? {
-        return authDataSource.getRefreshToken()
+    fun refreshAuthTokens() {
+        _authTokens.value = getAuthTokensUseCase()
     }
 
     override fun onCleared() {

@@ -6,12 +6,12 @@ import com.ssafy.jjongle.data.remote.AuthRemoteDataSource
 import com.ssafy.jjongle.data.remote.model.LogInRequest
 import com.ssafy.jjongle.data.remote.model.SignUpRequest
 import com.ssafy.jjongle.data.remote.model.UserUpdateRequest
+import com.ssafy.jjongle.domain.entity.AuthError
+import com.ssafy.jjongle.domain.entity.AuthException
 import com.ssafy.jjongle.domain.entity.AuthState
+import com.ssafy.jjongle.domain.entity.AuthTokens
 import com.ssafy.jjongle.domain.entity.UserInfo
 import com.ssafy.jjongle.domain.repository.AuthRepository
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
-import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,14 +27,14 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(idToken: String): Result<AuthState> {
         return try {
             val response = authRemoteDataSource.login(LogInRequest(idToken))
-            if (!response.isSuccessful) throw HttpException(response)
+            if (!response.isSuccessful) throw response.toAuthException()
 
             val body = response.body() ?: return Result.failure(Exception("로그인 응답 바디 없음"))
             persistTokensFromHeaders(response)
             val accessToken = authDataSource.getAccessToken()
             val refreshToken = authDataSource.getRefreshToken()
             if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-                throw IllegalStateException("로그인 응답에 토큰이 없습니다.")
+                throw AuthException(AuthError.MissingToken, "로그인 응답에 토큰이 없습니다.")
             }
 
             authDataSource.saveUserProfile(body.nickname, body.profileImage)
@@ -53,17 +53,18 @@ class AuthRepositoryImpl @Inject constructor(
             )
 
             Result.success(state)
-        } catch (e: HttpException) {
-            if (e.code() == 401) {
-                Log.w("AuthRepositoryImpl", "로그인 시 신규회원으로 처리: ${e.message()}")
+        } catch (e: AuthException) {
+            val httpError = e.error as? AuthError.Http
+            if (httpError?.code == 401) {
+                Log.w("AuthRepositoryImpl", "로그인 시 신규회원으로 처리: ${e.message}")
                 return Result.success(AuthState(isAuthenticated = false, isLoading = false))
             }
 
-            Log.e("AuthRepositoryImpl", "로그인 중 HttpException 발생: ${e.code()} ${e.message()}", e)
+            Log.e("AuthRepositoryImpl", "로그인 중 인증 오류 발생: ${e.message}", e)
             Result.failure(e)
         } catch (e: Exception) {
             Log.e("AuthRepositoryImpl", "로그인 중 일반 Exception 발생", e)
-            Result.failure(e)
+            Result.failure(e.toUnknownAuthException("로그인 중 알 수 없는 오류가 발생했습니다."))
         }
     }
 
@@ -88,9 +89,11 @@ class AuthRepositoryImpl @Inject constructor(
                     "AuthRepositoryImpl",
                     "Signup API 에러: ${response.code()} ${response.message()}"
                 )
-                val errorBody = response.errorBody()
-                    ?: "".toResponseBody("application/json".toMediaTypeOrNull())
-                throw HttpException(Response.error<Any>(response.code(), errorBody))
+                throw if (response.code() == 409) {
+                    AuthException(AuthError.UserAlreadyExists, "이미 가입된 사용자입니다.")
+                } else {
+                    response.toAuthException()
+                }
             }
 
             val body = response.body() ?: throw Exception("회원가입 응답 바디 없음")
@@ -98,7 +101,7 @@ class AuthRepositoryImpl @Inject constructor(
             val accessToken = authDataSource.getAccessToken()
             val refreshToken = authDataSource.getRefreshToken()
             if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-                throw IllegalStateException("회원가입 응답에 토큰이 없습니다.")
+                throw AuthException(AuthError.MissingToken, "회원가입 응답에 토큰이 없습니다.")
             }
             Log.d("AuthRemoteDataSource", "Tokens saved")
 
@@ -116,12 +119,12 @@ class AuthRepositoryImpl @Inject constructor(
             )
             Result.success(newState)
 
-        } catch (e: HttpException) {
-            Log.e("AuthRepositoryImpl", "회원가입 중 HttpException 발생: ${e.code()} ${e.message()}", e)
+        } catch (e: AuthException) {
+            Log.e("AuthRepositoryImpl", "회원가입 중 인증 오류 발생: ${e.message}", e)
             Result.failure(e)
         } catch (e: Exception) {
             Log.e("AuthRepositoryImpl", "회원가입 중 일반 Exception 발생", e)
-            Result.failure(e)
+            Result.failure(e.toUnknownAuthException("회원가입 중 알 수 없는 오류가 발생했습니다."))
         }
     }
 
@@ -133,7 +136,9 @@ class AuthRepositoryImpl @Inject constructor(
         if (currentRefreshToken.isNullOrBlank() || currentRefreshToken != refreshToken) {
             Log.w("AuthRepositoryImpl", "저장된 리프레시 토큰이 없거나 일치하지 않아 재발급 요청을 중단합니다.")
             logout() // 안전하게 로그아웃 처리
-            return Result.failure(Exception("유효한 리프레시 토큰이 없습니다."))
+            return Result.failure(
+                AuthException(AuthError.InvalidRefreshToken, "유효한 리프레시 토큰이 없습니다.")
+            )
         }
 
         return try {
@@ -148,9 +153,7 @@ class AuthRepositoryImpl @Inject constructor(
                 if (response.code() == 401 || response.code() == 403) {
                     logout()
                 }
-                val errorBody = response.errorBody()
-                    ?: "".toResponseBody("application/json".toMediaTypeOrNull())
-                throw HttpException(Response.error<Any>(response.code(), errorBody))
+                throw response.toAuthException()
             }
 
             persistTokensFromHeaders(response)
@@ -160,7 +163,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (newAccessToken.isNullOrBlank() || newRefreshToken.isNullOrBlank()) {
                 Log.e("AuthRepositoryImpl", "🚫 토큰 재발급 후 토큰 없음")
                 if (response.code() == 401 || response.code() == 403) logout() // 재발급 실패로 간주하고 로그아웃
-                throw Exception("토큰 재발급 후 서버로부터 토큰을 받지 못했습니다.")
+                throw AuthException(AuthError.MissingToken, "토큰 재발급 후 서버로부터 토큰을 받지 못했습니다.")
             }
 
             val updatedState = AuthState(
@@ -173,15 +176,16 @@ class AuthRepositoryImpl @Inject constructor(
 
             Result.success(updatedState)
 
-        } catch (e: HttpException) {
-            Log.e("AuthRepositoryImpl", "토큰 재발급 중 HttpException 발생: ${e.code()} ${e.message()}", e)
-            if (e.code() == 401 || e.code() == 403) {
+        } catch (e: AuthException) {
+            Log.e("AuthRepositoryImpl", "토큰 재발급 중 인증 오류 발생: ${e.message}", e)
+            val httpError = e.error as? AuthError.Http
+            if (httpError?.code == 401 || httpError?.code == 403) {
                 logout() // 토큰이 더 이상 유효하지 않으므로 로그아웃
             }
             Result.failure(e)
         } catch (e: Exception) {
             Log.e("AuthRepositoryImpl", "토큰 재발급 중 일반 Exception 발생", e)
-            Result.failure(e)
+            Result.failure(e.toUnknownAuthException("토큰 재발급 중 알 수 없는 오류가 발생했습니다."))
         }
     }
 
@@ -194,13 +198,13 @@ class AuthRepositoryImpl @Inject constructor(
                     profileImage = profileImage // "DEFAULT" | "MONGI" | "TOBY" | "LUNA"
                 )
             )
-            if (!res.isSuccessful) throw HttpException(res)
+            if (!res.isSuccessful) throw res.toAuthException()
 
             // 로컬 동기화
             authDataSource.saveUserProfile(nickname, profileImage)
         } catch (e: Exception) {
             android.util.Log.e("AuthRepositoryImpl", "회원정보 수정 실패", e)
-            throw e // ViewModel로 예외 전달
+            throw e.toUnknownAuthException("회원정보 수정에 실패했습니다.")
         }
     }
 
@@ -209,12 +213,12 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun withdraw() {
         try {
             val res = authRemoteDataSource.deleteUser() // DELETE /user
-            if (!res.isSuccessful) throw HttpException(res)
+            if (!res.isSuccessful) throw res.toAuthException()
 
             authDataSource.clearAuthData()
         } catch (e: Exception) {
             Log.e("AuthRepositoryImpl", "회원 탈퇴 실패", e)
-            throw e
+            throw e.toUnknownAuthException("회원 탈퇴에 실패했습니다.")
         }
     }
 
@@ -249,6 +253,20 @@ class AuthRepositoryImpl @Inject constructor(
         return AuthState(isAuthenticated = false, isLoading = false)
     }
 
+    override fun getStoredTokens(): AuthTokens? {
+        val accessToken = authDataSource.getAccessToken()
+        val refreshToken = authDataSource.getRefreshToken()
+        if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) return null
+        return AuthTokens(accessToken = accessToken, refreshToken = refreshToken)
+    }
+
+    override fun saveTokens(tokens: AuthTokens) {
+        if (!tokens.isValid) {
+            throw AuthException(AuthError.MissingToken, "저장할 인증 토큰이 비어 있습니다.")
+        }
+        authDataSource.saveTokens(tokens.accessToken, tokens.refreshToken)
+    }
+
     private fun getCachedUser(): UserInfo? {
         val nickname = authDataSource.getNickname()
         val profile = authDataSource.getProfileImage()
@@ -268,10 +286,25 @@ class AuthRepositoryImpl @Inject constructor(
             ?: response.headers()["Refresh-Token"]
 
         if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-            throw IllegalStateException("인증 응답 헤더에 토큰이 없습니다.")
+            throw AuthException(AuthError.MissingToken, "인증 응답 헤더에 토큰이 없습니다.")
         }
 
         authDataSource.saveTokens(accessToken, refreshToken)
         authDataSource.saveSetCookies(setCookieHeaders)
+    }
+
+    private fun Response<*>.toAuthException(): AuthException {
+        return AuthException(
+            error = AuthError.Http(code(), message()),
+            message = "인증 요청 실패: ${code()} ${message()}".trim()
+        )
+    }
+
+    private fun Throwable.toUnknownAuthException(defaultMessage: String): AuthException {
+        return if (this is AuthException) {
+            this
+        } else {
+            AuthException(AuthError.Unknown(message), message ?: defaultMessage, this)
+        }
     }
 }

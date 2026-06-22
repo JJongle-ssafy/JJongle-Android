@@ -36,8 +36,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 
@@ -67,44 +65,19 @@ fun LoginScreen(
             )
 
             if (account != null && account.idToken != null) {
-
-                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                FirebaseAuth.getInstance().signInWithCredential(credential)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            FirebaseAuth.getInstance().currentUser?.getIdToken(true)
-                                ?.addOnSuccessListener { result ->
-                                    val firebaseIdToken = result.token.orEmpty()
-                                    Log.d(
-                                        "LoginScreen",
-                                        "Firebase ID token issued=${firebaseIdToken.isNotBlank()}"
-                                    )
-
-                                    viewModel.login(
-                                        idToken = firebaseIdToken,
-                                        onSuccess = {
-                                            onNavigateToMap()
-                                        },
-                                        onNeedSignUp = {
-                                            Log.d("LoginScreen", "🟡 onNeedSignUp 호출됨")
-
-                                            onNavigateToSignUp(firebaseIdToken)  // 회원가입 화면으로 이동
-                                        },
-                                        onFailure = {
-                                            Toast.makeText(context, "로그인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
-                                        }
-                                    )
-
-                                }
-                        } else {
-                            Log.e("LoginScreen", "Firebase credential sign-in failed", task.exception)
-                            Toast.makeText(
-                                context,
-                                "Firebase 로그인 실패: ${task.exception?.localizedMessage ?: "알 수 없는 오류"}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                viewModel.loginWithGoogleIdToken(
+                    googleIdToken = account.idToken.orEmpty(),
+                    onSuccess = {
+                        onNavigateToMap()
+                    },
+                    onNeedSignUp = { firebaseIdToken ->
+                        Log.d("LoginScreen", "onNeedSignUp 호출됨")
+                        onNavigateToSignUp(firebaseIdToken)
+                    },
+                    onFailure = {
+                        Toast.makeText(context, "로그인 실패: ${it.message}", Toast.LENGTH_SHORT).show()
                     }
+                )
             } else {
                 Log.e("LoginScreen", "Google account or idToken is missing")
                 Toast.makeText(context, "구글 ID 토큰을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
