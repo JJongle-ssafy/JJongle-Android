@@ -8,5 +8,4 @@ data class ImageAnalysisData(
     @SerializedName("imageBase64") val imageBase64: String
 )
 
-typealias SubmitAnswerData = ImageAnalysisData
 typealias GameFinishData = ImageAnalysisData

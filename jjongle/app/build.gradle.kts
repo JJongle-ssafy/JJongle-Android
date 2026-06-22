@@ -24,8 +24,15 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "WS_BASE_URL", "\"ws://10.0.2.2:8080/ws/group-game\"")
+        }
+
         release {
             isMinifyEnabled = false
+            buildConfigField("String", "API_BASE_URL", "\"http://i13d106.p.ssafy.io:8080/\"")
+            buildConfigField("String", "WS_BASE_URL", "\"ws://i13d106.p.ssafy.io:8080/ws/group-game\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -41,6 +48,11 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 
     // Kapt 설정
@@ -106,10 +118,12 @@ dependencies {
 
     // Google ML Kit Pose Detection
     implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
+    implementation("com.google.mlkit:face-detection:16.1.7")
 
 
     // 테스트 의존성
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -132,6 +146,6 @@ dependencies {
     implementation("androidx.media3:media3-session:1.7.1")
     implementation("androidx.media3:media3-datasource:1.7.1") // RawResourceDataSource 용
 
-    implementation(project(":MainApp.androidlib"))
-    implementation(project(":unityLibrary"))
+    releaseImplementation(project(":MainApp.androidlib"))
+    releaseImplementation(project(":unityLibrary"))
 }

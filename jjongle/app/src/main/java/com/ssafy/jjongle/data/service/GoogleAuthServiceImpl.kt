@@ -26,7 +26,7 @@ class GoogleAuthServiceImpl @Inject constructor(
 
     override suspend fun signIn(idToken: String): Result<GoogleUser> {
         // [1] 로그인 진입 로그
-        Log.d("GoogleAuth", "signIn() called with idToken: $idToken")
+        Log.d("GoogleAuth", "signIn() called. hasIdToken=${idToken.isNotBlank()}")
 
         return try {
             // [2] Credential 생성 시도

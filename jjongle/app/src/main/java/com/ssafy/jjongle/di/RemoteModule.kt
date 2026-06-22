@@ -1,6 +1,5 @@
 package com.ssafy.jjongle.di
 
-import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.data.remote.AuthApiService
 import com.ssafy.jjongle.data.remote.AuthRemoteDataSource
 import com.ssafy.jjongle.data.remote.AuthRemoteDataSourceImpl
@@ -17,10 +16,8 @@ object RemoteModule {
     @Provides
     @Singleton
     fun provideAuthRemoteDataSource(
-        authApiService: AuthApiService,
-        authDataSource: AuthDataSource
-
+        authApiService: AuthApiService
     ): AuthRemoteDataSource {
-        return AuthRemoteDataSourceImpl(authApiService, authDataSource)
+        return AuthRemoteDataSourceImpl(authApiService)
     }
 }

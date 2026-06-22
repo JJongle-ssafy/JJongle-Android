@@ -23,8 +23,10 @@ class AuthDataSource @Inject constructor(
             putString(KEY_ACCESS_TOKEN, accessToken)
             putString(KEY_REFRESH_TOKEN, refreshToken)
         }
-        Log.d("AuthLocalDataSource", "✅ accessToken 저장됨: $accessToken")
-        Log.d("AuthLocalDataSource", "✅ refreshToken 저장됨: $refreshToken")
+        Log.d(
+            "AuthLocalDataSource",
+            "토큰 저장 완료. hasAccessToken=${accessToken.isNotBlank()}, hasRefreshToken=${refreshToken.isNotBlank()}"
+        )
     }
 
     // 토큰을 가져오는 메소드

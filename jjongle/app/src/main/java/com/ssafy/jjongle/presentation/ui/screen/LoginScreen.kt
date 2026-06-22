@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -49,17 +51,20 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val authState by viewModel.authState.collectAsState()
+    val serverClientId = context.getString(R.string.default_web_client_id)
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        Log.d("LoginScreen", "ActivityResult 콜백 진입") // ActivityResult 콜백 로그
+        Log.d("LoginScreen", "Google sign-in resultCode=${result.resultCode}")
 
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            Log.d("LoginScreen", "account: $account")
-            Log.d("LoginScreen", "idToken: ${account?.idToken}")
+            Log.d(
+                "LoginScreen",
+                "Google account email=${account?.email}, hasIdToken=${!account?.idToken.isNullOrBlank()}"
+            )
 
             if (account != null && account.idToken != null) {
 
@@ -69,8 +74,11 @@ fun LoginScreen(
                         if (task.isSuccessful) {
                             FirebaseAuth.getInstance().currentUser?.getIdToken(true)
                                 ?.addOnSuccessListener { result ->
-                                    val firebaseIdToken = result.token
-                                    Log.d("FirebaseIDToken", firebaseIdToken!!) // ✅ 서버에 이걸 보내야 함
+                                    val firebaseIdToken = result.token.orEmpty()
+                                    Log.d(
+                                        "LoginScreen",
+                                        "Firebase ID token issued=${firebaseIdToken.isNotBlank()}"
+                                    )
 
                                     viewModel.login(
                                         idToken = firebaseIdToken,
@@ -88,19 +96,37 @@ fun LoginScreen(
                                     )
 
                                 }
+                        } else {
+                            Log.e("LoginScreen", "Firebase credential sign-in failed", task.exception)
+                            Toast.makeText(
+                                context,
+                                "Firebase 로그인 실패: ${task.exception?.localizedMessage ?: "알 수 없는 오류"}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
+            } else {
+                Log.e("LoginScreen", "Google account or idToken is missing")
+                Toast.makeText(context, "구글 ID 토큰을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
 
         } catch (e: ApiException) {
-            Log.e("LoginScreen", "구글 로그인 실패", e) // ✅ 반드시 필요
-
-            Toast.makeText(context, "구글 로그인 실패", Toast.LENGTH_SHORT).show()
+            Log.e(
+                "LoginScreen",
+                "Google sign-in failed. statusCode=${e.statusCode}, " +
+                    "serverClientIdSuffix=${serverClientId.takeLast(12)}",
+                e
+            )
+            Toast.makeText(
+                context,
+                "구글 로그인 실패 (${e.statusCode})",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestIdToken(serverClientId)
         .requestEmail()
         .build()
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
@@ -140,8 +166,19 @@ fun LoginScreen(
                 IconButton(
                     onClick = {
                         Log.d("LoginScreen", "로그인 버튼 클릭됨")
-                        val intent = googleSignInClient.signInIntent
-                        launcher.launch(intent)
+                        val availability = GoogleApiAvailability.getInstance()
+                        val status = availability.isGooglePlayServicesAvailable(context)
+                        if (status == ConnectionResult.SUCCESS) {
+                            val intent = googleSignInClient.signInIntent
+                            launcher.launch(intent)
+                        } else {
+                            Log.e("LoginScreen", "Google Play Services unavailable. status=$status")
+                            Toast.makeText(
+                                context,
+                                "Google Play 서비스를 사용할 수 없습니다. ($status)",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     },
                     modifier = Modifier
                         .size(56.dp)

@@ -1,8 +1,7 @@
 package com.ssafy.jjongle.data.repository
 import com.ssafy.jjongle.data.model.TTSRequest
-import com.ssafy.jjongle.data.model.TTSResponse
-import com.ssafy.jjongle.data.model.TTSResponseWrapper
 import com.ssafy.jjongle.data.remote.SuperToneApiService
+import com.ssafy.jjongle.domain.entity.TtsAudio
 import com.ssafy.jjongle.domain.repository.TTSRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,7 +17,7 @@ class TTSRepositoryImpl @Inject constructor(
 
     override suspend fun generateTTS(
         text: String
-    ): Result<TTSResponseWrapper> = withContext(Dispatchers.IO) {
+    ): Result<TtsAudio> = withContext(Dispatchers.IO) {
         try {
             val request = TTSRequest(text = text)
 
@@ -31,36 +30,19 @@ class TTSRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val responseBody = response.body()
                 if (responseBody != null) {
-                    // 헤더에서 오디오 길이 추출
                     val audioLength = extractAudioLengthFromHeaders(response)
+                    val contentType = responseBody.contentType()?.toString()
+                    val audioBytes = responseBody.bytes()
 
-                    // 실제 바이트 추출
-                    val audioBytes = try { responseBody.bytes() } catch (e: Exception) { null }
-
-                     val wrapper = TTSResponseWrapper(
-                         responseBody = responseBody,
-                         audioLength = audioLength,
-                         audioBytes = audioBytes
-                     )
-
-                    Result.success(wrapper)
+                    Result.success(
+                        TtsAudio(
+                            bytes = audioBytes,
+                            audioLength = audioLength,
+                            contentType = contentType
+                        )
+                    )
                 } else Result.failure(Exception("응답 본문이 null입니다"))
             } else Result.failure(Exception("API 호출 실패: ${response.code()}"))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun generateTTSResponse(
-        text: String
-    ): Result<TTSResponse> = withContext(Dispatchers.IO) {
-        try {
-            val result = generateTTS(text)
-            result.mapCatching { wrapper ->
-                val bytes = wrapper.audioBytes ?: return@mapCatching wrapper.responseBody
-                // bytes로 새로운 ResponseBody 생성 (재사용 가능)
-                okhttp3.ResponseBody.create(wrapper.responseBody.contentType(), bytes)
-            }
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -135,7 +135,10 @@ class MainActivity : ComponentActivity() {
             val refreshToken = jsonObject.getString("refreshToken")
             
             authDataSource.saveTokens(accessToken, refreshToken)
-            Log.d("MainActivity", "토큰 업데이트 완료: accessToken=${accessToken.take(20)}..., refreshToken=${refreshToken.take(20)}...")
+            Log.d(
+                "MainActivity",
+                "토큰 업데이트 완료. hasAccessToken=${accessToken.isNotBlank()}, hasRefreshToken=${refreshToken.isNotBlank()}"
+            )
         } catch (e: Exception) {
             Log.e("MainActivity", "토큰 업데이트 실패: ${e.message}", e)
         }

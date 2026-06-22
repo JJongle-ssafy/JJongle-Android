@@ -1,10 +1,12 @@
 package com.ssafy.jjongle.data.repository
 
 import com.ssafy.jjongle.data.local.SessionDataSource
+import com.ssafy.jjongle.data.model.toDto
 import com.ssafy.jjongle.data.remote.OXGameApiService
-import com.ssafy.jjongle.data.websocket.ConnectionState
-import com.ssafy.jjongle.data.websocket.GameEvent
 import com.ssafy.jjongle.data.websocket.GameWebSocketManager
+import com.ssafy.jjongle.domain.entity.GameConnectionState
+import com.ssafy.jjongle.domain.entity.GameEvent
+import com.ssafy.jjongle.domain.entity.UserPosition
 import com.ssafy.jjongle.domain.repository.OXGameRepository
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +46,7 @@ class OXGameRepositoryImpl @Inject constructor(
         webSocketManager.disconnect()
     }
 
-    override val connectionState: StateFlow<ConnectionState>
+    override val connectionState: StateFlow<GameConnectionState>
         get() = webSocketManager.connectionState
 
     override val gameEvents: SharedFlow<GameEvent>
@@ -55,8 +57,18 @@ class OXGameRepositoryImpl @Inject constructor(
         webSocketManager.sendImageAnalysis(sessionKey, quizId, imageData)
     }
 
-    override fun sendSubmitAnswer(sessionKey: String, quizId: Int, imageData: String) {
-        webSocketManager.sendSubmitAnswer(sessionKey, quizId, imageData)
+    override fun sendSubmitAnswer(
+        sessionKey: String,
+        quizId: Int,
+        oAreaUserPositions: List<UserPosition>,
+        xAreaUserPositions: List<UserPosition>
+    ) {
+        webSocketManager.sendSubmitAnswer(
+            sessionKey = sessionKey,
+            quizId = quizId,
+            oAreaUserPositions = oAreaUserPositions.map { it.toDto() },
+            xAreaUserPositions = xAreaUserPositions.map { it.toDto() }
+        )
     }
 
     override fun sendGameFinish(sessionKey: String, quizId: Int, imageData: String) {

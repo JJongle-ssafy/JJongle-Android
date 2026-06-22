@@ -2,6 +2,7 @@ package com.ssafy.jjongle.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.ssafy.jjongle.BuildConfig
 import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.data.remote.AuthApiService
 import com.ssafy.jjongle.data.remote.AuthInterceptor
@@ -61,7 +62,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://i13d106.p.ssafy.io:8080/") // 실제 API URL로 변경 필요
+            .baseUrl(BuildConfig.API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -91,7 +92,7 @@ object NetworkModule {
         @Named("refresh") okHttpClient: OkHttpClient,
         gson: Gson
     ): Retrofit = Retrofit.Builder()
-        .baseUrl("http://i13d106.p.ssafy.io:8080/")
+        .baseUrl(BuildConfig.API_BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()

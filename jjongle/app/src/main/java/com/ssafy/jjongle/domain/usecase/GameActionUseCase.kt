@@ -1,7 +1,8 @@
 package com.ssafy.jjongle.domain.usecase
 
-import com.ssafy.jjongle.data.websocket.ConnectionState
-import com.ssafy.jjongle.data.websocket.GameEvent
+import com.ssafy.jjongle.domain.entity.GameConnectionState
+import com.ssafy.jjongle.domain.entity.GameEvent
+import com.ssafy.jjongle.domain.entity.UserPosition
 import com.ssafy.jjongle.domain.repository.OXGameRepository
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,7 @@ class GameActionUseCase @Inject constructor(
     /**
      * WebSocket 연결 상태를 관찰합니다.
      */
-    val connectionState: StateFlow<ConnectionState>
+    val connectionState: StateFlow<GameConnectionState>
         get() = oxGameRepository.connectionState
 
     /**
@@ -52,8 +53,18 @@ class GameActionUseCase @Inject constructor(
     /**
      * 최종 답변 제출 요청을 전송합니다.
      */
-    fun sendSubmitAnswer(sessionKey: String, quizId: Int, imageData: String) {
-        oxGameRepository.sendSubmitAnswer(sessionKey, quizId, imageData)
+    fun sendSubmitAnswer(
+        sessionKey: String,
+        quizId: Int,
+        oAreaUserPositions: List<UserPosition>,
+        xAreaUserPositions: List<UserPosition>
+    ) {
+        oxGameRepository.sendSubmitAnswer(
+            sessionKey = sessionKey,
+            quizId = quizId,
+            oAreaUserPositions = oAreaUserPositions,
+            xAreaUserPositions = xAreaUserPositions
+        )
     }
 
     /**

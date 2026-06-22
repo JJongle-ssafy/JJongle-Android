@@ -61,15 +61,15 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.data.websocket.ConnectionState
+import com.ssafy.jjongle.domain.entity.GameConnectionState
 import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.CameraComponent
 import com.ssafy.jjongle.presentation.viewmodel.OXGameViewModel
+import com.ssafy.jjongle.presentation.vision.OXTrackedFace
 import com.ssafy.jjongle.util.AudioPlayer
 import kotlinx.coroutines.delay
-import java.io.File
 
 @Composable
 fun OXGameScreen(
@@ -87,7 +87,6 @@ fun OXGameScreen(
     val isQuizActive by viewModel.isQuizActive.collectAsState()
     val finishProfiles by viewModel.finishProfiles.collectAsState()
     val finalTop3 by viewModel.finalTop3.collectAsState()
-    val captureTrigger by viewModel.captureTrigger.collectAsState()
     val userPosition by viewModel.userPosition.collectAsState()
     val isAnswerSubmitted by viewModel.isAnswerSubmitted.collectAsState()
     val showRewardAnimation by viewModel.showRewardAnimation.collectAsState()
@@ -126,7 +125,7 @@ fun OXGameScreen(
             is TTSState.Success -> {
                 // 해설 단계라면 시작 플래그 설정
                 if (!isQuizActive) explanationTtsStarted = true
-                audioPlayer.playTTS(currentTTSState.response) // Use the local variable
+                audioPlayer.playTTS(currentTTSState.audio) // Use the local variable
                 // TTS 재생 완료 후 타이머 재시작
                 delay(100) // 잠시 대기 후 재생 상태 확인
                 if (!audioPlayer.isPlaying()) {
@@ -195,12 +194,12 @@ fun OXGameScreen(
     // 연결 상태에 따른 UI 처리
     when {
         // 로딩 중이거나 연결 대기 중
-        isLoading || connectionState == ConnectionState.CONNECTING -> {
+        isLoading || connectionState == GameConnectionState.CONNECTING -> {
             LoadingDialog("게임 연결 중...")
         }
 
         // 연결 실패
-        connectionState == ConnectionState.ERROR -> {
+        connectionState == GameConnectionState.ERROR -> {
             ErrorDialog(
                 message = "연결에 실패했습니다.",
                 onConfirm = onNavigateToMap
@@ -217,29 +216,26 @@ fun OXGameScreen(
         // 게임 진행 중
         gameState.isGameActive && currentQuiz != null -> {
             currentQuiz?.let { quiz ->
-                if (isQuizActive) {
-                    // 퀴즈 진행 중
+                Box(modifier = Modifier.fillMaxSize()) {
                     QuizGameContent(
                         quiz = quiz,
                         quizIndex = currentQuizIndex,
                         totalQuizzes = quizSession?.quizzes?.size ?: 0,
                         timeLeft = timeLeft,
-                        captureTrigger = captureTrigger,
-                        onFrameCaptured = { file ->
-                            viewModel.sendFrameForAnalysis(file)
-                        },
+                        onFacePositionsChanged = viewModel::updateTrackedFaces,
                         showCorrectAnimation = showCorrectAnimation,
                         correctAnswer = correctAnswer
                     )
-                } else {
-                    // 해설 페이지
-                    QuizExplanationContent(
-                        quiz = quiz,
-                        quizIndex = currentQuizIndex,
-                        totalQuizzes = quizSession?.quizzes?.size ?: 0,
-                        isAnswerSubmitted = isAnswerSubmitted,
-                        onNextQuiz = { viewModel.nextQuiz() }
-                    )
+
+                    if (!isQuizActive) {
+                        QuizExplanationContent(
+                            quiz = quiz,
+                            quizIndex = currentQuizIndex,
+                            totalQuizzes = quizSession?.quizzes?.size ?: 0,
+                            isAnswerSubmitted = isAnswerSubmitted,
+                            onNextQuiz = { viewModel.nextQuiz() }
+                        )
+                    }
                 }
             }
         }
@@ -376,8 +372,7 @@ fun QuizGameContent(
     quizIndex: Int,
     totalQuizzes: Int,
     timeLeft: Int,
-    captureTrigger: Int,
-    onFrameCaptured: (File) -> Unit,
+    onFacePositionsChanged: (List<OXTrackedFace>) -> Unit,
     showCorrectAnimation: Boolean,
     correctAnswer: String?
 ) {
@@ -424,8 +419,7 @@ fun QuizGameContent(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(16.dp))
                         .border(2.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(16.dp)),
-                    captureTrigger = captureTrigger,
-                    onFrameCaptured = onFrameCaptured
+                    onFacePositionsChanged = onFacePositionsChanged
                 )
 
                 Box(
@@ -559,7 +553,7 @@ fun GameResultContent(
                     .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                val rankedWithProfile = top3Rankings.filter { (userId, _) -> profiles.containsKey(userId) }
+                val rankedWithProfile = top3Rankings
                 val first = rankedWithProfile.getOrNull(0)
                 val second = rankedWithProfile.getOrNull(1)
                 val third = rankedWithProfile.getOrNull(2)
@@ -705,6 +699,14 @@ private fun RankedProfile(
                         .fillMaxSize()
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = "?",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
         }

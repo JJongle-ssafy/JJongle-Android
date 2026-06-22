@@ -1,24 +1,22 @@
 package com.ssafy.jjongle.presentation.viewmodel
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.data.local.SessionDataSource
-import com.ssafy.jjongle.data.model.UserPositionDto
-import com.ssafy.jjongle.data.model.toDomain
-import com.ssafy.jjongle.data.websocket.ConnectionState
-import com.ssafy.jjongle.data.websocket.GameEvent
+import com.ssafy.jjongle.domain.entity.GameConnectionState
+import com.ssafy.jjongle.domain.entity.GameEvent
 import com.ssafy.jjongle.domain.entity.GameScore
 import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.domain.entity.QuizResult
 import com.ssafy.jjongle.domain.entity.QuizSession
+import com.ssafy.jjongle.domain.entity.UserPosition
 import com.ssafy.jjongle.domain.usecase.GameActionUseCase
 import com.ssafy.jjongle.domain.usecase.StartOXGameUseCase
 import com.ssafy.jjongle.domain.usecase.TTSUseCase
 import com.ssafy.jjongle.presentation.state.GameState
 import com.ssafy.jjongle.presentation.state.TTSState
+import com.ssafy.jjongle.presentation.vision.OXAnswerArea
+import com.ssafy.jjongle.presentation.vision.OXParticipantProfileCache
+import com.ssafy.jjongle.presentation.vision.OXTrackedFace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,15 +27,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class OXGameViewModel @Inject constructor(
     private val startGameUseCase: StartOXGameUseCase,
     private val gameActionUseCase: GameActionUseCase,
-    private val sessionDataSource: SessionDataSource,
     private val ttsUseCase: TTSUseCase
 ) : ViewModel() {
 
@@ -70,7 +65,7 @@ class OXGameViewModel @Inject constructor(
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     // WebSocket 관련 상태들
-    val connectionState: StateFlow<ConnectionState> = gameActionUseCase.connectionState
+    val connectionState: StateFlow<GameConnectionState> = gameActionUseCase.connectionState
     val gameEvents = gameActionUseCase.gameEvents
 
     // 타이머 관련 상태들
@@ -91,13 +86,8 @@ class OXGameViewModel @Inject constructor(
     private val _finalTop3 = MutableStateFlow<List<Pair<Int, Int>>>(emptyList())
     val finalTop3: StateFlow<List<Pair<Int, Int>>> = _finalTop3.asStateFlow()
 
-    // 카메라 캡처 트리거
-    private val _captureTrigger = MutableStateFlow(0)
-    val captureTrigger: StateFlow<Int> = _captureTrigger.asStateFlow()
-
-    // 마지막 캡처 이미지 저장 (StateFlow로 관리)
-    private val _lastCapturedImageBase64 = MutableStateFlow<String?>(null)
-    val lastCapturedImageBase64: StateFlow<String?> = _lastCapturedImageBase64.asStateFlow()
+    private val _latestTrackedFaces = MutableStateFlow<List<OXTrackedFace>>(emptyList())
+    val latestTrackedFaces: StateFlow<List<OXTrackedFace>> = _latestTrackedFaces.asStateFlow()
 
     // 보상 애니메이션 상태
     private val _showRewardAnimation = MutableStateFlow(false)
@@ -126,8 +116,8 @@ class OXGameViewModel @Inject constructor(
     val ttsState: StateFlow<TTSState> = _ttsState.asStateFlow()
 
     // 타이머 작업들
-    private var imageTransmissionJob: Job? = null
     private var quizTimerJob: Job? = null
+    private val participantProfileCache = OXParticipantProfileCache()
 
     // 중복 GAME_FINISH 전송 방지 플래그
     private var isGameFinishRequested: Boolean = false
@@ -157,7 +147,7 @@ class OXGameViewModel @Inject constructor(
     }
 
     /**
-     * 퀴즈 시작 - 타이머 시작과 이미지 전송 시작
+     * 퀴즈 시작 - 타이머 시작과 얼굴 위치 추적 초기화
      */
     fun startCurrentQuiz() {
         val currentQuiz = currentQuiz.value ?: return
@@ -166,8 +156,7 @@ class OXGameViewModel @Inject constructor(
         _isQuizActive.value = true
         _timeLeft.value = 10 // 10초 제한시간
 
-        // 마지막 캡처 이미지 초기화
-        _lastCapturedImageBase64.value = null
+        _latestTrackedFaces.value = emptyList()
 
         // 문제 TTS 생성 및 재생
         generateQuestionTTS()
@@ -175,62 +164,12 @@ class OXGameViewModel @Inject constructor(
         // 퀴즈 타이머 시작
         startQuizTimer()
 
-        // 이미지 전송 시작 (0.2초마다)
-        startImageTransmission()
     }
 
-    /**
-     * 이미지 전송을 위해 0.2초마다 카메라 캡처를 트리거합니다.
-     */
-    private fun startImageTransmission() {
-        imageTransmissionJob?.cancel()
-        imageTransmissionJob = viewModelScope.launch {
-
-            while (_isQuizActive.value) {
-                _captureTrigger.value++ // 값 변경으로 캡처 트리거
-                delay(10) // 0.2초 대기
-            }
-        }
-    }
-
-    /**
-     * UI(카메라)에서 캡처된 프레임을 받아 서버로 전송합니다.
-     * @param imageFile 캡처된 이미지 파일
-     */
-    fun sendFrameForAnalysis(imageFile: File) {
-        // 게임 종료 또는 퀴즈 비활성 상태에서는 전송하지 않음
-        if (_gameState.value.isGameFinished || !_isQuizActive.value) {
-            imageFile.delete()
-            return
-        }
-        // 웹소켓이 연결된 상태가 아니면 아무 작업도 하지 않고 파일을 삭제합니다.
-        if (connectionState.value != ConnectionState.CONNECTED) {
-            imageFile.delete()
-            return
-        }
-
-        viewModelScope.launch {
-            val sessionKey = startGameUseCase.getSessionKey() ?: return@launch
-            val currentQuizId = currentQuiz.value?.id ?: return@launch
-
-            try {
-                // 이미지를 리사이징하고 압축하여 용량을 줄입니다.
-                val resizedAndCompressedImage = resizeAndCompressImage(imageFile, 640, 480, 50)
-
-                // Base64로 인코딩
-                val base64Image = Base64.encodeToString(resizedAndCompressedImage, Base64.NO_WRAP)
-
-                // 마지막 캡처 이미지 저장
-                _lastCapturedImageBase64.value = base64Image
-
-                gameActionUseCase.sendImageAnalysis(sessionKey, currentQuizId, base64Image)
-            } catch (e: Exception) {
-                handleGameError("이미지 처리 오류: ${e.message}")
-            } finally {
-                // 처리 후 파일 삭제
-                imageFile.delete()
-            }
-        }
+    fun updateTrackedFaces(faces: List<OXTrackedFace>) {
+        if (!_isQuizActive.value || _gameState.value.isGameFinished) return
+        _latestTrackedFaces.value = faces
+        _finishProfiles.value = participantProfileCache.updateFrom(faces)
     }
 
     /**
@@ -265,18 +204,25 @@ class OXGameViewModel @Inject constructor(
         val currentQuiz = currentQuiz.value ?: return
         val sessionKey = startGameUseCase.getSessionKey() ?: return
 
-        // 이미지 전송 중단
-        imageTransmissionJob?.cancel()
         quizTimerJob?.cancel()
 
-        // SUBMIT_ANSWER 전송 - 저장된 마지막 이미지 사용
-        val imageData = _lastCapturedImageBase64.value ?: run {
-            handleGameError("이미지가 캡처되지 않았습니다.")
-            return
-        }
+        val trackedFaces = _latestTrackedFaces.value
+        val profiles = participantProfileCache.updateFrom(trackedFaces)
+        _finishProfiles.value = profiles
+        val oAreaUserPositions = trackedFaces
+            .filter { it.area == OXAnswerArea.O }
+            .map { it.toUserPosition() }
+        val xAreaUserPositions = trackedFaces
+            .filter { it.area == OXAnswerArea.X }
+            .map { it.toUserPosition() }
 
-        println("DEBUG: SUBMIT_ANSWER 전송 - 퀴즈 ID: ${currentQuiz.id}")
-        gameActionUseCase.sendSubmitAnswer(sessionKey, currentQuiz.id, imageData)
+        println("DEBUG: SUBMIT_ANSWER 전송 - 퀴즈 ID: ${currentQuiz.id}, O: ${oAreaUserPositions.size}, X: ${xAreaUserPositions.size}")
+        gameActionUseCase.sendSubmitAnswer(
+            sessionKey = sessionKey,
+            quizId = currentQuiz.id,
+            oAreaUserPositions = oAreaUserPositions,
+            xAreaUserPositions = xAreaUserPositions
+        )
 
         // 답변 제출 상태 초기화
         _isAnswerSubmitted.value = false
@@ -292,13 +238,13 @@ class OXGameViewModel @Inject constructor(
     private fun recordQuizResult(
         quizId: Int,
         correctAnswer: String,
-        correctUserPositions: List<UserPositionDto>
+        correctUserPositions: List<UserPosition>
     ) {
         val newResult = QuizResult(
             quizId = quizId,
             correctAnswer = correctAnswer,
             correctCount = correctUserPositions.size,
-            totalParticipants = 10, // 가정값, 실제로는 서버에서 전체 참가자 수 받아야 함
+            totalParticipants = _latestTrackedFaces.value.size,
             correctUserIds = correctUserPositions.map { it.userId }
         )
 
@@ -313,7 +259,7 @@ class OXGameViewModel @Inject constructor(
     /**
      * 보상 애니메이션 표시
      */
-    private fun showRewardAnimation(correctUserPositions: List<UserPositionDto>) {
+    private fun showRewardAnimation(correctUserPositions: List<UserPosition>) {
         println("DEBUG: showRewardAnimation 호출됨 - 정답자 수: ${correctUserPositions.size}")
 
         // 정답자가 있으면 정답 애니메이션 표시
@@ -394,27 +340,13 @@ class OXGameViewModel @Inject constructor(
             _isAnswerSubmitted.value = false // 답변 제출 상태 초기화
             startCurrentQuiz() // 다음 문제 타이머 시작
         } else {
-            // 마지막 문제를 넘긴 경우: 서버에 GAME_FINISH 요청 전송 후 로딩 상태로 전환
+            // 마지막 문제를 넘긴 경우: 로컬 프로필 캐시로 결과 화면 구성
             if (isGameFinishRequested) {
                 // 이미 전송 요청됨 (자동 진행/버튼 중복 방지)
                 return
             }
-            val sessionKey = startGameUseCase.getSessionKey()
-            val lastQuizId = session?.quizzes?.lastOrNull()?.id
-
-            // 더 이상 퀴즈 진행 없음
-            stopLiveStreaming()
-
-            if (sessionKey != null && lastQuizId != null) {
-                _isLoading.value = true
-                val imageData = _lastCapturedImageBase64.value ?: ""
-                println("DEBUG: GAME_FINISH 전송 - quizId: $lastQuizId, hasImage: ${imageData.isNotEmpty()}")
-                isGameFinishRequested = true
-                gameActionUseCase.sendGameFinish(sessionKey, lastQuizId, imageData)
-            } else {
-                // 세션키/퀴즈ID가 없으면 즉시 게임 종료 처리
-                _gameState.value = GameState(isGameActive = false, isGameFinished = true)
-            }
+            isGameFinishRequested = true
+            finishGameLocally()
         }
     }
 
@@ -427,7 +359,10 @@ class OXGameViewModel @Inject constructor(
         _isQuizActive.value = false
         _gameScore.value = GameScore(0, 0, 0, emptyList())
         _quizResults.value = emptyList()
-        _lastCapturedImageBase64.value = null
+        _latestTrackedFaces.value = emptyList()
+        participantProfileCache.clear()
+        _finishProfiles.value = emptyMap()
+        _finalTop3.value = emptyList()
         _showRewardAnimation.value = false
         _userPosition.value = null
         _animationType.value = null
@@ -461,9 +396,10 @@ class OXGameViewModel @Inject constructor(
                     }
 
                     is GameEvent.GameStart -> {
-                        // DTO 리스트를 엔티티 리스트로 변환
-                        val quizzes = event.quizList.map { it.toDomain() }
-                        val session = QuizSession(quizzes = quizzes, sessionKey = event.sessionKey)
+                        val session = QuizSession(
+                            quizzes = event.quizzes,
+                            sessionKey = event.sessionKey
+                        )
 
                         // 세션키 저장
                         startGameUseCase.saveSessionKey(session.sessionKey)
@@ -503,14 +439,14 @@ class OXGameViewModel @Inject constructor(
 
                     is GameEvent.GameFinish -> {
                         println("DEBUG: GAME_FINISH 이벤트 수신")
-                        // 더 이상 프레임 전송/타이머가 동작하지 않도록 즉시 중지
+                        // 더 이상 얼굴 추적/타이머가 동작하지 않도록 즉시 중지
                         stopLiveStreaming()
 
                         // 프로필 맵 구성 및 최종 TOP3 계산
                         val profilesMap = buildProfilesMap(event)
                         _finishProfiles.value = profilesMap
 
-                        val top3 = computeFinalTop3WithProfiles(profilesMap)
+                        val top3 = computeFinalTop3WithProfiles()
                         _finalTop3.value = top3
 
                         // 로딩 해제 및 게임 종료 처리
@@ -540,12 +476,36 @@ class OXGameViewModel @Inject constructor(
     }
 
     /**
-     * 라이브 전송(프레임/타이머)을 모두 중단하고 퀴즈 활성 상태를 종료합니다.
+     * 얼굴 추적과 타이머를 중단하고 퀴즈 활성 상태를 종료합니다.
      */
     private fun stopLiveStreaming() {
         _isQuizActive.value = false
-        imageTransmissionJob?.cancel()
         quizTimerJob?.cancel()
+    }
+
+    private fun finishGameLocally() {
+        stopLiveStreaming()
+
+        val profilesMap = participantProfileCache.snapshot()
+        _finishProfiles.value = profilesMap
+        _finalTop3.value = computeFinalTop3WithProfiles()
+        _isLoading.value = false
+        _gameState.value = GameState(isGameActive = false, isGameFinished = true)
+        resetTTSState()
+
+        viewModelScope.launch {
+            try {
+                val sessionKey = startGameUseCase.getSessionKey()
+                if (sessionKey != null) {
+                    gameActionUseCase.reportGameFinish(sessionKey)
+                    println("DEBUG: finishOXGame 호출 성공")
+                } else {
+                    println("WARN: finishOXGame 호출 불가 - sessionKey null")
+                }
+            } catch (e: Exception) {
+                println("ERROR: finishOXGame 호출 실패 - ${e.message}")
+            }
+        }
     }
 
     /**
@@ -560,8 +520,8 @@ class OXGameViewModel @Inject constructor(
     /**
      * 현 시점까지의 정답 기록으로 상위 3명을 계산하고, 프로필이 있는 유저만 남깁니다.
      */
-    private fun computeFinalTop3WithProfiles(profilesMap: Map<Int, String>): List<Pair<Int, Int>> {
-        return getTop3Rankings().filter { (userId, _) -> profilesMap.containsKey(userId) }
+    private fun computeFinalTop3WithProfiles(): List<Pair<Int, Int>> {
+        return getTop3Rankings()
     }
 
     /**
@@ -569,8 +529,6 @@ class OXGameViewModel @Inject constructor(
      */
     private fun handleGameError(errorMessage: String) {
         _isLoading.value = false
-        // 모든 타이머와 작업 중지
-        imageTransmissionJob?.cancel()
         quizTimerJob?.cancel()
 
         // 게임 상태를 비활성화
@@ -634,30 +592,16 @@ class OXGameViewModel @Inject constructor(
         }
     }
 
-    private fun resizeAndCompressImage(
-        file: File,
-        targetWidth: Int,
-        targetHeight: Int,
-        quality: Int
-    ): ByteArray {
-        // 1. 파일을 비트맵으로 디코딩
-        val originalBitmap = BitmapFactory.decodeFile(file.absolutePath)
-            ?: throw IllegalStateException("Failed to decode image file.")
-
-        // 2. 원하는 크기로 비트맵 리사이즈
-        val resizedBitmap =
-            Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true)
-
-        // 3. 비트맵을 JPEG으로 압축
-        val outputStream = ByteArrayOutputStream()
-        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
-
-        // 4. 압축된 데이터를 ByteArray로 반환
-        return outputStream.toByteArray()
-    }
-
     override fun onCleared() {
         super.onCleared()
         gameActionUseCase.disconnectWebSocket()
+    }
+
+    private fun OXTrackedFace.toUserPosition(): UserPosition {
+        return UserPosition(
+            userId = participantId,
+            x = x,
+            y = y
+        )
     }
 }

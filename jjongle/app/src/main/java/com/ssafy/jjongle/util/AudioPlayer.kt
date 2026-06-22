@@ -7,7 +7,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.util.Log
-import com.ssafy.jjongle.data.model.TTSResponseWrapper
+import com.ssafy.jjongle.domain.entity.TtsAudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -91,11 +91,10 @@ class AudioPlayer(private val context: Context) {
 
     /**
      * TTS 응답을 재생 (오디오 길이 정보 포함)
-     * @param ttsResponseWrapper TTS 응답 래퍼
      */
-    suspend fun playTTS(ttsResponseWrapper: TTSResponseWrapper) {
+    suspend fun playTTS(ttsAudio: TtsAudio) {
         try {
-            val audioFile = createTempAudioFile(ttsResponseWrapper)
+            val audioFile = createTempAudioFile(ttsAudio)
             playAudioFile(audioFile)
         } catch (e: Exception) {
             Log.e("AudioPlayer", "TTS 재생 실패", e)
@@ -105,26 +104,20 @@ class AudioPlayer(private val context: Context) {
 
 
     /**
-     * 임시 오디오 파일 생성 (TTSResponseWrapper 사용)
+     * 임시 오디오 파일 생성
      */
-    private suspend fun createTempAudioFile(ttsResponseWrapper: TTSResponseWrapper): File =
+    private suspend fun createTempAudioFile(ttsAudio: TtsAudio): File =
         withContext(Dispatchers.IO) {
             val tempFile = File.createTempFile("tts_audio", ".mp3", context.cacheDir)
             try {
-                val bytes = ttsResponseWrapper.audioBytes
-                if (bytes != null) {
-                    FileOutputStream(tempFile).use { outputStream ->
-                        outputStream.write(bytes)
-                        outputStream.flush()
-                        try {
-                            outputStream.fd.sync()
-                        } catch (_: Exception) {}
-                    }
-                } else {
-                    Log.e("AudioPlayer", "바이트 배열이 null입니다")
-                    throw IOException("바이트 배열이 null입니다")
+                FileOutputStream(tempFile).use { outputStream ->
+                    outputStream.write(ttsAudio.bytes)
+                    outputStream.flush()
+                    try {
+                        outputStream.fd.sync()
+                    } catch (_: Exception) {}
                 }
-                
+
                 tempFile
             } catch (e: IOException) {
                 Log.e("AudioPlayer", "임시 파일 생성 실패", e)

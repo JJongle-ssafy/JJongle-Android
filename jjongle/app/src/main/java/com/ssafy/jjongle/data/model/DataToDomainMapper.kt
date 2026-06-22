@@ -1,5 +1,6 @@
 package com.ssafy.jjongle.data.model
 
+import com.ssafy.jjongle.domain.entity.GameProfileImage
 import com.ssafy.jjongle.domain.entity.Quiz
 import com.ssafy.jjongle.domain.entity.QuizSession
 import com.ssafy.jjongle.domain.entity.UserPosition
@@ -13,6 +14,21 @@ fun UserPositionDto.toDomain(): UserPosition {
         userId = this.userId,
         x = this.x,
         y = this.y
+    )
+}
+
+fun UserPosition.toDto(): UserPositionDto {
+    return UserPositionDto(
+        userId = this.userId,
+        x = this.x,
+        y = this.y
+    )
+}
+
+fun GameFinishProfile.toDomain(): GameProfileImage {
+    return GameProfileImage(
+        userId = this.userId,
+        base64 = this.base64
     )
 }
 

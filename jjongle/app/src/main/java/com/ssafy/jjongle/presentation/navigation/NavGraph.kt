@@ -1,7 +1,9 @@
 package com.ssafy.jjongle.presentation.navigation
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -41,6 +43,26 @@ import com.ssafy.jjongle.presentation.ui.screen.TangramTutorialScreen
 import com.ssafy.jjongle.presentation.viewmodel.MapViewModel
 import com.ssafy.jjongle.presentation.viewmodel.MusicViewModel
 import com.ssafy.jjongle.presentation.viewmodel.NavigationViewModel
+
+private const val UNITY_ACTIVITY_CLASS = "com.ssafy.jjongle.CustomUnityActivity"
+
+private fun buildUnityIntentOrNull(
+    context: Context,
+    accessToken: String?,
+    refreshToken: String?,
+    stageId: Int
+): Intent? {
+    return runCatching {
+        Intent(context, Class.forName(UNITY_ACTIVITY_CLASS)).apply {
+            putExtra("accessToken", accessToken ?: "")
+            putExtra("refreshToken", refreshToken ?: "")
+            putExtra("stageId", stageId)
+        }
+    }.getOrElse {
+        Toast.makeText(context, "Unity 모듈이 포함되지 않은 debug 빌드입니다.", Toast.LENGTH_SHORT).show()
+        null
+    }
+}
 
 
 @Composable
@@ -259,15 +281,8 @@ fun NavGraph(
                         navController.navigate(Screen.BeforeTangramTutorial.route)
                     } else {
                         // 다른 스테이지는 바로 유니티 시작
-                        val intent = Intent(
-                            context,
-                            Class.forName("com.ssafy.jjongle.CustomUnityActivity")
-                        ).apply {
-                            putExtra("accessToken", accessToken ?: "")
-                            putExtra("refreshToken", refreshToken ?: "")
-                            putExtra("stageId", stageId)
-                        }
-                        launcher.launch(intent) // ✅ 결과 받기 모드로 실행
+                        buildUnityIntentOrNull(context, accessToken, refreshToken, stageId)
+                            ?.let { launcher.launch(it) } // ✅ 결과 받기 모드로 실행
                         // 나중에 결과 받기 모드 아닌걸로 변경
                     }
                 },
@@ -406,15 +421,8 @@ fun NavGraph(
                     navController.navigate(Screen.TangramTutorial.route)
                 },
                 onSkipTutorial = {
-                    val intent = Intent(
-                        context,
-                        Class.forName("com.ssafy.jjongle.CustomUnityActivity")
-                    ).apply {
-                        putExtra("accessToken", tutorialAccessToken ?: "")
-                        putExtra("refreshToken", tutorialRefreshToken ?: "")
-                        putExtra("stageId", 1)
-                    }
-                    launcher.launch(intent)
+                    buildUnityIntentOrNull(context, tutorialAccessToken, tutorialRefreshToken, 1)
+                        ?.let { launcher.launch(it) }
                 }
             )
         }
@@ -434,15 +442,8 @@ fun NavGraph(
             
             TangramTutorialScreen(
                 onStartTutorial = {
-                    val intent = Intent(
-                        context,
-                        Class.forName("com.ssafy.jjongle.CustomUnityActivity")
-                    ).apply {
-                        putExtra("accessToken", tutorialAccessToken ?: "")
-                        putExtra("refreshToken", tutorialRefreshToken ?: "")
-                        putExtra("stageId", 1)
-                    }
-                    launcher.launch(intent)
+                    buildUnityIntentOrNull(context, tutorialAccessToken, tutorialRefreshToken, 1)
+                        ?.let { launcher.launch(it) }
                 }
             )
         }
@@ -462,4 +463,3 @@ fun NavGraph(
 
     }
 }
-

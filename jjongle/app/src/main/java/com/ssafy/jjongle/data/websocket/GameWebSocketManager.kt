@@ -2,19 +2,21 @@ package com.ssafy.jjongle.data.websocket
 
 import android.util.Log
 import com.google.gson.Gson
+import com.ssafy.jjongle.BuildConfig
 import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.data.model.AnalysisResultResponse
 import com.ssafy.jjongle.data.model.BaseRequest
 import com.ssafy.jjongle.data.model.BaseResponse
 import com.ssafy.jjongle.data.model.GameFinishData
-import com.ssafy.jjongle.data.model.GameFinishProfile
 import com.ssafy.jjongle.data.model.GameFinishResponse
 import com.ssafy.jjongle.data.model.GameStartResponse
 import com.ssafy.jjongle.data.model.ImageAnalysisData
-import com.ssafy.jjongle.data.model.QuizResponse
-import com.ssafy.jjongle.data.model.SubmitAnswerData
+import com.ssafy.jjongle.data.model.PositionSubmitData
 import com.ssafy.jjongle.data.model.SubmitResultResponse
 import com.ssafy.jjongle.data.model.UserPositionDto
+import com.ssafy.jjongle.data.model.toDomain
+import com.ssafy.jjongle.domain.entity.GameConnectionState
+import com.ssafy.jjongle.domain.entity.GameEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,8 +42,6 @@ class GameWebSocketManager @Inject constructor(
     private val gson: Gson // Gson 주입
 ) {
     private companion object {
-        // TODO: 실제 WebSocket URL로 변경해야 합니다.
-        private const val WS_BASE_URL = "ws://i13d106.p.ssafy.io:8080/ws/group-game"
         private const val TAG = "GameWebSocket" // 로그 태그 추가
     }
 
@@ -50,7 +50,7 @@ class GameWebSocketManager @Inject constructor(
     // 이 Manager의 생명주기와 함께할 코루틴 스코프
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
+    private val _connectionState = MutableStateFlow(GameConnectionState.DISCONNECTED)
     val connectionState = _connectionState.asStateFlow()
 
     @Volatile
@@ -65,27 +65,27 @@ class GameWebSocketManager @Inject constructor(
         authDataSource.getAccessToken() ?: throw IllegalStateException("Access token is null")
 
     fun connect() {
-        if (_connectionState.value == ConnectionState.CONNECTED || _connectionState.value == ConnectionState.CONNECTING) {
+        if (_connectionState.value == GameConnectionState.CONNECTED || _connectionState.value == GameConnectionState.CONNECTING) {
             Log.d(TAG, "이미 연결 중이거나 연결됨. 재연결 시도 중단.")
             return
         }
         isDisconnectingManually = false // 연결 시도 시 플래그 초기화
-        _connectionState.value = ConnectionState.CONNECTING
+        _connectionState.value = GameConnectionState.CONNECTING
         val request = Request.Builder()
-            .url("$WS_BASE_URL?token=$accessToken") // 세션 키를 URL에 포함
+            .url("${BuildConfig.WS_BASE_URL}?token=$accessToken") // 세션 키를 URL에 포함
             .build()
         webSocket = okHttpClient.newWebSocket(request, GameWebSocketListener())
     }
 
     fun disconnect() {
-        if (_connectionState.value == ConnectionState.DISCONNECTED || _connectionState.value == ConnectionState.DISCONNECTING) {
+        if (_connectionState.value == GameConnectionState.DISCONNECTED || _connectionState.value == GameConnectionState.DISCONNECTING) {
             return
         }
         isDisconnectingManually = true // 수동 연결 해제 플래그 설정
         Log.d(TAG, "수동으로 WebSocket 연결 해제 시작.")
         webSocket?.close(1000, "User disconnected")
         webSocket = null
-        _connectionState.value = ConnectionState.DISCONNECTED
+        _connectionState.value = GameConnectionState.DISCONNECTED
         Log.d(TAG, "WebSocket 연결 상태를 DISCONNECTED로 설정함.")
     }
 
@@ -103,8 +103,18 @@ class GameWebSocketManager @Inject constructor(
     /**
      * 최종 답변 제출 요청 전송
      */
-    fun sendSubmitAnswer(sessionKey: String, quizId: Int, base64Image: String) {
-        val data = SubmitAnswerData(sessionKey, quizId, base64Image)
+    fun sendSubmitAnswer(
+        sessionKey: String,
+        quizId: Int,
+        oAreaUserPositions: List<UserPositionDto>,
+        xAreaUserPositions: List<UserPositionDto>
+    ) {
+        val data = PositionSubmitData(
+            sessionKey = sessionKey,
+            quizId = quizId,
+            oAreaUserPositions = oAreaUserPositions,
+            xAreaUserPositions = xAreaUserPositions
+        )
         val request = BaseRequest("SUBMIT_ANSWER", data)
         val jsonMessage = gson.toJson(request)
         webSocket?.send(jsonMessage)
@@ -126,7 +136,7 @@ class GameWebSocketManager @Inject constructor(
 
     private inner class GameWebSocketListener : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
-            _connectionState.value = ConnectionState.CONNECTED
+            _connectionState.value = GameConnectionState.CONNECTED
             Log.d(TAG, "onOpen: WebSocket 연결 성공. 응답: ${response.code} ${response.message}")
         }
 
@@ -140,7 +150,7 @@ class GameWebSocketManager @Inject constructor(
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-            _connectionState.value = ConnectionState.DISCONNECTING
+            _connectionState.value = GameConnectionState.DISCONNECTING
             Log.d(TAG, "onClosing: WebSocket 닫힘 요청. 코드: $code, 이유: $reason")
         }
 
@@ -148,17 +158,17 @@ class GameWebSocketManager @Inject constructor(
             if (isDisconnectingManually) {
                 Log.d(TAG, "onClosed: 수동 연결 해제 완료.")
             }
-            _connectionState.value = ConnectionState.DISCONNECTED
+            _connectionState.value = GameConnectionState.DISCONNECTED
             Log.d(TAG, "onClosed: WebSocket 연결 종료됨. 코드: $code, 이유: $reason")
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             if (isDisconnectingManually) {
                 Log.w(TAG, "onFailure: 수동 연결 해제 중 발생한 오류 (무시): ${t.message}")
-                _connectionState.value = ConnectionState.DISCONNECTED // 에러 대신 DISCONNECTED로 처리
+                _connectionState.value = GameConnectionState.DISCONNECTED // 에러 대신 DISCONNECTED로 처리
                 return
             }
-            _connectionState.value = ConnectionState.ERROR
+            _connectionState.value = GameConnectionState.ERROR
             Log.e(TAG, "onFailure: WebSocket 오류 발생: ${t.message}", t)
             response?.let {
                 Log.e(TAG, "onFailure: 오류 응답: ${it.code} ${it.message}")
@@ -176,7 +186,10 @@ class GameWebSocketManager @Inject constructor(
 
                 "GAME_START" -> {
                     val response = gson.fromJson(json, GameStartResponse::class.java)
-                    GameEvent.GameStart(response.data.quizList, response.data.sessionKey)
+                    GameEvent.GameStart(
+                        quizzes = response.data.quizList.map { it.toDomain() },
+                        sessionKey = response.data.sessionKey
+                    )
                 }
 
                 "SUBMIT_RESULT" -> {
@@ -184,7 +197,7 @@ class GameWebSocketManager @Inject constructor(
                     GameEvent.SubmitResult(
                         response.data.quizId,
                         response.data.correctAnswer,
-                        response.data.correctUserPositions
+                        response.data.correctUserPositions.map { it.toDomain() }
                     )
                 }
 
@@ -195,7 +208,7 @@ class GameWebSocketManager @Inject constructor(
 
                 "GAME_FINISH_RESULT" -> {
                     val response = gson.fromJson(json, GameFinishResponse::class.java)
-                    GameEvent.GameFinish(response.data.userImages)
+                    GameEvent.GameFinish(response.data.userImages.map { it.toDomain() })
                 }
 
 
@@ -244,34 +257,4 @@ class GameWebSocketManager @Inject constructor(
             "└─────────────────────────────────────────────────────────────────────────────"
         )
     }
-}
-
-// WebSocket 연결 상태
-enum class ConnectionState {
-    DISCONNECTED,
-    CONNECTING,
-    CONNECTED,
-    DISCONNECTING,
-    ERROR
-}
-
-// 게임 이벤트 종류
-sealed class GameEvent {
-    data class ConnectionEstablished(val message: String) : GameEvent()
-    data class GameStart(val quizList: List<QuizResponse>, val sessionKey: String) : GameEvent()
-
-    data class SubmitResult(
-        val quizId: Int,
-        val correctAnswer: String,
-        val correctUserPositions: List<UserPositionDto>
-    ) : GameEvent()
-
-    data class AnalysisResult(val data: String) : GameEvent()
-
-    // 게임 종료 시, 서버에서 보내주는 프로필(base64) 리스트
-    data class GameFinish(val profiles: List<GameFinishProfile>) :
-        GameEvent()
-
-    data class Error(val message: String) : GameEvent()
-    data object Unknown : GameEvent()
 }

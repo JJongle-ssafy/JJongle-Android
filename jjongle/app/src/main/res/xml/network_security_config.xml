@@ -3,4 +3,8 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">i13d106.p.ssafy.io</domain>
     </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain>10.0.2.2</domain>
+        <domain>localhost</domain>
+    </domain-config>
 </network-security-config>
