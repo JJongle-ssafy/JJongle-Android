@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.calculateMypageLayoutMetrics
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 
 
@@ -55,16 +58,20 @@ fun MypageScreen(
         else -> R.drawable.profile_mongi // 기본 프로필 이미지
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val layoutMetrics = remember(maxWidth, maxHeight) {
+            calculateMypageLayoutMetrics(
+                containerWidthDp = maxWidth.value,
+                containerHeightDp = maxHeight.value
+            )
+        }
 
         // 배경 이미지
         ResponsiveBackgroundImage(
             painter = painterResource(id = R.drawable.mypage_bg),
             contentDescription = "Mypage Background",
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
         // 뒤로가기 버튼
@@ -74,7 +81,7 @@ fun MypageScreen(
             fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 24.dp, top = 24.dp)
+                .padding(start = layoutMetrics.topPadding.dp, top = layoutMetrics.topPadding.dp)
         )
 
         // 로그아웃 버튼 (우측 상단) — 뒤로가기와 동일 스타일
@@ -87,7 +94,7 @@ fun MypageScreen(
             fontSize = 18.sp,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(end = 24.dp, top = 24.dp)
+                .padding(end = layoutMetrics.topPadding.dp, top = layoutMetrics.topPadding.dp)
         )
 
 
@@ -95,7 +102,11 @@ fun MypageScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 30.dp),
+                .padding(horizontal = layoutMetrics.horizontalPadding.dp)
+                .padding(
+                    top = layoutMetrics.contentTopPadding.dp,
+                    bottom = layoutMetrics.contentBottomPadding.dp
+                ),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -103,14 +114,14 @@ fun MypageScreen(
             // 프로필 + 프레임 겹치기
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(430.dp) // 전체 사이즈는 프로필 기준
+                modifier = Modifier.size(layoutMetrics.profileFrameSize.dp)
             ) {
                 // 1. 프로필 이미지
                 Image(
                     painter = painterResource(id = profileImageRes),
                     contentDescription = "캐릭터 프로필",
                     modifier = Modifier
-                        .size(300.dp) // 내부 이미지
+                        .size(layoutMetrics.profileImageSize.dp)
                         .clip(CircleShape)
                         .border(4.dp, Color(0xFF567147), CircleShape)
                 )
@@ -119,7 +130,7 @@ fun MypageScreen(
                 Image(
                     painter = painterResource(id = R.drawable.profile_frame),
                     contentDescription = "프로필 프레임",
-                    modifier = Modifier.size(400.dp) // 프레임이 바깥으로 감싸는 크기
+                    modifier = Modifier.size(layoutMetrics.profileFrameSize.dp)
                 )
             }
 
@@ -128,15 +139,16 @@ fun MypageScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // 프로필+프레임 겹치기 (생략)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "$nickname 대원", fontSize = 50.sp, color = Color(0xFF3F1E13))
+                Spacer(modifier = Modifier.height(layoutMetrics.profileNameGap.dp))
+                Text(text = "$nickname 대원", fontSize = layoutMetrics.nameTextSize.sp, color = Color(0xFF3F1E13))
             }
+
+            Spacer(modifier = Modifier.height(layoutMetrics.sectionGap.dp))
 
             // 하단 3등분 Row (contentDescription 추가)
             Row(
                 modifier = Modifier
-//                    .align(Alignment.BottomCenter)
-                    .height(900.dp)
+                    .height(layoutMetrics.actionRowHeight.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -151,7 +163,7 @@ fun MypageScreen(
                         painter = painterResource(R.drawable.animal_book),
                         contentDescription = "동물 친구들 이동 버튼",
                         modifier = Modifier
-                            .size(400.dp)
+                            .size(layoutMetrics.bookButtonSize.dp)
                             .clickable { onAnimalBookClick() }
                     )
                 }
@@ -163,13 +175,13 @@ fun MypageScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(180.dp, 70.dp)
+                            .size(layoutMetrics.settingButtonWidth.dp, layoutMetrics.settingButtonHeight.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(Color(0xFF562405))
                             .clickable { onSettingClick() },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("설정", color = Color.White, fontSize = 26.sp)
+                        Text("설정", color = Color.White, fontSize = layoutMetrics.settingTextSize.sp)
                     }
                 }
 
@@ -184,7 +196,7 @@ fun MypageScreen(
                         painter = painterResource(R.drawable.quiz_book),
                         contentDescription = "지식 노트 이동 버튼",
                         modifier = Modifier
-                            .size(400.dp)
+                            .size(layoutMetrics.bookButtonSize.dp)
                             .clickable { onQuizNoteClick() }
                     )
                 }

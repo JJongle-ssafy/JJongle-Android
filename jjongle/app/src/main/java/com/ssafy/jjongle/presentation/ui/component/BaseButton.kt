@@ -11,9 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ssafy.jjongle.presentation.ui.layout.rememberCompactUiScale
+import kotlin.math.max
+
 // 프로젝트의 색상 테마에 맞춰 따로 정의해두면 더 좋습니다.
 val JjongleBrown = Color(0xFF572405)
 val JjongleWhite = Color.White
@@ -26,9 +31,14 @@ fun BaseButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val uiScale = rememberCompactUiScale()
+    val buttonHeight = 56.dp.scaled(uiScale, min = 40.dp)
+    val horizontalPadding = 24.dp.scaled(uiScale, min = 16.dp)
+    val verticalPadding = 8.dp.scaled(uiScale, min = 6.dp)
+
     Button(
         onClick = onClick,
-        modifier = modifier.height(56.dp), // 버튼 높이를 적절히 조절합니다.
+        modifier = modifier.height(buttonHeight),
         shape = RoundedCornerShape(16.dp), // 둥근 모서리 모양을 적용합니다.
         colors = ButtonDefaults.buttonColors(
             containerColor = JjongleBrown, // 버튼의 배경색
@@ -43,13 +53,25 @@ fun BaseButton(
             pressedElevation = 0.dp
         ),
         // 버튼 내부의 여백(padding)을 조절합니다.
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+        contentPadding = PaddingValues(horizontal = horizontalPadding, vertical = verticalPadding)
     ) {
         Text(
             text = text,
-            fontSize = 28.sp, // 이미지와 비슷하게 글자 크기를 키웁니다.
+            fontSize = fontSize.scaledSp(uiScale, min = 14.sp),
             fontWeight = FontWeight.Bold // 글자를 굵게 처리합니다.
         )
+    }
+}
+
+private fun Dp.scaled(scale: Float, min: Dp): Dp {
+    return (value * scale).dp.coerceAtLeast(min)
+}
+
+private fun TextUnit.scaledSp(scale: Float, min: TextUnit): TextUnit {
+    return if (type == TextUnitType.Sp) {
+        max(value * scale, min.value).sp
+    } else {
+        this
     }
 }
 

@@ -11,12 +11,13 @@ import androidx.compose.ui.layout.ContentScale
 fun ResponsiveBackgroundImage(
     painter: Painter,
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.FillBounds
 ) {
     Image(
         painter = painter,
         contentDescription = contentDescription,
         modifier = modifier.fillMaxSize(),
-        contentScale = ContentScale.FillBounds
+        contentScale = contentScale
     )
 }
