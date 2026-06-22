@@ -12,7 +12,9 @@ import android.graphics.YuvImage
 import android.media.Image
 import android.os.SystemClock
 import android.util.Base64
+import android.view.Surface
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
@@ -156,11 +158,20 @@ private fun CameraPreview(
 
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
+                val windowManager = ctx.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
+                @Suppress("DEPRECATION")
+                val targetRotation = previewView.display?.rotation
+                    ?: windowManager?.defaultDisplay?.rotation
+                    ?: Surface.ROTATION_90
 
-                val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
-                }
+                val preview = Preview.Builder()
+                    .setTargetRotation(targetRotation)
+                    .build()
+                    .also {
+                        it.setSurfaceProvider(previewView.surfaceProvider)
+                    }
                 val imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetRotation(targetRotation)
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                     .also {
