@@ -69,7 +69,7 @@ import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.CameraComponent
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
-import com.ssafy.jjongle.presentation.ui.layout.calculateAdaptiveBackgroundLayout
+import com.ssafy.jjongle.presentation.ui.layout.calculateFillBoundsBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.OXGameViewModel
 import com.ssafy.jjongle.presentation.vision.OXTrackedFace
 import com.ssafy.jjongle.util.AudioPlayer
@@ -540,7 +540,7 @@ fun GameResultContent(
 
         val rankedWithProfile = top3Rankings
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val backgroundLayout = calculateAdaptiveBackgroundLayout(
+            val backgroundLayout = calculateFillBoundsBackgroundLayout(
                 containerWidth = maxWidth.value,
                 containerHeight = maxHeight.value,
                 imageWidth = OX_RESULT_BACKGROUND_WIDTH_PX,
