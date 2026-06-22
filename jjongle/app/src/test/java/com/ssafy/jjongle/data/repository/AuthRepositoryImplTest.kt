@@ -1,12 +1,14 @@
 package com.ssafy.jjongle.data.repository
 
 import android.content.SharedPreferences
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.ssafy.jjongle.data.firebase.FirebaseAuthenticatedUser
 import com.ssafy.jjongle.data.firebase.FirebaseAuthDataSource
 import com.ssafy.jjongle.data.firebase.UserProfileDataSource
 import com.ssafy.jjongle.data.firebase.model.UserProfileDto
 import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.domain.entity.AuthException
+import com.ssafy.jjongle.domain.entity.AuthStorageUnavailableError
 import com.ssafy.jjongle.domain.entity.UserAlreadyExistsAuthError
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,6 +27,25 @@ class AuthRepositoryImplTest {
 
         assertTrue(result.isSuccess)
         assertFalse(result.getOrThrow().isAuthenticated)
+    }
+
+    @Test
+    fun login_failsWithStorageUnavailable_whenFirestoreAccessIsDenied() = runTest {
+        val repository = createRepository(
+            userProfileDataSource = FakeUserProfileDataSource(
+                getProfileError = FirebaseFirestoreException(
+                    "Cloud Firestore API is disabled",
+                    FirebaseFirestoreException.Code.PERMISSION_DENIED
+                )
+            )
+        )
+
+        val result = repository.login("firebase-token")
+
+        val error = result.exceptionOrNull()
+        assertTrue(error is AuthException)
+        assertTrue((error as AuthException).error is AuthStorageUnavailableError)
+        assertTrue(error.message.orEmpty().contains("Cloud Firestore API"))
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.ssafy.jjongle.data.repository
 
 import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.ssafy.jjongle.data.firebase.FirebaseAuthenticatedUser
 import com.ssafy.jjongle.data.firebase.FirebaseAuthDataSource
 import com.ssafy.jjongle.data.firebase.UserProfileDataSource
@@ -9,6 +10,7 @@ import com.ssafy.jjongle.data.firebase.model.toDomain
 import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.domain.entity.AuthException
 import com.ssafy.jjongle.domain.entity.AuthState
+import com.ssafy.jjongle.domain.entity.AuthStorageUnavailableError
 import com.ssafy.jjongle.domain.entity.AuthTokens
 import com.ssafy.jjongle.domain.entity.InvalidRefreshTokenAuthError
 import com.ssafy.jjongle.domain.entity.MissingTokenAuthError
@@ -214,11 +216,22 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     private fun Throwable.toUnknownAuthException(defaultMessage: String): AuthException {
-        return if (this is AuthException) {
-            this
-        } else {
-            AuthException(UnknownAuthError(message), message ?: defaultMessage, this)
+        return when (this) {
+            is AuthException -> this
+            is FirebaseFirestoreException -> toFirestoreAuthException(defaultMessage)
+            else -> AuthException(UnknownAuthError(message), message ?: defaultMessage, this)
         }
+    }
+
+    private fun FirebaseFirestoreException.toFirestoreAuthException(defaultMessage: String): AuthException {
+        val mappedMessage = when (code) {
+            FirebaseFirestoreException.Code.PERMISSION_DENIED ->
+                "Firestore 사용자 저장소에 접근할 수 없습니다. Firebase Console에서 Cloud Firestore API 활성화와 보안 규칙을 확인하세요."
+            FirebaseFirestoreException.Code.UNAVAILABLE ->
+                "Firestore 사용자 저장소에 연결할 수 없습니다. 네트워크 상태 또는 Firebase 프로젝트 설정을 확인하세요."
+            else -> message ?: defaultMessage
+        }
+        return AuthException(AuthStorageUnavailableError, mappedMessage, this)
     }
 
     private companion object {
