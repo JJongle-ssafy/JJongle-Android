@@ -17,6 +17,8 @@ class TTSUseCase @Inject constructor(
     suspend fun generateTTS(
         text: String
     ): Result<TtsAudio> {
-        return ttsRepository.generateTTS(text)
+        // TODO: TTS API 비용 절약을 위해 임시 비활성화. 아래 주석을 해제하면 복원됩니다.
+        // return ttsRepository.generateTTS(text)
+        return Result.failure(IllegalStateException("TTS 임시 비활성화"))
     }
 }

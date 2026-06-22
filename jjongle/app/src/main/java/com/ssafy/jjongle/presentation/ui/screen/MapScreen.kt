@@ -97,16 +97,24 @@ fun MapScreen(
                         enabled = !mapState.isWalking
                     ) {
                         coroutineScope.launch {
-                            viewModel.startWalking()
+                            var success = false
+                            try {
+                                viewModel.startWalking()
 
-                            // L자 형태가 아닌, 대각선으로 이동하기 위해 joinAll 사용
-                            joinAll(
-                                launch { x.animateTo(TANGRAM_CHARACTER_X, animationSpeed) },
-                                launch { y.animateTo(TANGRAM_CHARACTER_Y, animationSpeed) }
-                            )
+                                // L자 형태가 아닌, 대각선으로 이동하기 위해 joinAll 사용
+                                joinAll(
+                                    launch { x.animateTo(TANGRAM_CHARACTER_X, animationSpeed) },
+                                    launch { y.animateTo(TANGRAM_CHARACTER_Y, animationSpeed) }
+                                )
 
-                            viewModel.moveCharacterTo(TANGRAM_CHARACTER_X, TANGRAM_CHARACTER_Y)
-                            onNavigateToTangram()
+                                viewModel.moveCharacterTo(TANGRAM_CHARACTER_X, TANGRAM_CHARACTER_Y)
+                                success = true
+                                onNavigateToTangram()
+                            } finally {
+                                if (!success) {
+                                    viewModel.moveCharacterTo(x.value, y.value)
+                                }
+                            }
                         }
 
                     },
@@ -129,15 +137,23 @@ fun MapScreen(
                         enabled = !mapState.isWalking
                     ) {
                         coroutineScope.launch {
-                            viewModel.startWalking()
+                            var success = false
+                            try {
+                                viewModel.startWalking()
 
-                            joinAll(
-                                launch { x.animateTo(OX_CHARACTER_X, animationSpeed) },
-                                launch { y.animateTo(OX_CHARACTER_Y, animationSpeed) }
-                            )
+                                joinAll(
+                                    launch { x.animateTo(OX_CHARACTER_X, animationSpeed) },
+                                    launch { y.animateTo(OX_CHARACTER_Y, animationSpeed) }
+                                )
 
-                            viewModel.moveCharacterTo(OX_CHARACTER_X, OX_CHARACTER_Y)
-                            onNavigateToOXGame()
+                                viewModel.moveCharacterTo(OX_CHARACTER_X, OX_CHARACTER_Y)
+                                success = true
+                                onNavigateToOXGame()
+                            } finally {
+                                if (!success) {
+                                    viewModel.moveCharacterTo(x.value, y.value)
+                                }
+                            }
                         }
 
                     },
@@ -160,15 +176,23 @@ fun MapScreen(
                         enabled = !mapState.isWalking
                     ) {
                         coroutineScope.launch {
-                            viewModel.startWalking()
+                            var success = false
+                            try {
+                                viewModel.startWalking()
 
-                            joinAll(
-                                launch { x.animateTo(MYPAGE_CHARACTER_X, animationSpeed) },
-                                launch { y.animateTo(MYPAGE_CHARACTER_Y, animationSpeed) }
-                            )
+                                joinAll(
+                                    launch { x.animateTo(MYPAGE_CHARACTER_X, animationSpeed) },
+                                    launch { y.animateTo(MYPAGE_CHARACTER_Y, animationSpeed) }
+                                )
 
-                            viewModel.moveCharacterTo(MYPAGE_CHARACTER_X, MYPAGE_CHARACTER_Y)
-                            onNavigateToMyPage()
+                                viewModel.moveCharacterTo(MYPAGE_CHARACTER_X, MYPAGE_CHARACTER_Y)
+                                success = true
+                                onNavigateToMyPage()
+                            } finally {
+                                if (!success) {
+                                    viewModel.moveCharacterTo(x.value, y.value)
+                                }
+                            }
                         }
                     },
                 painter = painterResource(id = R.drawable.mypage_panel),
@@ -186,6 +210,7 @@ fun MapScreen(
                 isWalking = mapState.isWalking,
                 assetName = "mongi_walk.json",
                 size = scaledDp(MAP_CHARACTER_SIZE),
+                mirrorHorizontally = x.targetValue < x.value
             )
         }
 
@@ -219,16 +244,16 @@ fun MapScreen(
 
 private const val MAP_DESIGN_WIDTH_DP = 1280f
 private const val MAP_DESIGN_HEIGHT_DP = 800f
-private const val MAP_PANEL_WIDTH = 759f
-private const val MAP_PANEL_HEIGHT = 509f
+private const val MAP_PANEL_WIDTH = 347f
+private const val MAP_PANEL_HEIGHT = 233f
 private const val MAP_CHARACTER_SIZE = 300f
 
-private const val TANGRAM_PANEL_X = 128f
+private const val TANGRAM_PANEL_X = 200f
 private const val TANGRAM_PANEL_Y = 75f
 private const val TANGRAM_CHARACTER_X = 128f
 private const val TANGRAM_CHARACTER_Y = 140f
 
-private const val OX_PANEL_X = 730f
+private const val OX_PANEL_X = 800f
 private const val OX_PANEL_Y = 130f
 private const val OX_CHARACTER_X = 730f
 private const val OX_CHARACTER_Y = 180f

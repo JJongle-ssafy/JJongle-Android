@@ -56,6 +56,7 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.ssafy.jjongle.presentation.vision.FaceReidentifier
 import com.ssafy.jjongle.presentation.vision.OXFacePositionClassifier
 import com.ssafy.jjongle.presentation.vision.OXTrackedFace
 import java.util.concurrent.Executors
@@ -127,7 +128,7 @@ private fun CameraPreview(
             .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
             .setContourMode(FaceDetectorOptions.CONTOUR_MODE_NONE)
             .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
-            .setMinFaceSize(0.08f)
+            .setMinFaceSize(0.12f)
             .enableTracking()
             .build()
         FaceDetection.getClient(options)
@@ -225,10 +226,12 @@ private class OXFaceFrameAnalyzer(
     private val resultExecutor: Executor,
     private val onFacePositionsChanged: (List<OXTrackedFace>) -> Unit
 ) : ImageAnalysis.Analyzer {
-    private val trackingIdToParticipantId = mutableMapOf<Int, Int>()
+    private val faceReidentifier = FaceReidentifier()
     private val profileImagesByParticipantId = mutableMapOf<Int, String>()
-    private var nextParticipantId = 1
     private var lastAnalyzedAt = 0L
+    private var lastSuccessfulResult: List<OXTrackedFace> = emptyList()
+    private var lastSuccessfulResultAt = 0L
+    private var cleanupCounter = 0
 
     override fun analyze(imageProxy: ImageProxy) {
         val now = SystemClock.elapsedRealtime()
@@ -259,10 +262,32 @@ private class OXFaceFrameAnalyzer(
 
         detector.process(inputImage)
             .addOnSuccessListener(resultExecutor) { faces ->
-                onFacePositionsChanged(faces.toTrackedFaces(imageProxy, imageWidth, imageHeight))
+                val tracked = faces.toTrackedFaces(imageProxy, imageWidth, imageHeight, now)
+                if (tracked.isNotEmpty()) {
+                    lastSuccessfulResult = tracked
+                    lastSuccessfulResultAt = now
+                    onFacePositionsChanged(tracked)
+                } else {
+                    // Grace period: 얼굴이 순간적으로 감지되지 않아도 직전 결과 유지
+                    if (now - lastSuccessfulResultAt < GRACE_PERIOD_MS) {
+                        onFacePositionsChanged(lastSuccessfulResult)
+                    } else {
+                        lastSuccessfulResult = emptyList()
+                        onFacePositionsChanged(emptyList())
+                    }
+                }
+                // 주기적 cleanup (매 50프레임마다)
+                if (++cleanupCounter % 50 == 0) {
+                    faceReidentifier.cleanupExpired(now)
+                }
             }
             .addOnFailureListener(resultExecutor) {
-                onFacePositionsChanged(emptyList())
+                val now2 = android.os.SystemClock.elapsedRealtime()
+                if (now2 - lastSuccessfulResultAt < GRACE_PERIOD_MS) {
+                    onFacePositionsChanged(lastSuccessfulResult)
+                } else {
+                    onFacePositionsChanged(emptyList())
+                }
             }
             .addOnCompleteListener(resultExecutor) {
                 imageProxy.close()
@@ -272,13 +297,22 @@ private class OXFaceFrameAnalyzer(
     private fun List<Face>.toTrackedFaces(
         imageProxy: ImageProxy,
         imageWidth: Int,
-        imageHeight: Int
+        imageHeight: Int,
+        currentTimeMs: Long
     ): List<OXTrackedFace> {
+        // 1) ML Kit 얼굴 → Detection 리스트 변환
+        val detections = mapNotNull { face ->
+            val trackingId = face.trackingId ?: return@mapNotNull null
+            FaceReidentifier.Detection(trackingId, face.boundingBox)
+        }
+
+        // 2) SORT 기반 배치 매칭 (칼만 예측 → IoU → 헝가리안)
+        val idMapping = faceReidentifier.resolveAll(detections, currentTimeMs)
+
+        // 3) trackingId → (participantId, face) 매핑
         val trackedFaces = mapNotNull { face ->
             val trackingId = face.trackingId ?: return@mapNotNull null
-            val participantId = trackingIdToParticipantId.getOrPut(trackingId) {
-                nextParticipantId++
-            }
+            val participantId = idMapping[trackingId] ?: return@mapNotNull null
             participantId to face
         }
 
@@ -392,10 +426,13 @@ private class OXFaceFrameAnalyzer(
     }
 
     companion object {
-        private const val ANALYSIS_INTERVAL_MS = 200L
+        /** 분석 간격 — 10ms로 단축하여 추적 연속성 향상 */
+        private const val ANALYSIS_INTERVAL_MS = 10L
         private const val PROFILE_IMAGE_SIZE = 160
-        private const val PROFILE_JPEG_QUALITY = 72
+        private const val PROFILE_JPEG_QUALITY = 90
         private const val FACE_PADDING_RATIO = 0.20f
+        /** 얼굴 감지 실패 시 직전 결과를 유지하는 유예 시간 */
+        private const val GRACE_PERIOD_MS = 1000L
     }
 }
 
