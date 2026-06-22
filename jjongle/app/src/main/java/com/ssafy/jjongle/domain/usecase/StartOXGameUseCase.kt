@@ -7,7 +7,7 @@ class StartOXGameUseCase @Inject constructor(
     private val oxGameRepository: OXGameRepository
 ) {
     /**
-     * 주어진 세션 키로 WebSocket에 연결합니다.
+     * 로컬 OX 게임 세션을 시작합니다.
      */
     fun connectWebSocket() {
         oxGameRepository.connectWebSocket()

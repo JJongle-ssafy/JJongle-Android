@@ -13,7 +13,7 @@ interface OXGameRepository {
     fun isSessionValid(): Boolean
     fun clearSession()
 
-    // WebSocket 연결 관리
+    // Legacy 이름 유지: 현재 구현은 서버 WebSocket 대신 로컬 OX 게임 엔진을 시작/종료한다.
     fun connectWebSocket()
     fun disconnectWebSocket()
     val connectionState: StateFlow<GameConnectionState>
@@ -26,6 +26,6 @@ interface OXGameRepository {
         xAreaUserPositions: List<UserPosition>
     )
 
-    // REST: 게임 종료 보고
+    // Legacy 이름 유지: 현재 구현은 서버 보고 대신 로컬 종료 처리를 수행한다.
     suspend fun finishOXGame(sessionKey: String)
 }

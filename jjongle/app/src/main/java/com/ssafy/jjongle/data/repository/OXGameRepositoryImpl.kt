@@ -1,57 +1,80 @@
 package com.ssafy.jjongle.data.repository
 
+import com.ssafy.jjongle.data.game.LocalOXGameEngine
 import com.ssafy.jjongle.data.local.SessionDataSource
-import com.ssafy.jjongle.data.model.toDto
-import com.ssafy.jjongle.data.remote.OXGameApiService
-import com.ssafy.jjongle.data.websocket.GameWebSocketManager
 import com.ssafy.jjongle.domain.entity.GameConnectionState
+import com.ssafy.jjongle.domain.entity.GameErrorEvent
 import com.ssafy.jjongle.domain.entity.GameEvent
 import com.ssafy.jjongle.domain.entity.UserPosition
 import com.ssafy.jjongle.domain.repository.OXGameRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.ssafy.jjongle.data.remote.model.FinishOXGameRequest
 
 class OXGameRepositoryImpl @Inject constructor(
     private val sessionDataSource: SessionDataSource,
-    private val webSocketManager: GameWebSocketManager,
-    private val oxGameApiService: OXGameApiService
+    private val localGameEngine: LocalOXGameEngine
 ) : OXGameRepository {
 
-    // 세션 관리
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val _connectionState = MutableStateFlow(GameConnectionState.DISCONNECTED)
+    private val _gameEvents = MutableSharedFlow<GameEvent>(replay = 1)
+
     override fun saveSessionKey(sessionKey: String) {
         sessionDataSource.saveSessionKey(sessionKey)
     }
 
-    override fun getSessionKey(): String? {
-        return sessionDataSource.getSessionKey()
-    }
+    override fun getSessionKey(): String? = sessionDataSource.getSessionKey()
 
-    override fun isSessionValid(): Boolean {
-        return sessionDataSource.isSessionValid()
-    }
+    override fun isSessionValid(): Boolean = sessionDataSource.isSessionValid()
 
     override fun clearSession() {
         sessionDataSource.clearSession()
+        localGameEngine.clear()
         disconnectWebSocket()
     }
 
-    // WebSocket 연결 관리
     override fun connectWebSocket() {
-        webSocketManager.connect()
+        if (_connectionState.value == GameConnectionState.CONNECTED ||
+            _connectionState.value == GameConnectionState.CONNECTING
+        ) {
+            return
+        }
+
+        _connectionState.value = GameConnectionState.CONNECTING
+        scope.launch {
+            runCatching { localGameEngine.startGame() }
+                .onSuccess { event ->
+                    sessionDataSource.saveSessionKey(event.sessionKey)
+                    _connectionState.value = GameConnectionState.CONNECTED
+                    _gameEvents.emit(event)
+                }
+                .onFailure { error ->
+                    _connectionState.value = GameConnectionState.ERROR
+                    _gameEvents.emit(
+                        GameErrorEvent(error.message ?: "OX 게임을 시작할 수 없습니다.")
+                    )
+                }
+        }
     }
 
     override fun disconnectWebSocket() {
-        webSocketManager.disconnect()
+        _connectionState.value = GameConnectionState.DISCONNECTED
     }
 
     override val connectionState: StateFlow<GameConnectionState>
-        get() = webSocketManager.connectionState
+        get() = _connectionState.asStateFlow()
 
     override val gameEvents: SharedFlow<GameEvent>
-        get() = webSocketManager.gameEvents
-
+        get() = _gameEvents.asSharedFlow()
 
     override fun sendSubmitAnswer(
         sessionKey: String,
@@ -59,16 +82,25 @@ class OXGameRepositoryImpl @Inject constructor(
         oAreaUserPositions: List<UserPosition>,
         xAreaUserPositions: List<UserPosition>
     ) {
-        webSocketManager.sendSubmitAnswer(
-            sessionKey = sessionKey,
-            quizId = quizId,
-            oAreaUserPositions = oAreaUserPositions.map { it.toDto() },
-            xAreaUserPositions = xAreaUserPositions.map { it.toDto() }
-        )
+        scope.launch {
+            runCatching {
+                localGameEngine.submitAnswer(
+                    sessionKey = sessionKey,
+                    quizId = quizId,
+                    oAreaUserPositions = oAreaUserPositions,
+                    xAreaUserPositions = xAreaUserPositions
+                )
+            }.onSuccess { event ->
+                _gameEvents.emit(event)
+            }.onFailure { error ->
+                _gameEvents.emit(
+                    GameErrorEvent(error.message ?: "OX 정답을 제출할 수 없습니다.")
+                )
+            }
+        }
     }
 
     override suspend fun finishOXGame(sessionKey: String) {
-        val request = FinishOXGameRequest(sessionKey = sessionKey)
-        oxGameApiService.finishOXGame(request)
+        require(sessionKey.isNotBlank()) { "OX 게임 세션 키가 비어 있습니다." }
     }
 }

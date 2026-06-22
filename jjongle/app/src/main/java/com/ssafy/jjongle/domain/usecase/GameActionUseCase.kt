@@ -16,7 +16,7 @@ class GameActionUseCase @Inject constructor(
 ) {
 
     /**
-     * WebSocket 연결 상태를 관찰합니다.
+     * OX 게임 연결 상태를 관찰합니다.
      */
     val connectionState: StateFlow<GameConnectionState>
         get() = oxGameRepository.connectionState
@@ -29,7 +29,7 @@ class GameActionUseCase @Inject constructor(
     
 
     /**
-     * WebSocket 연결을 종료합니다.
+     * OX 게임 연결을 종료합니다.
      */
     fun disconnectWebSocket() {
         oxGameRepository.disconnectWebSocket()
@@ -37,7 +37,7 @@ class GameActionUseCase @Inject constructor(
 
 
     /**
-     * 최종 답변 제출 요청을 전송합니다.
+     * 최종 답변을 로컬 게임 엔진에 제출합니다.
      */
     fun sendSubmitAnswer(
         sessionKey: String,
@@ -54,7 +54,7 @@ class GameActionUseCase @Inject constructor(
     }
 
     /**
-     * REST API로 게임 종료 보고
+     * 게임 종료 처리를 수행합니다.
      */
     suspend fun reportGameFinish(sessionKey: String) {
         oxGameRepository.finishOXGame(sessionKey)
