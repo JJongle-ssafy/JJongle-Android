@@ -8,5 +8,5 @@ import com.google.gson.annotations.SerializedName
  */
 open class BaseResponse(
     @SerializedName("type")
-    open val type: String
+    open val type: String? = null
 )

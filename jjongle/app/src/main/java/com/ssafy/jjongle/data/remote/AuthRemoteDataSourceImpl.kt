@@ -15,7 +15,7 @@ class AuthRemoteDataSourceImpl(
     // 로그인 API 호출
     override suspend fun login(request: LogInRequest): Response<AuthTokenResponse> {
 
-        Log.d("AuthRemoteDataSource", "로그인 API 요청. hasFirebaseIdToken=${request.firebaseIdToken.isNotBlank()}")
+        Log.d("AuthRemoteDataSource", "로그인 API 요청. hasFirebaseIdToken=${request.firebaseIdToken?.isNotBlank() == true}")
 
         val response = authApiService.login(request)
         Log.d("AuthRemoteDataSource", "로그인 API 응답 code=${response.code()}")
@@ -25,7 +25,7 @@ class AuthRemoteDataSourceImpl(
     // 회원가입 API 호출
     override suspend fun signup(request: SignUpRequest): Response<AuthTokenResponse> {
 
-        Log.d("AuthRemoteDataSource", "회원가입 API 요청. hasFirebaseIdToken=${request.firebaseIdToken.isNotBlank()}")
+        Log.d("AuthRemoteDataSource", "회원가입 API 요청. hasFirebaseIdToken=${request.firebaseIdToken?.isNotBlank() == true}")
         val response = authApiService.signup(request)
 
         Log.d("AuthRemoteDataSource", "회원가입 API 응답 code=${response.code()}")

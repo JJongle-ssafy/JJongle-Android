@@ -11,9 +11,9 @@ import com.ssafy.jjongle.domain.entity.UserPosition
 
 fun UserPositionDto.toDomain(): UserPosition {
     return UserPosition(
-        userId = this.userId,
-        x = this.x,
-        y = this.y
+        userId = this.userId.orMissingServerId(),
+        x = this.x.orMissingServerCoordinate(),
+        y = this.y.orMissingServerCoordinate()
     )
 }
 
@@ -27,30 +27,33 @@ fun UserPosition.toDto(): UserPositionDto {
 
 fun GameFinishProfile.toDomain(): GameProfileImage {
     return GameProfileImage(
-        userId = this.userId,
-        base64 = this.base64
+        userId = this.userId.orMissingServerId(),
+        base64 = this.base64.orMissingServerField("gameFinish.base64")
     )
 }
 
 fun GameStartResponse.toDomain(): QuizSession {
-    return QuizSession(
-        quizzes = this.data.quizList.map { it.toDomain() },
-        sessionKey = this.data.sessionKey
-    )
+    return this.data.toDomain()
 }
 
-fun GameStartData.toDomain(): QuizSession {
+fun GameFinishResponse.toDomainProfiles(): List<GameProfileImage> {
+    return this.data?.userImages
+        .orEmpty()
+        .mapNotNull { it?.toDomain() }
+}
+
+fun GameStartData?.toDomain(): QuizSession {
     return QuizSession(
-        quizzes = this.quizList.map { it.toDomain() },
-        sessionKey = this.sessionKey
+        quizzes = this?.quizList.orEmpty().mapNotNull { it?.toDomain() },
+        sessionKey = this?.sessionKey.orMissingServerField("gameStart.sessionKey")
     )
 }
 
 fun QuizResponse.toDomain(): Quiz {
     return Quiz(
-        id = this.quizId,
-        question = this.question,
-        answer = this.answer,
-        description = this.description
+        id = this.quizId.orMissingServerId(),
+        question = this.question.orMissingServerField("quiz.question"),
+        answer = this.answer.orMissingServerField("quiz.answer"),
+        description = this.description.orMissingServerField("quiz.description")
     )
 }

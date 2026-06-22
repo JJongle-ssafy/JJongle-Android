@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class SubmitResultData(
     @SerializedName("quizId")
-    val quizId: Int,
+    val quizId: Int? = null,
     @SerializedName("correctAnswer")
-    val correctAnswer: String,
+    val correctAnswer: String? = null,
     @SerializedName("correctUserPositions")
-    val correctUserPositions: List<UserPositionDto>
+    val correctUserPositions: List<UserPositionDto?>? = null
 )

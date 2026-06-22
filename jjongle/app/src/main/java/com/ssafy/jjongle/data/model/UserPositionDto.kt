@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName
  */
 data class UserPositionDto(
     @SerializedName("userId")
-    val userId: Int,
+    val userId: Int? = null,
     @SerializedName("x")
-    val x: Double,
+    val x: Double? = null,
     @SerializedName("y")
-    val y: Double
+    val y: Double? = null
 )

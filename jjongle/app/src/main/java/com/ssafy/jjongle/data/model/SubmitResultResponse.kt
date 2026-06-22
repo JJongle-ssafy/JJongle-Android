@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName
  */
 data class SubmitResultResponse(
     @SerializedName("data")
-    val data: SubmitResultData
+    val data: SubmitResultData? = null
 ) : BaseResponse("SUBMIT_RESULT")

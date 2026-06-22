@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName
 
 data class PositionSubmitData(
     @SerializedName("sessionKey")
-    val sessionKey: String,
+    val sessionKey: String? = null,
     @SerializedName("quizId")
-    val quizId: Int,
+    val quizId: Int? = null,
     @SerializedName("oAreaUserPositions")
-    val oAreaUserPositions: List<UserPositionDto>,
+    val oAreaUserPositions: List<UserPositionDto?>? = null,
     @SerializedName("xAreaUserPositions")
-    val xAreaUserPositions: List<UserPositionDto>
+    val xAreaUserPositions: List<UserPositionDto?>? = null
 )

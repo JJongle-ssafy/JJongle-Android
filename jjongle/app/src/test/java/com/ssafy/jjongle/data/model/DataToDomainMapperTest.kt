@@ -15,6 +15,13 @@ class DataToDomainMapperTest {
     }
 
     @Test
+    fun userPositionDto_toDomain_usesFallbacksForMissingFields() {
+        val domain = UserPositionDto().toDomain()
+
+        assertEquals(UserPosition(userId = -1, x = 0.0, y = 0.0), domain)
+    }
+
+    @Test
     fun userPosition_toDto_mapsAllFields() {
         val domain = UserPosition(userId = 9, x = 0.1, y = 0.9)
 
@@ -31,5 +38,31 @@ class DataToDomainMapperTest {
 
         assertEquals(3, domain.userId)
         assertEquals("profile-image", domain.base64)
+    }
+
+    @Test
+    fun gameFinishProfile_toDomain_usesFallbacksForMissingFields() {
+        val domain = GameFinishProfile().toDomain()
+
+        assertEquals(-1, domain.userId)
+        assertEquals("[MISSING_SERVER_FIELD:gameFinish.base64]", domain.base64)
+    }
+
+    @Test
+    fun gameStartResponse_toDomain_usesFallbacksForMissingData() {
+        val domain = GameStartResponse().toDomain()
+
+        assertEquals("[MISSING_SERVER_FIELD:gameStart.sessionKey]", domain.sessionKey)
+        assertEquals(emptyList<Any>(), domain.quizzes)
+    }
+
+    @Test
+    fun quizResponse_toDomain_usesFallbacksForMissingFields() {
+        val domain = QuizResponse().toDomain()
+
+        assertEquals(-1, domain.id)
+        assertEquals("[MISSING_SERVER_FIELD:quiz.question]", domain.question)
+        assertEquals("[MISSING_SERVER_FIELD:quiz.answer]", domain.answer)
+        assertEquals("[MISSING_SERVER_FIELD:quiz.description]", domain.description)
     }
 }

@@ -2,6 +2,7 @@ package com.ssafy.jjongle.data.repository
 
 import android.util.Log
 import com.ssafy.jjongle.data.local.AuthDataSource
+import com.ssafy.jjongle.data.model.orMissingServerField
 import com.ssafy.jjongle.data.remote.AuthRemoteDataSource
 import com.ssafy.jjongle.data.remote.model.LogInRequest
 import com.ssafy.jjongle.data.remote.model.SignUpRequest
@@ -37,7 +38,9 @@ class AuthRepositoryImpl @Inject constructor(
                 throw AuthException(AuthError.MissingToken, "로그인 응답에 토큰이 없습니다.")
             }
 
-            authDataSource.saveUserProfile(body.nickname, body.profileImage)
+            val nickname = body.nickname.orMissingServerField("auth.nickname")
+            val profileImage = body.profileImage.orMissingServerField("auth.profileImage")
+            authDataSource.saveUserProfile(nickname, profileImage)
 
             val state = AuthState(
                 isAuthenticated = true,
@@ -46,8 +49,8 @@ class AuthRepositoryImpl @Inject constructor(
                 user = UserInfo(
                     userId = 0L,
                     email = "",
-                    nickname = body.nickname,
-                    profileImage = body.profileImage
+                    nickname = nickname,
+                    profileImage = profileImage
                 ),
                 isLoading = false
             )
@@ -105,6 +108,9 @@ class AuthRepositoryImpl @Inject constructor(
             }
             Log.d("AuthRemoteDataSource", "Tokens saved")
 
+            val responseNickname = body.nickname.orMissingServerField("auth.nickname")
+            val responseProfileImage = body.profileImage.orMissingServerField("auth.profileImage")
+
             val newState = AuthState(
                 isAuthenticated = true,
                 accessToken = accessToken,
@@ -112,8 +118,8 @@ class AuthRepositoryImpl @Inject constructor(
                 user = UserInfo(
                     userId = 0L,
                     email = "",
-                    nickname = body.nickname ?: nickname,
-                    profileImage = body.profileImage ?: profileImage
+                    nickname = responseNickname,
+                    profileImage = responseProfileImage
                 ),
                 isLoading = false
             )

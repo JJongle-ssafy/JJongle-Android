@@ -21,7 +21,7 @@ interface OXGameApiService {
     @GET("/group-game/history/{historyId}")
     suspend fun getHistoryDetail(
         @Path("historyId") historyId: Long
-    ): List<OXGameWrongAnswerNoteDto>
+    ): List<OXGameWrongAnswerNoteDto?>
     @POST("/group-game/finish")
     suspend fun finishOXGame(
         @Body request: FinishOXGameRequest

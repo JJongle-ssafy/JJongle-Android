@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName
 
 data class TTSRequest(
     @SerializedName("text")
-    val text: String,
+    val text: String? = null,
     
     @SerializedName("language")
-    val language: String = "ko",
+    val language: String? = "ko",
     
     @SerializedName("output_format")
-    val outputFormat: String = "mp3"
+    val outputFormat: String? = "mp3"
 )

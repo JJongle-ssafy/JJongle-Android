@@ -81,6 +81,28 @@ class AuthRepositoryImplTest {
         assertEquals(null, authDataSource.getRefreshToken())
     }
 
+    @Test
+    fun login_usesVisibleFallbacks_whenResponseBodyFieldsAreMissing() = kotlinx.coroutines.test.runTest {
+        val authDataSource = AuthDataSource(InMemorySharedPreferences())
+        val repository = AuthRepositoryImpl(
+            authRemoteDataSource = FakeAuthRemoteDataSource(
+                loginResponse = Response.success(
+                    AuthTokenResponse(),
+                    authHeaders(accessToken = "access-token", refreshToken = "refresh-token")
+                )
+            ),
+            authDataSource = authDataSource
+        )
+
+        val result = repository.login("firebase-token")
+
+        assertTrue(result.isSuccess)
+        assertEquals("[MISSING_SERVER_FIELD:auth.nickname]", result.getOrThrow().user?.nickname)
+        assertEquals("[MISSING_SERVER_FIELD:auth.profileImage]", result.getOrThrow().user?.profileImage)
+        assertEquals("[MISSING_SERVER_FIELD:auth.nickname]", authDataSource.getNickname())
+        assertEquals("[MISSING_SERVER_FIELD:auth.profileImage]", authDataSource.getProfileImage())
+    }
+
     private fun authHeaders(accessToken: String, refreshToken: String): Headers =
         Headers.headersOf(
             "Authorization",

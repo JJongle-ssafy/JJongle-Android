@@ -68,4 +68,55 @@ class GameWebSocketEventParserTest {
 
         assertEquals(GameEvent.Unknown, event)
     }
+
+    @Test
+    fun parse_missingTypeReturnsUnknownEvent() {
+        val event = parser.parse("""{"data":{}}""")
+
+        assertEquals(GameEvent.Unknown, event)
+    }
+
+    @Test
+    fun parse_gameStartWithMissingDataUsesFallbackSession() {
+        val event = parser.parse("""{"type":"GAME_START"}""")
+
+        assertTrue(event is GameEvent.GameStart)
+        event as GameEvent.GameStart
+        assertEquals("[MISSING_SERVER_FIELD:gameStart.sessionKey]", event.sessionKey)
+        assertEquals(emptyList<Any>(), event.quizzes)
+    }
+
+    @Test
+    fun parse_submitResultWithMissingDataUsesFallbacks() {
+        val event = parser.parse("""{"type":"SUBMIT_RESULT"}""")
+
+        assertTrue(event is GameEvent.SubmitResult)
+        event as GameEvent.SubmitResult
+        assertEquals(-1, event.quizId)
+        assertEquals("[MISSING_SERVER_FIELD:submitResult.correctAnswer]", event.correctAnswer)
+        assertEquals(emptyList<Any>(), event.correctUserPositions)
+    }
+
+    @Test
+    fun parse_gameFinishWithNullProfileFieldsUsesFallbackProfile() {
+        val json = """
+            {
+              "type": "GAME_FINISH_RESULT",
+              "data": {
+                "userImages": [
+                  { "userId": null, "base64": null },
+                  null
+                ]
+              }
+            }
+        """.trimIndent()
+
+        val event = parser.parse(json)
+
+        assertTrue(event is GameEvent.GameFinish)
+        event as GameEvent.GameFinish
+        assertEquals(1, event.profiles.size)
+        assertEquals(-1, event.profiles.first().userId)
+        assertEquals("[MISSING_SERVER_FIELD:gameFinish.base64]", event.profiles.first().base64)
+    }
 }

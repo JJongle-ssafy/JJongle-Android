@@ -29,7 +29,9 @@ class TangramGameRepositoryImpl @Inject constructor(
 
     // API를 통해 칠교 히스토리를 가져오는 메서드
     override suspend fun getTangramHistories(page: Int, size: Int): List<TangramHistory> =
-        tangramGameApiService.getTangramHistories(page, size).content.map { it.toDomain() }
+        tangramGameApiService.getTangramHistories(page, size).content
+            .orEmpty()
+            .mapNotNull { it?.toDomain() }
 
     // API를 통해 칠교 상세 정보를 가져오는 메서드
     override suspend fun getTangramDetail(tangramId: Long, type: AnimalType): TangramDetail {

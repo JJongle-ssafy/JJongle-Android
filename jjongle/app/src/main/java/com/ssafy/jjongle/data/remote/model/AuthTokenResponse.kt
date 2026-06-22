@@ -7,6 +7,6 @@ package com.ssafy.jjongle.data.remote.model
 // userId: 사용자 ID (백엔드에서 관리하는 고유 ID)
 
 data class AuthTokenResponse(
-    val nickname: String,
-    val profileImage: String
+    val nickname: String? = null,
+    val profileImage: String? = null
 )

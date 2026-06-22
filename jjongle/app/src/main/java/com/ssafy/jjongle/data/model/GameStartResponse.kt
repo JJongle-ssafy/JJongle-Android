@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName
  */
 data class GameStartResponse(
     @SerializedName("data")
-    val data: GameStartData
+    val data: GameStartData? = null
 ) : BaseResponse("GAME_START")

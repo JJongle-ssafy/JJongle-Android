@@ -1,7 +1,8 @@
 package com.ssafy.jjongle.data.repository
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.ssafy.jjongle.data.model.missingServerDateTime
+import com.ssafy.jjongle.data.model.orMissingServerField
+import com.ssafy.jjongle.data.model.orMissingServerLongId
 import com.ssafy.jjongle.data.remote.OXGameRemoteDataSource
 import com.ssafy.jjongle.data.remote.model.oxgame.OXGameHistoryDto
 import com.ssafy.jjongle.data.remote.model.oxgame.OXGameWrongAnswerNoteDto
@@ -14,44 +15,47 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import javax.inject.Inject
 
 class OXGameHistoryRepositoryImpl @Inject constructor(
     private val remote: OXGameRemoteDataSource
 ) : OXGameHistoryRepository {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getHistories(page: Int): OXGameHistoryPage {
         val dto = remote.getHistories(page)
         return OXGameHistoryPage(
-            totalPages = dto.totalPages,
-            content = dto.content.map { it.toDomain() }
+            totalPages = dto.totalPages ?: 0,
+            content = dto.content.orEmpty().mapNotNull { it?.toDomain() }
         )
     }
 
     override suspend fun getHistoryDetail(historyId: Long): List<OXGameWrongAnswerNote> {
-        return remote.getHistoryDetail(historyId).map { it.toDomain() }
+        return remote.getHistoryDetail(historyId).mapNotNull { it?.toDomain() }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun OXGameHistoryDto.toDomain(): OXGameHistory {
         val ldt = parsePlayedAt(playedAt)
-        return OXGameHistory(id = quizHistoryId, playedAt = ldt)
+        return OXGameHistory(id = quizHistoryId.orMissingServerLongId(), playedAt = ldt)
     }
 
     private fun OXGameWrongAnswerNoteDto.toDomain(): OXGameWrongAnswerNote {
         val ox = if (answer.equals("O", ignoreCase = true)) OX.O else OX.X
-        return OXGameWrongAnswerNote(question = question, answer = ox)
+        return OXGameWrongAnswerNote(
+            question = question.orMissingServerField("oxWrongAnswer.question"),
+            answer = ox
+        )
     }
 
     // "2024-01-24T09:55:00" (local) 또는 "2025-08-12T05:27:43.025Z"(UTC)을 모두 처리
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun parsePlayedAt(raw: String): LocalDateTime {
-        return try {
+    private fun parsePlayedAt(raw: String?): LocalDateTime {
+        if (raw.isNullOrBlank()) return missingServerDateTime()
+
+        return runCatching {
             OffsetDateTime.parse(raw).atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
-        } catch (_: DateTimeParseException) {
+        }.recoverCatching {
             LocalDateTime.parse(raw, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        }.getOrElse {
+            missingServerDateTime()
         }
     }
 }

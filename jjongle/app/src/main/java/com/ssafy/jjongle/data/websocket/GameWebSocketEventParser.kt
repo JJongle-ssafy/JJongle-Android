@@ -5,6 +5,9 @@ import com.ssafy.jjongle.data.model.BaseResponse
 import com.ssafy.jjongle.data.model.GameFinishResponse
 import com.ssafy.jjongle.data.model.GameStartResponse
 import com.ssafy.jjongle.data.model.SubmitResultResponse
+import com.ssafy.jjongle.data.model.orMissingServerField
+import com.ssafy.jjongle.data.model.orMissingServerId
+import com.ssafy.jjongle.data.model.toDomainProfiles
 import com.ssafy.jjongle.data.model.toDomain
 import com.ssafy.jjongle.domain.entity.GameEvent
 import javax.inject.Inject
@@ -14,27 +17,34 @@ class GameWebSocketEventParser @Inject constructor(
 ) {
     fun parse(json: String): GameEvent {
         val baseResponse = gson.fromJson(json, BaseResponse::class.java)
+            ?: return GameEvent.Unknown
+
         return when (baseResponse.type) {
             "GAME_START" -> {
-                val response = gson.fromJson(json, GameStartResponse::class.java)
+                val session = gson.fromJson(json, GameStartResponse::class.java)
+                    ?.toDomain()
+                    ?: GameStartResponse().toDomain()
                 GameEvent.GameStart(
-                    quizzes = response.data.quizList.map { it.toDomain() },
-                    sessionKey = response.data.sessionKey
+                    quizzes = session.quizzes,
+                    sessionKey = session.sessionKey
                 )
             }
 
             "SUBMIT_RESULT" -> {
                 val response = gson.fromJson(json, SubmitResultResponse::class.java)
                 GameEvent.SubmitResult(
-                    quizId = response.data.quizId,
-                    correctAnswer = response.data.correctAnswer,
-                    correctUserPositions = response.data.correctUserPositions.map { it.toDomain() }
+                    quizId = response?.data?.quizId.orMissingServerId(),
+                    correctAnswer = response?.data?.correctAnswer
+                        .orMissingServerField("submitResult.correctAnswer"),
+                    correctUserPositions = response?.data?.correctUserPositions
+                        .orEmpty()
+                        .mapNotNull { it?.toDomain() }
                 )
             }
 
             "GAME_FINISH_RESULT" -> {
                 val response = gson.fromJson(json, GameFinishResponse::class.java)
-                GameEvent.GameFinish(response.data.userImages.map { it.toDomain() })
+                GameEvent.GameFinish(response?.toDomainProfiles().orEmpty())
             }
 
             else -> GameEvent.Unknown

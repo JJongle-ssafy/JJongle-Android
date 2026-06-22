@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName
 
 data class QuizResponse(
     @SerializedName("quizId")
-    val quizId: Int,
+    val quizId: Int? = null,
 
     @SerializedName("question")
-    val question: String,
+    val question: String? = null,
 
     @SerializedName("answer")
-    val answer: String,
+    val answer: String? = null,
 
     @SerializedName("description")
-    val description: String
+    val description: String? = null
 )

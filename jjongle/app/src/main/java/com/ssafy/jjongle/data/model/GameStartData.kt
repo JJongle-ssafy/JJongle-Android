@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class GameStartData(
     @SerializedName("message")
-    val message: String,
+    val message: String? = null,
     @SerializedName("quizList")
-    val quizList: List<QuizResponse>,
+    val quizList: List<QuizResponse?>? = null,
     @SerializedName("sessionKey")
-    val sessionKey: String
+    val sessionKey: String? = null
 )
