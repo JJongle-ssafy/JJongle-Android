@@ -21,7 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.MainCharacter
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
-import com.ssafy.jjongle.presentation.ui.layout.calculateFitBackgroundLayout
+import com.ssafy.jjongle.presentation.ui.layout.calculateAdaptiveBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.TangramStageViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -107,7 +107,7 @@ fun TangramStageScreen(
         )
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val backgroundLayout = calculateFitBackgroundLayout(
+            val backgroundLayout = calculateAdaptiveBackgroundLayout(
                 containerWidth = maxWidth.value,
                 containerHeight = maxHeight.value,
                 imageWidth = TANGRAM_STAGE_BACKGROUND_WIDTH_PX,

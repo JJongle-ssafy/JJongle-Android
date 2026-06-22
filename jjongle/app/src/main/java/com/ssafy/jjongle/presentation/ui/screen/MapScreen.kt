@@ -32,7 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.MainCharacter
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
-import com.ssafy.jjongle.presentation.ui.layout.calculateFitBackgroundLayout
+import com.ssafy.jjongle.presentation.ui.layout.calculateAdaptiveBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.MapViewModel
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -73,7 +73,7 @@ fun MapScreen(
         )
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val backgroundLayout = calculateFitBackgroundLayout(
+            val backgroundLayout = calculateAdaptiveBackgroundLayout(
                 containerWidth = maxWidth.value,
                 containerHeight = maxHeight.value,
                 imageWidth = MAP_BACKGROUND_WIDTH_PX,

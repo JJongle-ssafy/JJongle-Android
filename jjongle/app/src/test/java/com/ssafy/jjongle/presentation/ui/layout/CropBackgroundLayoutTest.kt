@@ -72,4 +72,42 @@ class CropBackgroundLayoutTest {
         assertEquals(0f, layout.originX, 0.001f)
         assertEquals(207.371f, layout.originY, 0.001f)
     }
+
+    @Test
+    fun `adaptive layout fills tablet landscape when aspect ratio is close`() {
+        val layout = calculateAdaptiveBackgroundLayout(
+            containerWidth = 1280f,
+            containerHeight = 800f,
+            imageWidth = 2800f,
+            imageHeight = 1752f
+        )
+
+        val cropLayout = calculateCropBackgroundLayout(
+            containerWidth = 1280f,
+            containerHeight = 800f,
+            imageWidth = 2800f,
+            imageHeight = 1752f
+        )
+        assertEquals(cropLayout.scale, layout.scale, 0.001f)
+        assertEquals(cropLayout.originY, layout.originY, 0.001f)
+    }
+
+    @Test
+    fun `adaptive layout preserves full image on portrait phone`() {
+        val layout = calculateAdaptiveBackgroundLayout(
+            containerWidth = 360f,
+            containerHeight = 640f,
+            imageWidth = 2800f,
+            imageHeight = 1752f
+        )
+
+        val fitLayout = calculateFitBackgroundLayout(
+            containerWidth = 360f,
+            containerHeight = 640f,
+            imageWidth = 2800f,
+            imageHeight = 1752f
+        )
+        assertEquals(fitLayout.scale, layout.scale, 0.001f)
+        assertEquals(fitLayout.originY, layout.originY, 0.001f)
+    }
 }

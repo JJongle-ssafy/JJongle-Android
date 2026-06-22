@@ -1,5 +1,6 @@
 package com.ssafy.jjongle.presentation.ui.layout
 
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -55,4 +56,44 @@ fun calculateFitBackgroundLayout(
         originX = (containerWidth - imageWidth * scale) / 2f,
         originY = (containerHeight - imageHeight * scale) / 2f
     )
+}
+
+fun shouldPreserveFullBackgroundImage(
+    containerWidth: Float,
+    containerHeight: Float,
+    imageWidth: Float,
+    imageHeight: Float,
+    aspectRatioTolerance: Float = 0.18f
+): Boolean {
+    require(containerWidth > 0f) { "containerWidth must be greater than 0." }
+    require(containerHeight > 0f) { "containerHeight must be greater than 0." }
+    require(imageWidth > 0f) { "imageWidth must be greater than 0." }
+    require(imageHeight > 0f) { "imageHeight must be greater than 0." }
+    require(aspectRatioTolerance >= 0f) { "aspectRatioTolerance must be greater than or equal to 0." }
+
+    val containerAspectRatio = containerWidth / containerHeight
+    val imageAspectRatio = imageWidth / imageHeight
+    return abs(containerAspectRatio / imageAspectRatio - 1f) > aspectRatioTolerance
+}
+
+fun calculateAdaptiveBackgroundLayout(
+    containerWidth: Float,
+    containerHeight: Float,
+    imageWidth: Float,
+    imageHeight: Float,
+    aspectRatioTolerance: Float = 0.18f
+): CropBackgroundLayout {
+    return if (
+        shouldPreserveFullBackgroundImage(
+            containerWidth = containerWidth,
+            containerHeight = containerHeight,
+            imageWidth = imageWidth,
+            imageHeight = imageHeight,
+            aspectRatioTolerance = aspectRatioTolerance
+        )
+    ) {
+        calculateFitBackgroundLayout(containerWidth, containerHeight, imageWidth, imageHeight)
+    } else {
+        calculateCropBackgroundLayout(containerWidth, containerHeight, imageWidth, imageHeight)
+    }
 }
