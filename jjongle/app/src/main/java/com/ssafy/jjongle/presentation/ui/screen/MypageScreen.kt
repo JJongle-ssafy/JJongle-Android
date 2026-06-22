@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,8 +44,9 @@ fun MypageScreen(
     goHomeButtonText: String = "처음으로 돌아가기"
 ) {
 
-    val nickname = authViewModel.authState.value.user?.nickname ?: "사용자"
-    val profileImageRes = when (authViewModel.authState.value.user?.profileImage) {
+    val authState by authViewModel.authState.collectAsState()
+    val nickname = authState.user?.nickname ?: "사용자"
+    val profileImageRes = when (authState.user?.profileImage) {
         "MONGI" -> R.drawable.profile_mongi
         "TOBY" -> R.drawable.profile_toby
         "LUNA" -> R.drawable.profile_luna
@@ -187,5 +190,4 @@ fun MypageScreen(
         }
     }
 }
-
 
