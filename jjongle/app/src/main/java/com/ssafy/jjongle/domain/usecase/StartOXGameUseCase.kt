@@ -7,7 +7,7 @@ class StartOXGameUseCase @Inject constructor(
     private val oxGameRepository: OXGameRepository
 ) {
     /**
-     * SharedPreferences에 저장된 세션 키로 WebSocket 연결을 시도합니다.
+     * 저장된 세션 키로 WebSocket 연결을 시도합니다.
      */
     fun connectWebSocketWithSavedSession() {
         val sessionKey = oxGameRepository.getSessionKey()
@@ -32,7 +32,7 @@ class StartOXGameUseCase @Inject constructor(
     }
 
     /**
-     * 세션 키를 SharedPreferences에 저장합니다.
+     * 세션 키를 저장합니다.
      */
     fun saveSessionKey(sessionKey: String) {
         oxGameRepository.saveSessionKey(sessionKey)
