@@ -111,9 +111,9 @@ fun OXGameScreen(
     // 해설 TTS 시작 여부
     var explanationTtsStarted by remember { mutableStateOf(false) }
 
-    // 화면 진입 시 즉시 게임 시작 및 WebSocket 연결
+    // 화면 진입 시 즉시 로컬 OX 게임 시작
     LaunchedEffect(Unit) {
-        // WebSocket 연결 상태 초기화
+        // 게임 연결 상태 초기화
         viewModel.resetConnectionState()
         viewModel.connectToGame()
     }
@@ -838,7 +838,7 @@ fun QuizExplanationContent(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 다음 문제 버튼 (SUBMIT_ANSWER 응답이 와야 활성화)
+            // 다음 문제 버튼 (답변 제출 결과가 와야 활성화)
             BaseButton(
                 //TODO: 문제 수 3 문제로 조정
                 text = if (quizIndex + 1 >= totalQuizzes) "결과 화면으로 가기" else "다음 문제",

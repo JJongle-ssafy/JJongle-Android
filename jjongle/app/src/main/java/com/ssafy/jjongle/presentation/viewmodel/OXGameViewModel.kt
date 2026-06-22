@@ -72,7 +72,7 @@ class OXGameViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    // WebSocket 관련 상태들
+    // OX 게임 이벤트/연결 상태
     val connectionState: StateFlow<GameConnectionState> = gameActionUseCase.connectionState
     val gameEvents = gameActionUseCase.gameEvents
 
@@ -109,7 +109,7 @@ class OXGameViewModel @Inject constructor(
     private val _userPosition = MutableStateFlow<Pair<Double, Double>?>(null)
     val userPosition: StateFlow<Pair<Double, Double>?> = _userPosition.asStateFlow()
 
-    // SUBMIT_ANSWER 응답 상태
+    // 답변 제출 결과 수신 상태
     private val _isAnswerSubmitted = MutableStateFlow(false)
     val isAnswerSubmitted: StateFlow<Boolean> = _isAnswerSubmitted.asStateFlow()
 
@@ -137,7 +137,7 @@ class OXGameViewModel @Inject constructor(
     }
 
     /**
-     * 게임 참가를 위해 WebSocket 연결을 시작합니다.
+     * 로컬 OX 게임 세션을 시작합니다.
      */
     fun connectToGame() {
         viewModelScope.launch {
@@ -224,7 +224,7 @@ class OXGameViewModel @Inject constructor(
             .filter { it.area == OXAnswerArea.X }
             .map { it.toUserPosition() }
 
-        println("DEBUG: SUBMIT_ANSWER 전송 - 퀴즈 ID: ${currentQuiz.id}, O: ${oAreaUserPositions.size}, X: ${xAreaUserPositions.size}")
+        println("DEBUG: OX 답변 제출 - 퀴즈 ID: ${currentQuiz.id}, O: ${oAreaUserPositions.size}, X: ${xAreaUserPositions.size}")
         gameActionUseCase.sendSubmitAnswer(
             sessionKey = sessionKey,
             quizId = currentQuiz.id,
@@ -235,13 +235,13 @@ class OXGameViewModel @Inject constructor(
         // 답변 제출 상태 초기화
         _isAnswerSubmitted.value = false
 
-        // isQuizActive는 서버에서 SubmitResult 이벤트를 받은 후에 false로 설정됨
+        // isQuizActive는 SubmitResult 이벤트를 받은 후에 false로 설정됨
         // 여기서는 false로 설정하지 않음
         println("DEBUG: submitFinalAnswer 완료 - isQuizActive 유지")
     }
 
     /**
-     * 성적 기록 처리 (SUBMIT_RESULT 이벤트 받았을 때)
+     * 성적 기록 처리 (SubmitResult 이벤트 받았을 때)
      */
     private fun recordQuizResult(
         quizId: Int,
@@ -382,7 +382,7 @@ class OXGameViewModel @Inject constructor(
                     }
 
                     is SubmitResultEvent -> {
-                        println("DEBUG: SUBMIT_RESULT 이벤트 수신 - 퀴즈 ID: ${event.quizId}, 정답: ${event.correctAnswer}, 정답자 수: ${event.correctUserPositions.size}")
+                        println("DEBUG: SubmitResult 이벤트 수신 - 퀴즈 ID: ${event.quizId}, 정답: ${event.correctAnswer}, 정답자 수: ${event.correctUserPositions.size}")
                         // 퀴즈 결과 이벤트 처리 - 성적 기록
                         recordQuizResult(
                             event.quizId,
@@ -393,7 +393,7 @@ class OXGameViewModel @Inject constructor(
                         // 보상 애니메이션 표시
                         showRewardAnimation(event.correctUserPositions)
 
-                        // SUBMIT_ANSWER 응답을 받았으므로 다음 문제 버튼 활성화
+                        // 답변 제출 결과를 받았으므로 다음 문제 버튼 활성화
                         _isAnswerSubmitted.value = true
                     }
 
@@ -423,7 +423,7 @@ class OXGameViewModel @Inject constructor(
 
                         resetTTSState()
 
-                        // REST로 게임 종료 보고
+                        // 게임 종료 기록 저장
                         viewModelScope.launch {
                             try {
                                 val sessionKey = startGameUseCase.getSessionKey()
@@ -477,7 +477,7 @@ class OXGameViewModel @Inject constructor(
     }
 
     /**
-     * 서버에서 받은 GameFinish 이벤트에서 프로필 맵을 구성합니다.
+     * Legacy GameFinish 이벤트에서 프로필 맵을 구성합니다.
      */
     private fun buildProfilesMap(event: GameFinishEvent): Map<Int, String> {
         return event.profiles
