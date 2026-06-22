@@ -62,6 +62,92 @@ fun MapScreen(
         Log.d("Map", "CurrentPosition: ${mapState.characterX}, ${mapState.characterY}")
     }
 
+    MapContent(
+        characterX = x.value,
+        characterY = y.value,
+        characterTargetX = x.targetValue,
+        isWalking = mapState.isWalking,
+        isBgmOn = mapState.isBgmOn,
+        onTangramPanelClick = {
+            coroutineScope.launch {
+                var success = false
+                try {
+                    viewModel.startWalking()
+
+                    // L자 형태가 아닌, 대각선으로 이동하기 위해 joinAll 사용
+                    joinAll(
+                        launch { x.animateTo(TANGRAM_CHARACTER_X, animationSpeed) },
+                        launch { y.animateTo(TANGRAM_CHARACTER_Y, animationSpeed) }
+                    )
+
+                    viewModel.moveCharacterTo(TANGRAM_CHARACTER_X, TANGRAM_CHARACTER_Y)
+                    success = true
+                    onNavigateToTangram()
+                } finally {
+                    if (!success) {
+                        viewModel.moveCharacterTo(x.value, y.value)
+                    }
+                }
+            }
+        },
+        onOXPanelClick = {
+            coroutineScope.launch {
+                var success = false
+                try {
+                    viewModel.startWalking()
+
+                    joinAll(
+                        launch { x.animateTo(OX_CHARACTER_X, animationSpeed) },
+                        launch { y.animateTo(OX_CHARACTER_Y, animationSpeed) }
+                    )
+
+                    viewModel.moveCharacterTo(OX_CHARACTER_X, OX_CHARACTER_Y)
+                    success = true
+                    onNavigateToOXGame()
+                } finally {
+                    if (!success) {
+                        viewModel.moveCharacterTo(x.value, y.value)
+                    }
+                }
+            }
+        },
+        onMypagePanelClick = {
+            coroutineScope.launch {
+                var success = false
+                try {
+                    viewModel.startWalking()
+
+                    joinAll(
+                        launch { x.animateTo(MYPAGE_CHARACTER_X, animationSpeed) },
+                        launch { y.animateTo(MYPAGE_CHARACTER_Y, animationSpeed) }
+                    )
+
+                    viewModel.moveCharacterTo(MYPAGE_CHARACTER_X, MYPAGE_CHARACTER_Y)
+                    success = true
+                    onNavigateToMyPage()
+                } finally {
+                    if (!success) {
+                        viewModel.moveCharacterTo(x.value, y.value)
+                    }
+                }
+            }
+        },
+        onBgmClick = { viewModel.toggleBgm() }
+    )
+}
+
+@Composable
+fun MapContent(
+    characterX: Float,
+    characterY: Float,
+    characterTargetX: Float,
+    isWalking: Boolean,
+    isBgmOn: Boolean,
+    onTangramPanelClick: () -> Unit,
+    onOXPanelClick: () -> Unit,
+    onMypagePanelClick: () -> Unit,
+    onBgmClick: () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize()
 
@@ -94,30 +180,8 @@ fun MapScreen(
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
-                        enabled = !mapState.isWalking
-                    ) {
-                        coroutineScope.launch {
-                            var success = false
-                            try {
-                                viewModel.startWalking()
-
-                                // L자 형태가 아닌, 대각선으로 이동하기 위해 joinAll 사용
-                                joinAll(
-                                    launch { x.animateTo(TANGRAM_CHARACTER_X, animationSpeed) },
-                                    launch { y.animateTo(TANGRAM_CHARACTER_Y, animationSpeed) }
-                                )
-
-                                viewModel.moveCharacterTo(TANGRAM_CHARACTER_X, TANGRAM_CHARACTER_Y)
-                                success = true
-                                onNavigateToTangram()
-                            } finally {
-                                if (!success) {
-                                    viewModel.moveCharacterTo(x.value, y.value)
-                                }
-                            }
-                        }
-
-                    },
+                        enabled = !isWalking
+                    ) { onTangramPanelClick() },
                 painter = painterResource(id = R.drawable.tangram_panel),
                 contentDescription = "tangram panel",
             )
@@ -137,29 +201,8 @@ fun MapScreen(
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
-                        enabled = !mapState.isWalking
-                    ) {
-                        coroutineScope.launch {
-                            var success = false
-                            try {
-                                viewModel.startWalking()
-
-                                joinAll(
-                                    launch { x.animateTo(OX_CHARACTER_X, animationSpeed) },
-                                    launch { y.animateTo(OX_CHARACTER_Y, animationSpeed) }
-                                )
-
-                                viewModel.moveCharacterTo(OX_CHARACTER_X, OX_CHARACTER_Y)
-                                success = true
-                                onNavigateToOXGame()
-                            } finally {
-                                if (!success) {
-                                    viewModel.moveCharacterTo(x.value, y.value)
-                                }
-                            }
-                        }
-
-                    },
+                        enabled = !isWalking
+                    ) { onOXPanelClick() },
                 painter = painterResource(id = R.drawable.ox_panel),
                 contentDescription = "ox panel",
             )
@@ -179,28 +222,8 @@ fun MapScreen(
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
-                        enabled = !mapState.isWalking
-                    ) {
-                        coroutineScope.launch {
-                            var success = false
-                            try {
-                                viewModel.startWalking()
-
-                                joinAll(
-                                    launch { x.animateTo(MYPAGE_CHARACTER_X, animationSpeed) },
-                                    launch { y.animateTo(MYPAGE_CHARACTER_Y, animationSpeed) }
-                                )
-
-                                viewModel.moveCharacterTo(MYPAGE_CHARACTER_X, MYPAGE_CHARACTER_Y)
-                                success = true
-                                onNavigateToMyPage()
-                            } finally {
-                                if (!success) {
-                                    viewModel.moveCharacterTo(x.value, y.value)
-                                }
-                            }
-                        }
-                    },
+                        enabled = !isWalking
+                    ) { onMypagePanelClick() },
                 painter = painterResource(id = R.drawable.mypage_panel),
                 contentDescription = "mypage panel",
             )
@@ -210,13 +233,13 @@ fun MapScreen(
             MainCharacter(
                 modifier = Modifier
                     .offset(
-                        x = backgroundLayout.x(x.value).dp,
-                        y = backgroundLayout.y(y.value).dp
+                        x = backgroundLayout.x(characterX).dp,
+                        y = backgroundLayout.y(characterY).dp
                     ),
-                isWalking = mapState.isWalking,
+                isWalking = isWalking,
                 assetName = "mongi_walk.json",
                 size = backgroundLayout.scale(MAP_CHARACTER_SIZE).dp,
-                mirrorHorizontally = x.targetValue < x.value
+                mirrorHorizontally = characterTargetX < characterX
             )
         }
 
@@ -233,13 +256,11 @@ fun MapScreen(
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    viewModel.toggleBgm()
-                },
+                ) { onBgmClick() },
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (mapState.isBgmOn) "🎧" else "🔇",
+                text = if (isBgmOn) "🎧" else "🔇",
                 fontSize = 20.sp,
                 color = Color.White
             )

@@ -39,10 +39,21 @@ fun SplashScreen(
     onNavigateToMap: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-
-    // 로그인 상태를 관찰
     val authState by viewModel.authState.collectAsState()
 
+    SplashContent(
+        isAuthenticated = authState.isAuthenticated,
+        onNavigateToLogin = onNavigateToLogin,
+        onNavigateToMap = onNavigateToMap
+    )
+}
+
+@Composable
+fun SplashContent(
+    isAuthenticated: Boolean,
+    onNavigateToLogin: () -> Unit,
+    onNavigateToMap: () -> Unit
+) {
     // ✨ 깜빡임 효과 위한 alpha 애니메이션 정의
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
@@ -59,7 +70,7 @@ fun SplashScreen(
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                if (authState.isAuthenticated) {
+                if (isAuthenticated) {
                     // 로그인 상태라면 게임 화면으로 이동
                     onNavigateToMap()
                 } else {
@@ -99,12 +110,12 @@ fun SplashScreen(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun SplashScreenPreview() {
     JjongleTheme {
-        SplashScreen(
+        SplashContent(
+            isAuthenticated = false,
             onNavigateToLogin = {},
             onNavigateToMap = {}
         ) // NavController는 실제로는 context가 필요합니다.

@@ -30,22 +30,39 @@ fun OXTutorialScreen(
     onStartQuiz: () -> Unit,
 ) {
     val page = remember { mutableIntStateOf(0) }
-    val contentList = listOf(
-        "넓은 공간을 준비해주세요. 주위 물건과 친구에게 부딪히지 않게 자리를 넓혀요!",
-        "귀는? 쫑긋! 눈은? 반짝! 문제가 나오면 집중해서 들어주세요",
-        "O는 왼쪽! X는 오른쪽! 논란 시간막대가 다 줄어들면 움직이지 말고 제자리에 있어요!!",
-        "지혜의 미로 속 지식 여행, 준비됐나요?? 친구들과 함께 OX대모험을 떠나볼까요?"
-    )
-    val pages = listOf(
-        R.drawable.ox_tutorial_1,
-        R.drawable.ox_tutorial_2,
-        R.drawable.ox_tutorial_3,
-        R.drawable.ox_tutorial_4,
-    )
-
     val context = LocalContext.current
     val audioPlayer = remember { AudioPlayer(context) }
     val tutorialViewModel: TutorialViewModel = hiltViewModel()
+
+    OXTutorialContent(
+        page = page.intValue,
+        onPrevious = { page.intValue -= 1 },
+        onNext = { page.intValue += 1 },
+        onStartQuiz = onStartQuiz
+    )
+
+    // 페이지 변경 시 TTS 재생
+    LaunchedEffect(page.intValue) {
+        audioPlayer.stop()
+        val text = OX_TUTORIAL_CONTENTS.getOrNull(page.intValue)
+        if (text != null) {
+            val result = tutorialViewModel.generateTTS(text)
+            if (result.isSuccess) {
+                audioPlayer.playTTS(result.getOrNull()!!)
+                delay(100)
+            }
+        }
+    }
+}
+
+@Composable
+fun OXTutorialContent(
+    page: Int,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    onStartQuiz: () -> Unit
+) {
+    val safePage = page.coerceIn(OX_TUTORIAL_IMAGES.indices)
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경
@@ -57,7 +74,7 @@ fun OXTutorialScreen(
 
         // 중앙 튜토리얼 이미지
         Image(
-            painter = painterResource(id = pages[page.intValue]),
+            painter = painterResource(id = OX_TUTORIAL_IMAGES[safePage]),
             contentDescription = "tutorial step",
             modifier = Modifier
                 .align(Alignment.Center)
@@ -68,7 +85,7 @@ fun OXTutorialScreen(
         )
 
         // 이전 버튼 (왼쪽 중앙)
-        if (page.intValue > 0) {
+        if (safePage > 0) {
             Image(
                 painter = painterResource(id = R.drawable.previous_btn),
                 contentDescription = "previous",
@@ -76,13 +93,13 @@ fun OXTutorialScreen(
                     .align(Alignment.CenterStart)
                     .size(80.dp)
                     .padding(start = 24.dp)
-                    .clickable { page.intValue -= 1 },
+                    .clickable { onPrevious() },
                 contentScale = ContentScale.Fit
             )
         }
 
         // 다음 버튼 (오른쪽 중앙)
-        if (page.intValue < pages.lastIndex) {
+        if (safePage < OX_TUTORIAL_IMAGES.lastIndex) {
             Image(
                 painter = painterResource(id = R.drawable.next_btn),
                 contentDescription = "next",
@@ -90,7 +107,7 @@ fun OXTutorialScreen(
                     .align(Alignment.CenterEnd)
                     .size(80.dp)
                     .padding(end = 24.dp)
-                    .clickable { page.intValue += 1 },
+                    .clickable { onNext() },
                 contentScale = ContentScale.Fit
             )
         } else {
@@ -104,18 +121,18 @@ fun OXTutorialScreen(
             )
         }
     }
-
-    // 페이지 변경 시 TTS 재생
-    LaunchedEffect(page.intValue) {
-        audioPlayer.stop()
-        val text = contentList.getOrNull(page.intValue)
-        if (text != null) {
-            val result = tutorialViewModel.generateTTS(text)
-            if (result.isSuccess) {
-                audioPlayer.playTTS(result.getOrNull()!!)
-                delay(100)
-            }
-        }
-    }
 }
 
+private val OX_TUTORIAL_CONTENTS = listOf(
+    "넓은 공간을 준비해주세요. 주위 물건과 친구에게 부딪히지 않게 자리를 넓혀요!",
+    "귀는? 쫑긋! 눈은? 반짝! 문제가 나오면 집중해서 들어주세요",
+    "O는 왼쪽! X는 오른쪽! 논란 시간막대가 다 줄어들면 움직이지 말고 제자리에 있어요!!",
+    "지혜의 미로 속 지식 여행, 준비됐나요?? 친구들과 함께 OX대모험을 떠나볼까요?"
+)
+
+private val OX_TUTORIAL_IMAGES = listOf(
+    R.drawable.ox_tutorial_1,
+    R.drawable.ox_tutorial_2,
+    R.drawable.ox_tutorial_3,
+    R.drawable.ox_tutorial_4,
+)

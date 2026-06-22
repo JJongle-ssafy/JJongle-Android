@@ -33,23 +33,39 @@ fun TangramTutorialScreen(
     onStartTutorial: () -> Unit,
 ) {
     var currentTutorial by remember { mutableIntStateOf(0) }
-    val contentList = listOf(
-        "깨끗한 책상을 준비해주세요! 칠교 조각들이 흩어지지 않게 가지런히 놓아주세요!",
-        "반사 거울을 끼워주세요! 거울이 빠지지 않게 잘 꽂아주세요.",
-        "태블릿 각도를 맞춰주세요 칠교 조각들이 화면 안에 쏙 들어오게 해주세요!!",
-        "이제 준비는 끝났어요!! 동물 친구들을 만나러 정글로 떠나볼까요?"
-    )
-
-    val tutorialImages = listOf(
-        R.drawable.tangram_tutorial1,
-        R.drawable.tangram_tutorial2,
-        R.drawable.tangram_tutorial3,
-        R.drawable.tangram_tutorial4
-    )
-
     val context = LocalContext.current
     val audioPlayer = remember { AudioPlayer(context) }
     val tutorialViewModel: TutorialViewModel = hiltViewModel()
+
+    TangramTutorialContent(
+        currentTutorial = currentTutorial,
+        onPrevious = { currentTutorial-- },
+        onNext = { currentTutorial++ },
+        onStartTutorial = onStartTutorial
+    )
+
+    // 페이지 변경 시 TTS 재생
+    LaunchedEffect(currentTutorial) {
+        audioPlayer.stop()
+        val text = TANGRAM_TUTORIAL_CONTENTS.getOrNull(currentTutorial)
+        if (text != null) {
+            val result = tutorialViewModel.generateTTS(text)
+            if (result.isSuccess) {
+                audioPlayer.playTTS(result.getOrNull()!!)
+                delay(100)
+            }
+        }
+    }
+}
+
+@Composable
+fun TangramTutorialContent(
+    currentTutorial: Int,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    onStartTutorial: () -> Unit
+) {
+    val safeCurrentTutorial = currentTutorial.coerceIn(TANGRAM_TUTORIAL_IMAGES.indices)
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경 이미지
@@ -61,8 +77,8 @@ fun TangramTutorialScreen(
 
         // 가운데 튜토리얼 이미지
         Image(
-            painter = painterResource(id = tutorialImages[currentTutorial]),
-            contentDescription = "Tutorial ${currentTutorial + 1}",
+            painter = painterResource(id = TANGRAM_TUTORIAL_IMAGES[safeCurrentTutorial]),
+            contentDescription = "Tutorial ${safeCurrentTutorial + 1}",
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = 50.dp)
@@ -72,7 +88,7 @@ fun TangramTutorialScreen(
         )
 
         // 이전 버튼 (화면 왼쪽, 세로 중앙)
-        if (currentTutorial > 0) {
+        if (safeCurrentTutorial > 0) {
             Image(
                 painter = painterResource(id = R.drawable.previous_btn),
                 contentDescription = "이전",
@@ -80,13 +96,13 @@ fun TangramTutorialScreen(
                     .align(Alignment.CenterStart)
                     .size(80.dp)
                     .padding(start = 24.dp)
-                    .clickable { currentTutorial-- },
+                    .clickable { onPrevious() },
                 contentScale = ContentScale.Fit
             )
         }
 
         // 다음/시작 버튼
-        if (currentTutorial < tutorialImages.size - 1) {
+        if (safeCurrentTutorial < TANGRAM_TUTORIAL_IMAGES.size - 1) {
             // 다음 버튼 (화면 오른쪽, 세로 중앙)
             Image(
                 painter = painterResource(id = R.drawable.next_btn),
@@ -95,7 +111,7 @@ fun TangramTutorialScreen(
                     .align(Alignment.CenterEnd)
                     .size(80.dp)
                     .padding(end = 24.dp)
-                    .clickable { currentTutorial++ },
+                    .clickable { onNext() },
                 contentScale = ContentScale.Fit
             )
         } else {
@@ -110,17 +126,18 @@ fun TangramTutorialScreen(
             )
         }
     }
-
-    // 페이지 변경 시 TTS 재생
-    LaunchedEffect(currentTutorial) {
-        audioPlayer.stop()
-        val text = contentList.getOrNull(currentTutorial)
-        if (text != null) {
-            val result = tutorialViewModel.generateTTS(text)
-            if (result.isSuccess) {
-                audioPlayer.playTTS(result.getOrNull()!!)
-                delay(100)
-            }
-        }
-    }
 }
+
+private val TANGRAM_TUTORIAL_CONTENTS = listOf(
+    "깨끗한 책상을 준비해주세요! 칠교 조각들이 흩어지지 않게 가지런히 놓아주세요!",
+    "반사 거울을 끼워주세요! 거울이 빠지지 않게 잘 꽂아주세요.",
+    "태블릿 각도를 맞춰주세요 칠교 조각들이 화면 안에 쏙 들어오게 해주세요!!",
+    "이제 준비는 끝났어요!! 동물 친구들을 만나러 정글로 떠나볼까요?"
+)
+
+private val TANGRAM_TUTORIAL_IMAGES = listOf(
+    R.drawable.tangram_tutorial1,
+    R.drawable.tangram_tutorial2,
+    R.drawable.tangram_tutorial3,
+    R.drawable.tangram_tutorial4
+)

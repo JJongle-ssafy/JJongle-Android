@@ -104,6 +104,34 @@ fun LoginScreen(
         .build()
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
+    LoginContent(
+        isLoading = authState.isLoading,
+        errorMessage = authState.error,
+        onGoogleSignInClick = {
+            Log.d("LoginScreen", "로그인 버튼 클릭됨")
+            val availability = GoogleApiAvailability.getInstance()
+            val status = availability.isGooglePlayServicesAvailable(context)
+            if (status == ConnectionResult.SUCCESS) {
+                val intent = googleSignInClient.signInIntent
+                launcher.launch(intent)
+            } else {
+                Log.e("LoginScreen", "Google Play Services unavailable. status=$status")
+                Toast.makeText(
+                    context,
+                    "Google Play 서비스를 사용할 수 없습니다. ($status)",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    )
+}
+
+@Composable
+fun LoginContent(
+    isLoading: Boolean,
+    errorMessage: String?,
+    onGoogleSignInClick: () -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -131,27 +159,12 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             // 로그인 버튼
-            if (authState.isLoading) {
+            if (isLoading) {
                 Log.d("LoginScreen", "⏳ 로딩 중")
                 CircularProgressIndicator()
             } else {
                 IconButton(
-                    onClick = {
-                        Log.d("LoginScreen", "로그인 버튼 클릭됨")
-                        val availability = GoogleApiAvailability.getInstance()
-                        val status = availability.isGooglePlayServicesAvailable(context)
-                        if (status == ConnectionResult.SUCCESS) {
-                            val intent = googleSignInClient.signInIntent
-                            launcher.launch(intent)
-                        } else {
-                            Log.e("LoginScreen", "Google Play Services unavailable. status=$status")
-                            Toast.makeText(
-                                context,
-                                "Google Play 서비스를 사용할 수 없습니다. ($status)",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    },
+                    onClick = onGoogleSignInClick,
                     modifier = Modifier
                         .size(56.dp)
                         .background(Color.White, shape = CircleShape)
@@ -165,7 +178,7 @@ fun LoginScreen(
                 }
             }
 
-            authState.error?.let {
+            errorMessage?.let {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = it, color = Color.Red)
             }

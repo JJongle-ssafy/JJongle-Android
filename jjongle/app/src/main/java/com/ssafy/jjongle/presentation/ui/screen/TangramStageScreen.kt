@@ -48,21 +48,6 @@ fun TangramStageScreen(
     val currentStage by viewModel.currentStage.collectAsState()
     val currentChallengeStageId by viewModel.currentChallengeStageId.collectAsState()
     val authTokens by viewModel.authTokens.collectAsState()
-    
-    // 스테이지 위치 데이터 (ViewModel에서 가져올 수도 있지만, UI 전용이므로 여기 유지)
-    val stagePositions = remember {
-        listOf(
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(1, 420f, 500f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(2, 590f, 420f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(3, 440f, 320f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(4, 260f, 350f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(5, 140f, 250f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(6, 160f, 130f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(7, 360f, 60f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(8, 520f, 130f),
-            com.ssafy.jjongle.presentation.viewmodel.StagePosition(9, 700f, 120f)
-        )
-    }
 
     // 캐릭터 위치 애니메이션 상태 (UI 전용)
     val animatedCharacterX = remember { Animatable(characterX) }
@@ -95,6 +80,50 @@ fun TangramStageScreen(
             targetStageId = 0
         }
     }
+
+    TangramStageContent(
+        gameName = gameName,
+        backgroundImagePainter = backgroundImagePainter,
+        characterX = animatedCharacterX.value,
+        characterY = animatedCharacterY.value,
+        isCharacterMoving = isCharacterMoving,
+        onStageClick = { stageId ->
+            if (!isCharacterMoving && stageId <= currentChallengeStageId) {
+                if (stageId == currentStage) {
+                    onStartGameClick(
+                        stageId,
+                        authTokens?.accessToken,
+                        authTokens?.refreshToken
+                    )
+                } else {
+                    targetStageId = stageId
+                    viewModel.moveToStage(stageId)
+                }
+            }
+        },
+        onGoMapClick = onGoMapClick,
+        onMeetAnimalClick = onMeetAnimalClick,
+        modifier = modifier,
+        goHomeButtonText = goHomeButtonText,
+        meetAnimalButtonText = meetAnimalButtonText
+    )
+}
+
+@Composable
+fun TangramStageContent(
+    gameName: String,
+    backgroundImagePainter: Painter,
+    characterX: Float,
+    characterY: Float,
+    isCharacterMoving: Boolean,
+    onStageClick: (stageId: Int) -> Unit,
+    onGoMapClick: () -> Unit,
+    onMeetAnimalClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    goHomeButtonText: String = "처음으로 돌아가기",
+    meetAnimalButtonText: String = "동물 친구 만나기"
+) {
+    val stagePositions = remember { defaultTangramStagePositions() }
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -129,21 +158,7 @@ fun TangramStageScreen(
                         .clip(CircleShape)
                         .clickable {
                             if (!isCharacterMoving) {
-                                // 스테이지 접근 가능 여부 확인
-                                if (stage.stageId <= currentChallengeStageId) {
-                                    if (stage.stageId == currentStage) {
-                                        // 현재 스테이지를 터치한 경우 바로 게임 시작
-                                        onStartGameClick(
-                                            stage.stageId,
-                                            authTokens?.accessToken,
-                                            authTokens?.refreshToken
-                                        )
-                                    } else {
-                                        // 다른 스테이지로 이동
-                                        targetStageId = stage.stageId
-                                        viewModel.moveToStage(stage.stageId)
-                                    }
-                                }
+                                onStageClick(stage.stageId)
                             }
                         }
                 )
@@ -153,8 +168,8 @@ fun TangramStageScreen(
             MainCharacter(
                 modifier = Modifier
                     .offset(
-                        x = backgroundLayout.x(stageX(animatedCharacterX.value)).dp,
-                        y = backgroundLayout.y(stageY(animatedCharacterY.value)).dp
+                        x = backgroundLayout.x(stageX(characterX)).dp,
+                        y = backgroundLayout.y(stageY(characterY)).dp
                     ),
                 isWalking = isCharacterMoving,
                 assetName = "mongi_walk.json",
@@ -184,6 +199,18 @@ fun TangramStageScreen(
 
     }
 }
+
+private fun defaultTangramStagePositions() = listOf(
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(1, 420f, 500f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(2, 590f, 420f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(3, 440f, 320f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(4, 260f, 350f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(5, 140f, 250f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(6, 160f, 130f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(7, 360f, 60f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(8, 520f, 130f),
+    com.ssafy.jjongle.presentation.viewmodel.StagePosition(9, 700f, 120f)
+)
 
 private const val TANGRAM_STAGE_BACKGROUND_WIDTH_PX = 2800f
 private const val TANGRAM_STAGE_BACKGROUND_HEIGHT_PX = 1752f

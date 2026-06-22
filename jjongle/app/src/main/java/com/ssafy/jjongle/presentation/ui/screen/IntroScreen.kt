@@ -52,15 +52,46 @@ fun IntroScreen(
     if (pages.isEmpty()) return
 
     val currentPageData = pages[currentPage]
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val audioPlayer = remember { AudioPlayer(context) }
+    val introViewModel: IntroViewModel = hiltViewModel()
+
+    // 페이지 변경 시 TTS로 설명 읽어주기
+    LaunchedEffect(currentPage) {
+        val result = introViewModel.generateTTS(currentPageData.content)
+        if (result.isSuccess) {
+            audioPlayer.playTTS(result.getOrNull()!!)
+            delay(100)
+        }
+    }
+
+    IntroContent(
+        gameName = gameName,
+        pages = pages,
+        currentPage = currentPage,
+        onPageChange = { currentPage = it },
+        onStartGameClick = onStartGameClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun IntroContent(
+    gameName: String,
+    pages: List<IntroPage>,
+    currentPage: Int,
+    onPageChange: (Int) -> Unit,
+    onStartGameClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (pages.isEmpty()) return
+
+    val safeCurrentPage = currentPage.coerceIn(pages.indices)
+    val currentPageData = pages[safeCurrentPage]
 
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // TTS 재생기 (페이지 변경 시 자동 낭독)
-        val context = androidx.compose.ui.platform.LocalContext.current
-        val audioPlayer = remember { AudioPlayer(context) }
-        val introViewModel: IntroViewModel = hiltViewModel()
-
         // 배경 이미지
         ResponsiveBackgroundImage(
             painter = painterResource(id = currentPageData.backgroundImage),
@@ -95,17 +126,8 @@ fun IntroScreen(
             )
         }
 
-        // 페이지 변경 시 TTS로 설명 읽어주기
-        LaunchedEffect(currentPage) {
-            val result = introViewModel.generateTTS(currentPageData.content)
-            if (result.isSuccess) {
-                audioPlayer.playTTS(result.getOrNull()!!)
-                delay(100)
-            }
-        }
-
         // 이전 버튼 (화면 왼쪽, 세로 중앙)
-        if (currentPage > 0) {
+        if (safeCurrentPage > 0) {
             Image(
                 painter = painterResource(id = R.drawable.previous_btn),
                 contentDescription = "이전",
@@ -113,13 +135,13 @@ fun IntroScreen(
                     .align(Alignment.CenterStart)
                     .size(80.dp)
                     .padding(start = 24.dp)
-                    .clickable { currentPage-- },
+                    .clickable { onPageChange(safeCurrentPage - 1) },
                 contentScale = ContentScale.Fit
             )
         }
 
         // 다음/시작 버튼
-        if (currentPage < pages.size - 1) {
+        if (safeCurrentPage < pages.size - 1) {
             // 다음 버튼 (화면 오른쪽, 세로 중앙)
             Image(
                 painter = painterResource(id = R.drawable.next_btn),
@@ -128,7 +150,7 @@ fun IntroScreen(
                     .align(Alignment.CenterEnd)
                     .size(80.dp)
                     .padding(end = 24.dp)
-                    .clickable { currentPage++ },
+                    .clickable { onPageChange(safeCurrentPage + 1) },
                 contentScale = ContentScale.Fit
             )
         } else {
@@ -166,9 +188,11 @@ fun IntroScreenPreview() {
         )
     )
 
-    IntroScreen(
+    IntroContent(
         gameName = "종글 O/X 대모험",
         pages = oxGamePages,
+        currentPage = 0,
+        onPageChange = {},
         onStartGameClick = {},
     )
 }
