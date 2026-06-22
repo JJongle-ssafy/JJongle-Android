@@ -42,6 +42,8 @@ import com.ssafy.jjongle.domain.entity.OX
 import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.viewmodel.QuizNoteState
+import com.ssafy.jjongle.presentation.viewmodel.QuizNoteUi
 import com.ssafy.jjongle.presentation.viewmodel.QuizNoteViewModel
 import java.time.LocalDateTime
 
@@ -58,6 +60,25 @@ fun QuizNoteScreen(
     // 상세일 때만 시스템 뒤로가기로 닫기
     if (ui.detail.isNotEmpty()) BackHandler { vm.closeDetail() }
 
+    QuizNoteContent(
+        ui = ui,
+        onBackClick = onBackClick,
+        onGoOXGameTitle = onGoOXGameTitle,
+        onNoteClick = { vm.openDetail(it) },
+        onLoadPage = { vm.loadPage(it) },
+        onCloseDetail = { vm.closeDetail() }
+    )
+}
+
+@Composable
+fun QuizNoteContent(
+    ui: QuizNoteState,
+    onBackClick: () -> Unit,
+    onGoOXGameTitle: () -> Unit,
+    onNoteClick: (historyId: Long) -> Unit,
+    onLoadPage: (page: Int) -> Unit,
+    onCloseDetail: () -> Unit
+) {
     Box(Modifier.fillMaxSize()) {
         // 배경
         ResponsiveBackgroundImage(
@@ -68,7 +89,7 @@ fun QuizNoteScreen(
 
         // 상단 뒤로가기 (오버레이보다 위)
         BaseButton(
-            onClick = { if (ui.detail.isNotEmpty()) vm.closeDetail() else onBackClick() },
+            onClick = { if (ui.detail.isNotEmpty()) onCloseDetail() else onBackClick() },
             text = "뒤로가기",
             fontSize = 18.sp,
             modifier = Modifier
@@ -82,8 +103,8 @@ fun QuizNoteScreen(
         if (hasNotes) {
             // 노트 3장
             NotesRow(
-                notes = ui.notes.map { NoteUi(it.id, it.recordedAt) },
-                onClick = { vm.openDetail(it) },
+                notes = ui.notes,
+                onClick = onNoteClick,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(horizontal = 24.dp)
@@ -99,7 +120,7 @@ fun QuizNoteScreen(
                         .align(Alignment.CenterStart)
                         .size(80.dp)
                         .padding(start = 24.dp)
-                        .clickable { vm.loadPage(ui.page - 1) }
+                        .clickable { onLoadPage(ui.page - 1) }
                 )
             }
             if (showArrows && ui.hasNext) {
@@ -110,7 +131,7 @@ fun QuizNoteScreen(
                         .align(Alignment.CenterEnd)
                         .size(80.dp)
                         .padding(end = 24.dp)
-                        .clickable { vm.loadPage(ui.page + 1) }
+                        .clickable { onLoadPage(ui.page + 1) }
                 )
             }
         } else {
@@ -125,7 +146,7 @@ fun QuizNoteScreen(
         if (ui.detail.isNotEmpty()) {
             QuizDetailOverlay(
                 notes = ui.detail,
-                onDismiss = { vm.closeDetail() }
+                onDismiss = onCloseDetail
             )
         }
     }
@@ -133,11 +154,9 @@ fun QuizNoteScreen(
 
 /* ---------- 리스트 렌더 ---------- */
 
-private data class NoteUi(val id: Long, val recordedAt: LocalDateTime)
-
 @Composable
 private fun NotesRow(
-    notes: List<NoteUi>,
+    notes: List<QuizNoteUi>,
     onClick: (historyId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -1,8 +1,12 @@
 package com.ssafy.jjongle.presentation.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
@@ -53,6 +57,13 @@ class MypageTabletPaparazziTest {
     fun ox_game_start_tablet_reference_ratio() {
         paparazzi.snapshot {
             OXGameStartSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_quiz_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            OXGameQuizSnapshotContent()
         }
     }
 
@@ -116,6 +127,13 @@ class MypagePhonePaparazziTest {
     }
 
     @Test
+    fun ox_game_quiz_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameQuizSnapshotContent()
+        }
+    }
+
+    @Test
     fun ox_game_explanation_phone_keeps_tablet_ratio() {
         paparazzi.snapshot {
             OXGameExplanationSnapshotContent()
@@ -171,6 +189,13 @@ class MypageWidePhonePaparazziTest {
     fun ox_game_start_wide_phone_keeps_tablet_ratio() {
         paparazzi.snapshot {
             OXGameStartSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_quiz_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameQuizSnapshotContent()
         }
     }
 
@@ -267,6 +292,29 @@ private fun OXGameExplanationSnapshotContent() {
                 totalQuizzes = 3,
                 isAnswerSubmitted = true,
                 onNextQuiz = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun OXGameQuizSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            QuizGameContent(
+                quiz = sampleQuiz,
+                quizIndex = 0,
+                totalQuizzes = 3,
+                timeLeft = 7,
+                onFacePositionsChanged = {},
+                showCorrectAnimation = false,
+                correctAnswer = null,
+                cameraContent = { modifier ->
+                    Box(
+                        modifier = modifier.background(Color(0xFF1F2328)),
+                        contentAlignment = Alignment.Center
+                    ) {}
+                }
             )
         }
     }

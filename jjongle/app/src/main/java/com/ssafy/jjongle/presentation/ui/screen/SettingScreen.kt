@@ -57,7 +57,65 @@ fun SettingScreen(
         editingCharacter = CharacterType.fromServerName(serverProfile)
     }
 
+    SettingContent(
+        serverNickname = serverNickname,
+        editingNickname = editingNickname,
+        editingCharacter = editingCharacter,
+        showWithdrawDialog = showWithdrawDialog,
+        isWithdrawing = isWithdrawing,
+        onNicknameChange = { editingNickname = it },
+        onCharacterSelect = { editingCharacter = it },
+        onConfirmClick = {
+            val finalNickname =
+                if (editingNickname.isBlank()) serverNickname else editingNickname
+            authViewModel.updateProfile(
+                nickname = finalNickname,
+                profileImage = editingCharacter.serverName,
+                onSuccess = { onUpdated() },
+                onFailure = { Log.e("SettingScreen", "프로필 수정 실패: ${it.message}") }
+            )
+        },
+        onBackClick = onBackClick,
+        onWithdrawClick = { showWithdrawDialog = true },
+        onWithdrawDismiss = { if (!isWithdrawing) showWithdrawDialog = false },
+        onWithdrawConfirm = {
+            isWithdrawing = true
+            authViewModel.withdraw(
+                onSuccess = {
+                    isWithdrawing = false
+                    showWithdrawDialog = false
+                    onWithdrawn()
+                },
+                onFailure = { e ->
+                    isWithdrawing = false
+                    showWithdrawDialog = false
+                    android.util.Log.e("SettingScreen", "탈퇴 실패: ${e.message}")
+                }
+            )
+        },
+        goHomeButtonText = goHomeButtonText,
+        placeholderText = if (serverNickname.isNotBlank()) serverNickname
+        else profileViewModel.nickname.value
+    )
+}
 
+@Composable
+fun SettingContent(
+    serverNickname: String,
+    editingNickname: String,
+    editingCharacter: CharacterType,
+    showWithdrawDialog: Boolean,
+    isWithdrawing: Boolean,
+    onNicknameChange: (String) -> Unit,
+    onCharacterSelect: (CharacterType) -> Unit,
+    onConfirmClick: () -> Unit,
+    onBackClick: () -> Unit,
+    onWithdrawClick: () -> Unit,
+    onWithdrawDismiss: () -> Unit,
+    onWithdrawConfirm: () -> Unit,
+    goHomeButtonText: String = "뒤로가기",
+    placeholderText: String = serverNickname
+) {
     Box(Modifier.fillMaxSize()) {
         // 배경
         ResponsiveBackgroundImage(
@@ -69,22 +127,12 @@ fun SettingScreen(
         // SignupScreen과 동일한 다이얼로그 재사용
         ProfileDialog(
             nickname = editingNickname,
-            onNicknameChange = { editingNickname = it },          // ← 로컬 상태 갱신
+            onNicknameChange = onNicknameChange,
             selectedCharacter = editingCharacter,
-            onCharacterSelect = { editingCharacter = it },        // ← 로컬 상태 갱신
+            onCharacterSelect = onCharacterSelect,
             confirmText = "수정하기",
-            placeholderText = if (serverNickname.isNotBlank()) serverNickname
-            else profileViewModel.nickname.value, // 로컬 보정
-            onConfirmClick = {
-                val finalNickname =
-                    if (editingNickname.isBlank()) serverNickname else editingNickname
-                authViewModel.updateProfile(
-                    nickname = finalNickname,
-                    profileImage = editingCharacter.serverName,
-                    onSuccess = { onUpdated() },
-                    onFailure = { Log.e("SettingScreen", "프로필 수정 실패: ${it.message}") }
-                )
-            }
+            placeholderText = placeholderText,
+            onConfirmClick = onConfirmClick
         )
 
         // 뒤로가기 버튼
@@ -100,7 +148,7 @@ fun SettingScreen(
         // 하단 우측: 회원탈퇴
         BaseButton(
             // TODO: 회원탈퇴 다이얼로그 구현
-            onClick = { showWithdrawDialog = true },
+            onClick = onWithdrawClick,
             text = "회원탈퇴",
             fontSize = 16.sp,
             modifier = Modifier
@@ -112,7 +160,7 @@ fun SettingScreen(
     // 탈퇴 확인 다이얼로그
     if (showWithdrawDialog) {
         androidx.compose.material3.AlertDialog(
-            onDismissRequest = { if (!isWithdrawing) showWithdrawDialog = false },
+            onDismissRequest = onWithdrawDismiss,
             title = { androidx.compose.material3.Text("회원탈퇴") },
             text = {
                 androidx.compose.material3.Text(
@@ -123,28 +171,13 @@ fun SettingScreen(
             confirmButton = {
                 androidx.compose.material3.TextButton(
                     enabled = !isWithdrawing,
-                    onClick = {
-                        isWithdrawing = true
-                        authViewModel.withdraw(
-                            onSuccess = {
-                                isWithdrawing = false
-                                showWithdrawDialog = false
-                                onWithdrawn() // NavGraph에서 로그인으로 이동
-                            },
-                            onFailure = { e ->
-                                isWithdrawing = false
-                                showWithdrawDialog = false
-                                android.util.Log.e("SettingScreen", "탈퇴 실패: ${e.message}")
-                                // 필요 시 토스트/스낵바
-                            }
-                        )
-                    }
+                    onClick = onWithdrawConfirm
                 ) { androidx.compose.material3.Text("탈퇴") }
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(
                     enabled = !isWithdrawing,
-                    onClick = { showWithdrawDialog = false }
+                    onClick = onWithdrawDismiss
                 ) { androidx.compose.material3.Text("취소") }
             }
         )

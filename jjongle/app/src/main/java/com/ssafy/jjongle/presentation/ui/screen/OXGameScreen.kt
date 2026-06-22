@@ -377,7 +377,13 @@ fun QuizGameContent(
     timeLeft: Int,
     onFacePositionsChanged: (List<OXTrackedFace>) -> Unit,
     showCorrectAnimation: Boolean,
-    correctAnswer: String?
+    correctAnswer: String?,
+    cameraContent: @Composable (Modifier) -> Unit = { modifier ->
+        CameraComponent(
+            modifier = modifier,
+            onFacePositionsChanged = onFacePositionsChanged
+        )
+    }
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         // 배경 이미지
@@ -416,12 +422,11 @@ fun QuizGameContent(
                     colors = CardDefaults.cardColors(containerColor = Color.Black.copy(alpha = 0.15f))
                 ) {}
 
-                CameraComponent(
-                    modifier = Modifier
+                cameraContent(
+                    Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(16.dp))
-                        .border(2.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(16.dp)),
-                    onFacePositionsChanged = onFacePositionsChanged
+                        .border(2.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(16.dp))
                 )
 
                 Box(

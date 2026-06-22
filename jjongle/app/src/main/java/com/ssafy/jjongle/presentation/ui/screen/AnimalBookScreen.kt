@@ -57,6 +57,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.domain.entity.AnimalType
+import com.ssafy.jjongle.presentation.state.AnimalBookState
 import com.ssafy.jjongle.presentation.state.AnimalSlot
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
@@ -85,9 +86,32 @@ fun AnimalBookScreen(
 
     // 2) 페이지(8칸 고정) 구성 — 더미 레이아웃: 위치/순서만 담당
     var currentPage by remember { mutableIntStateOf(0) }
+
+    AnimalBookContent(
+        ui = ui,
+        currentPage = currentPage,
+        onPageChange = { currentPage = it },
+        onBackClick = onBackClick,
+        onAnimalSpecClick = onAnimalSpecClick,
+        onSelectAnimal = { viewModel.onSelect(it) },
+        onCloseDetail = { viewModel.closeDetail() }
+    )
+}
+
+@Composable
+fun AnimalBookContent(
+    ui: AnimalBookState,
+    currentPage: Int,
+    onPageChange: (Int) -> Unit,
+    onBackClick: () -> Unit,
+    onAnimalSpecClick: (String) -> Unit,
+    onSelectAnimal: (AnimalType) -> Unit,
+    onCloseDetail: () -> Unit
+) {
     val pages = remember { sampleAnimalPages() }      // 1P: 8종, 2P: SHEEP + LOCK 7
     val pageCount = pages.size
-    val baseSlots = pages[currentPage].slots          // 현재 페이지의 기본 슬롯(잠금 상태)
+    val safeCurrentPage = currentPage.coerceIn(0, pageCount - 1)
+    val baseSlots = pages[safeCurrentPage].slots          // 현재 페이지의 기본 슬롯(잠금 상태)
 
     // 3) 앨범 실제 렌더 크기 측정(이미지는 건드리지 않고, 그 위에 동일 크기 박스를 얹기 위함)
     val density = LocalDensity.current
@@ -146,7 +170,7 @@ fun AnimalBookScreen(
         )
 
         // 좌/우 페이지 화살표 (상세 중에는 숨김)
-        if (ui.selected == null && currentPage > 0) {
+        if (ui.selected == null && safeCurrentPage > 0) {
             Image(
                 painter = painterResource(R.drawable.previous_btn),
                 contentDescription = "이전",
@@ -154,10 +178,10 @@ fun AnimalBookScreen(
                     .align(Alignment.CenterStart)
                     .size(80.dp)
                     .padding(start = 24.dp)
-                    .clickable { currentPage-- }
+                    .clickable { onPageChange(safeCurrentPage - 1) }
             )
         }
-        if (ui.selected == null && currentPage < pageCount - 1) {
+        if (ui.selected == null && safeCurrentPage < pageCount - 1) {
             Image(
                 painter = painterResource(R.drawable.next_btn),
                 contentDescription = "다음",
@@ -165,7 +189,7 @@ fun AnimalBookScreen(
                     .align(Alignment.CenterEnd)
                     .size(80.dp)
                     .padding(end = 24.dp)
-                    .clickable { currentPage++ }
+                    .clickable { onPageChange(safeCurrentPage + 1) }
             )
         }
 
@@ -224,7 +248,7 @@ fun AnimalBookScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     if (type != null && slot.unlocked) {
-                                        viewModel.onSelect(type) // 상세 전환 + 스토리 로딩
+                                        onSelectAnimal(type)
                                     }
                                 }
                             }
@@ -234,7 +258,7 @@ fun AnimalBookScreen(
                         AnimalSpecPane(
                             animalImageRes = sel.animal.toImageRes(),
                             story = sel.story ?: "",
-                            onBack = { viewModel.closeDetail() },
+                            onBack = onCloseDetail,
                             onTakePhoto = { onAnimalSpecClick(sel.animal.name) } // ★ 여기만 교체
                         )
                     }

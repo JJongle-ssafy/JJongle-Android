@@ -244,15 +244,10 @@ fun CameraScreen(
         }
     }
 
-    Row(
-        modifier = Modifier.fillMaxSize()
+    CameraChromeContent(
+        onBack = onBack,
+        onCapturePhoto = { captureAndSavePhoto() }
     ) {
-        // 카메라(9/10)
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(9f)
-        ) {
             AndroidView(
                 factory = { ctx ->
                     val previewView = PreviewView(ctx).apply {
@@ -500,16 +495,32 @@ fun CameraScreen(
                     }
                 }
             }
-        }
+    }
+}
 
-        // 오른쪽 컨트롤(옵션)
+@Composable
+fun CameraChromeContent(
+    onBack: () -> Unit,
+    onCapturePhoto: () -> Unit,
+    modifier: Modifier = Modifier,
+    previewContent: @Composable BoxScope.() -> Unit
+) {
+    Row(
+        modifier = modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(9f),
+            content = previewContent
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
                 .background(Color.Black)
         ) {
-            // X 버튼
             IconButton(
                 onClick = onBack,
                 modifier = Modifier
@@ -526,9 +537,8 @@ fun CameraScreen(
                 )
             }
 
-            // 가운데 원형 캡처 버튼
             Button(
-                onClick = { captureAndSavePhoto() },
+                onClick = onCapturePhoto,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(60.dp)
