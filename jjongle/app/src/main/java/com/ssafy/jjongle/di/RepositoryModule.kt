@@ -4,6 +4,7 @@ import com.ssafy.jjongle.data.repository.AuthRepositoryImpl
 import com.ssafy.jjongle.data.repository.NavigationStateRepositoryImpl
 import com.ssafy.jjongle.data.repository.OXGameHistoryRepositoryImpl
 import com.ssafy.jjongle.data.repository.OXGameRepositoryImpl
+import com.ssafy.jjongle.data.repository.LocalOXQuizRepositoryImpl
 import com.ssafy.jjongle.data.repository.TTSRepositoryImpl
 import com.ssafy.jjongle.data.repository.TangramGameRepositoryImpl
 import com.ssafy.jjongle.data.service.GoogleAuthServiceImpl
@@ -12,6 +13,7 @@ import com.ssafy.jjongle.domain.repository.GoogleAuthService
 import com.ssafy.jjongle.domain.repository.NavigationStateRepository
 import com.ssafy.jjongle.domain.repository.OXGameHistoryRepository
 import com.ssafy.jjongle.domain.repository.OXGameRepository
+import com.ssafy.jjongle.domain.repository.OXQuizRepository
 import com.ssafy.jjongle.domain.repository.TTSRepository
 import com.ssafy.jjongle.domain.repository.TangramGameRepository
 import dagger.Binds
@@ -48,6 +50,12 @@ abstract class RepositoryModule {
     abstract fun bindOXGameRepository(
         oxGameRepositoryImpl: OXGameRepositoryImpl
     ): OXGameRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindOXQuizRepository(
+        impl: LocalOXQuizRepositoryImpl
+    ): OXQuizRepository
 
     @Binds
     @Singleton
