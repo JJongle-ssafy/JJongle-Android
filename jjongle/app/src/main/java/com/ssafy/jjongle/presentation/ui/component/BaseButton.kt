@@ -27,7 +27,7 @@ fun BaseButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.height(60.dp),
         shape = RoundedCornerShape(16.dp), // 둥근 모서리 모양을 적용합니다.
         colors = ButtonDefaults.buttonColors(
             containerColor = JjongleBrown, // 버튼의 배경색
