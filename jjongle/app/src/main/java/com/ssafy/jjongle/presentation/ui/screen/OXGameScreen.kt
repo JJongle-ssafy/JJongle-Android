@@ -69,6 +69,7 @@ import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.CameraComponent
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import com.ssafy.jjongle.presentation.ui.layout.calculateFillBoundsBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.OXGameViewModel
 import com.ssafy.jjongle.presentation.vision.OXTrackedFace
@@ -346,15 +347,11 @@ fun GameErrorDialog(
 fun GameStartContent(
     onStartQuiz: () -> Unit
 ) {
+    SystemBackgroundImageEffect(R.drawable.ox_start_content_bg)
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.ox_start_content_bg),
-            contentDescription = "게임 시작 배경",
-            modifier = Modifier.fillMaxSize()
-        )
 
         // 버튼을 상단 오른쪽에 배치
         BaseButton(
@@ -385,13 +382,9 @@ fun QuizGameContent(
         )
     }
 ) {
+    SystemBackgroundImageEffect(R.drawable.ox_game_camera_background)
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.ox_game_camera_background),
-            contentDescription = "게임 카메라 배경",
-            modifier = Modifier.fillMaxSize()
-        )
 
         Column(
             modifier = Modifier
@@ -535,13 +528,9 @@ fun GameResultContent(
     // 발랄한 폰트
     val playfulFont = FontFamily(Font(R.font.jalnan2))
 
+    SystemBackgroundImageEffect(R.drawable.ox_game_result_background)
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // 결과 배경
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.ox_game_result_background),
-            contentDescription = "result bg",
-            modifier = Modifier.fillMaxSize()
-        )
 
         val rankedWithProfile = top3Rankings
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -888,13 +877,9 @@ fun QuizExplanationContent(
 ) {
     // 자동 진행은 상위 컴포저블에서 TTS 종료 시점에 맞춰 처리합니다.
 
+    SystemBackgroundImageEffect(R.drawable.ox_game_background)
+
     Box(modifier = Modifier.fillMaxSize()) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.ox_game_background),
-            contentDescription = "해설 배경",
-            modifier = Modifier.fillMaxSize()
-        )
         val oxResult = if (quiz.answer == "O") {
             R.drawable.ox_o
         } else {

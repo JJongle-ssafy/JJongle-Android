@@ -21,13 +21,13 @@ import com.ssafy.jjongle.presentation.ui.theme.JjongleWhite
 fun BaseButton(
     onClick: () -> Unit,
     text: String,
-    fontSize: TextUnit = 28.sp,
+    fontSize: TextUnit = 30.sp,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(60.dp),
+        modifier = modifier.height(80.dp),
         shape = RoundedCornerShape(16.dp), // 둥근 모서리 모양을 적용합니다.
         colors = ButtonDefaults.buttonColors(
             containerColor = JjongleBrown, // 버튼의 배경색

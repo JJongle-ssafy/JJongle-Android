@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.domain.entity.AnimalType
 
+//TODO: 도메인으로 옮겨라
 @DrawableRes
 fun AnimalType.toImageRes(): Int = when (this) {
     AnimalType.TURTLE -> R.drawable.turtle

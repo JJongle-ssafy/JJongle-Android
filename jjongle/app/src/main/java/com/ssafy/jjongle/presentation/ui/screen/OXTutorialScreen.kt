@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
-import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import com.ssafy.jjongle.presentation.viewmodel.TutorialViewModel
 import com.ssafy.jjongle.util.AudioPlayer
 import kotlinx.coroutines.delay
@@ -60,17 +60,16 @@ fun OXTutorialContent(
     page: Int,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    onStartQuiz: () -> Unit
+    onStartQuiz: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val safePage = page.coerceIn(OX_TUTORIAL_IMAGES.indices)
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 배경
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.ox_tutorial_background),
-            contentDescription = "tutorial background",
-            modifier = Modifier.fillMaxSize()
-        )
+    SystemBackgroundImageEffect(R.drawable.ox_tutorial_background)
+
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
 
         // 중앙 튜토리얼 이미지
         Image(

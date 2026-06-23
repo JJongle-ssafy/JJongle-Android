@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.ScreenOrientation
@@ -237,7 +236,7 @@ private fun OXTitleSnapshotContent() {
         DesignCanvas(modifier = Modifier.fillMaxSize()) {
             OXGameTitleScreen(
                 gameName = "쫑글 O/X 대모험",
-                backgroundImagePainter = painterResource(id = R.drawable.ox_title_background),
+                backgroundImageRes = R.drawable.ox_title_background,
                 onStartGameClick = {},
                 onGoMapClick = {},
                 onGameRulesClick = {}
@@ -252,7 +251,7 @@ private fun TangramTitleSnapshotContent() {
         DesignCanvas(modifier = Modifier.fillMaxSize()) {
             TangramTitleScreen(
                 gameName = "쫑글 탐험대",
-                backgroundImagePainter = painterResource(id = R.drawable.tangram_title_background),
+                backgroundImageRes = R.drawable.tangram_title_background,
                 onStartGameClick = {},
                 onGoMapClick = {},
                 onGameRulesClick = {}

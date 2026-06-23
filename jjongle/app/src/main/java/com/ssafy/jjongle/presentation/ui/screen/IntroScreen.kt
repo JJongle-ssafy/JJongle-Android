@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import com.ssafy.jjongle.presentation.viewmodel.IntroViewModel
 import com.ssafy.jjongle.util.AudioPlayer
 import kotlinx.coroutines.delay
@@ -89,15 +90,24 @@ fun IntroContent(
     val safeCurrentPage = currentPage.coerceIn(pages.indices)
     val currentPageData = pages[safeCurrentPage]
 
+    val isWide = currentPageData.backgroundImage == R.drawable.ox_intro_background
+    if (isWide) {
+        SystemBackgroundImageEffect(currentPageData.backgroundImage)
+    } else {
+        SystemBackgroundImageEffect(null)
+    }
+
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = currentPageData.backgroundImage),
-            contentDescription = "$gameName 배경 이미지",
-            modifier = Modifier.fillMaxSize()
-        )
+        if (!isWide) {
+            // 배경 이미지
+            ResponsiveBackgroundImage(
+                painter = painterResource(id = currentPageData.backgroundImage),
+                contentDescription = "$gameName 배경 이미지",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
 
         // 중앙 스크롤 영역

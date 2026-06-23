@@ -36,7 +36,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 
 @Composable
@@ -132,15 +132,11 @@ fun LoginContent(
     errorMessage: String?,
     onGoogleSignInClick: () -> Unit
 ) {
+    SystemBackgroundImageEffect(R.drawable.login_bg)
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.login_bg),
-            contentDescription = "Login Background",
-            modifier = Modifier.fillMaxSize()
-        )
 
         Column(
             modifier = Modifier

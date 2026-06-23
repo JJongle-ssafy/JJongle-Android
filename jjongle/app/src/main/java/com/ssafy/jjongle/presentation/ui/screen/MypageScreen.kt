@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
-import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 
 
@@ -80,14 +80,9 @@ fun MypageContent(
     onLogoutClick: () -> Unit,
     goHomeButtonText: String = "처음으로 돌아가기"
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.mypage_bg),
-            contentDescription = "Mypage Background",
-            modifier = Modifier.fillMaxSize()
-        )
+    SystemBackgroundImageEffect(R.drawable.mypage_bg)
 
+    Box(modifier = Modifier.fillMaxSize()) {
         // 뒤로가기 버튼
         BaseButton(
             onClick = onGoMapClick,

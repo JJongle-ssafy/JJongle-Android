@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.jjongle.R
 import com.ssafy.jjongle.presentation.ui.component.MainCharacter
-import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import com.ssafy.jjongle.presentation.ui.layout.calculateFillBoundsBackgroundLayout
 import com.ssafy.jjongle.presentation.viewmodel.MapViewModel
 import kotlinx.coroutines.joinAll
@@ -148,15 +148,12 @@ fun MapContent(
     onMypagePanelClick: () -> Unit,
     onBgmClick: () -> Unit
 ) {
+    SystemBackgroundImageEffect(R.drawable.main_map)
+
     Box(
         modifier = Modifier.fillMaxSize()
 
     ) {
-        ResponsiveBackgroundImage(
-            painter = painterResource(id = R.drawable.main_map),
-            contentDescription = "Map Background",
-            modifier = Modifier.fillMaxSize()
-        )
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val backgroundLayout = calculateFillBoundsBackgroundLayout(

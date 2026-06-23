@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import com.ssafy.jjongle.presentation.ui.layout.SystemBackgroundImageEffect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,7 +23,7 @@ import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 @Composable
 fun OXGameTitleScreen(
     gameName: String,
-    backgroundImagePainter: Painter,
+    backgroundImageRes: Int,
     onStartGameClick: () -> Unit,
     onGoMapClick: () -> Unit,
     onGameRulesClick: () -> Unit,
@@ -32,15 +32,11 @@ fun OXGameTitleScreen(
     goHomeButtonText: String = "처음으로 돌아가기",
     gameRulesButtonText: String = "놀이 설명"
 ) {
+    SystemBackgroundImageEffect(backgroundImageRes)
+
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // 배경 이미지
-        ResponsiveBackgroundImage(
-            painter = backgroundImagePainter,
-            contentDescription = "$gameName 배경 이미지",
-            modifier = Modifier.fillMaxSize()
-        )
 
 
         // 처음으로 돌아가기 버튼
@@ -87,10 +83,9 @@ fun OXGameTitleScreen(
 )
 @Composable
 fun TitleScreenPreview() {
-    val dummyBackground = painterResource(id = R.drawable.ox_title_background)
     OXGameTitleScreen(
         gameName = "OX 게임",
-        backgroundImagePainter = dummyBackground,
+        backgroundImageRes = R.drawable.ox_title_background,
         onStartGameClick = {},
         onGoMapClick = {},
         onGameRulesClick = {},
