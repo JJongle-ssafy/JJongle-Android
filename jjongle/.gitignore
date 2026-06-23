@@ -73,4 +73,4 @@ Thumbs.db
 # LLM Agent & Wiki
 wiki/
 AGENT.md
-.claude
+.claude/
