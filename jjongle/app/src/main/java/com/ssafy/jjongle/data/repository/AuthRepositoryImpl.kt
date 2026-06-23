@@ -40,10 +40,10 @@ class AuthRepositoryImpl @Inject constructor(
 
             Result.success(profile.toAuthenticatedState(firebaseUser))
         } catch (e: AuthException) {
-            Log.e(TAG, "로그인 중 인증 오류 발생: ${e.message}", e)
+            logError("로그인 중 인증 오류 발생: ${e.message}", e)
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e(TAG, "로그인 중 일반 Exception 발생", e)
+            logError("로그인 중 일반 Exception 발생", e)
             Result.failure(e.toUnknownAuthException("로그인 중 알 수 없는 오류가 발생했습니다."))
         }
     }
@@ -73,10 +73,10 @@ class AuthRepositoryImpl @Inject constructor(
 
             Result.success(profile.toAuthenticatedState(firebaseUser))
         } catch (e: AuthException) {
-            Log.e(TAG, "회원가입 중 인증 오류 발생: ${e.message}", e)
+            logError("회원가입 중 인증 오류 발생: ${e.message}", e)
             Result.failure(e)
         } catch (e: Exception) {
-            Log.e(TAG, "회원가입 중 일반 Exception 발생", e)
+            logError("회원가입 중 일반 Exception 발생", e)
             Result.failure(e.toUnknownAuthException("회원가입 중 알 수 없는 오류가 발생했습니다."))
         }
     }
@@ -105,7 +105,7 @@ class AuthRepositoryImpl @Inject constructor(
             authDataSource.saveUserId(firebaseUser.uid)
             authDataSource.saveUserProfile(nickname, profileImage)
         } catch (e: Exception) {
-            Log.e(TAG, "회원정보 수정 실패", e)
+            logError("회원정보 수정 실패", e)
             throw e.toUnknownAuthException("회원정보 수정에 실패했습니다.")
         }
     }
@@ -117,7 +117,7 @@ class AuthRepositoryImpl @Inject constructor(
             authDataSource.clearAuthData()
             firebaseAuthDataSource.signOut()
         } catch (e: Exception) {
-            Log.e(TAG, "회원 탈퇴 실패", e)
+            logError("회원 탈퇴 실패", e)
             throw e.toUnknownAuthException("회원 탈퇴에 실패했습니다.")
         }
     }
@@ -125,27 +125,27 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout() {
         authDataSource.clearAuthData()
         firebaseAuthDataSource.signOut()
-        Log.d(TAG, "로그아웃 완료: Firebase 세션 및 로컬 인증 캐시 삭제")
+        logDebug("로그아웃 완료: Firebase 세션 및 로컬 인증 캐시 삭제")
     }
 
     override suspend fun checkAuthStatus(): AuthState {
         val firebaseUser = firebaseAuthDataSource.getCurrentUser()
         if (firebaseUser == null) {
             authDataSource.clearAuthData()
-            Log.d(TAG, "Firebase 사용자 없음. 로그아웃 상태로 처리")
+            logDebug("Firebase 사용자 없음. 로그아웃 상태로 처리")
             return AuthState(isAuthenticated = false, isLoading = false)
         }
 
         return try {
             val profile = userProfileDataSource.getProfile(firebaseUser.uid)
             if (profile == null) {
-                Log.w(TAG, "Firestore 사용자 프로필 없음. 회원가입 필요 상태로 처리")
+                logWarning("Firestore 사용자 프로필 없음. 회원가입 필요 상태로 처리")
                 AuthState(isAuthenticated = false, isLoading = false)
             } else {
                 profile.toAuthenticatedState(firebaseUser)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "로그인 상태 확인 실패", e)
+            logError("로그인 상태 확인 실패", e)
             val cachedUser = getCachedUser()
             if (cachedUser == null) {
                 AuthState(
@@ -172,7 +172,7 @@ class AuthRepositoryImpl @Inject constructor(
         return AuthTokens(accessToken = accessToken, refreshToken = refreshToken)
     }
 
-    @Deprecated("Server-issued access/refresh tokens are legacy. Kept for Unity/backend migration compatibility.")
+    @Deprecated("Server-issued access/refresh tokens are legacy. Kept for legacy backend compatibility.")
     override fun saveTokens(tokens: AuthTokens) {
         if (!tokens.isValid) {
             throw AuthException(MissingTokenAuthError, "저장할 인증 토큰이 비어 있습니다.")
@@ -232,6 +232,22 @@ class AuthRepositoryImpl @Inject constructor(
             else -> message ?: defaultMessage
         }
         return AuthException(AuthStorageUnavailableError, mappedMessage, this)
+    }
+
+    private fun logDebug(message: String) = safeLog { Log.d(TAG, message) }
+
+    private fun logWarning(message: String) = safeLog { Log.w(TAG, message) }
+
+    private fun logError(message: String, throwable: Throwable) = safeLog {
+        Log.e(TAG, message, throwable)
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private inline fun safeLog(block: () -> Unit) {
+        try {
+            block()
+        } catch (_: Throwable) {
+        }
     }
 
     private companion object {

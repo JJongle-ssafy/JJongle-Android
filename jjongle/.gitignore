@@ -70,7 +70,15 @@ gradle.properties.local
 ehthumbs.db
 Thumbs.db
 
-# LLM Agent & Wiki
+# LLM Agent, Docs & Wiki
+.agents/
+.codex/
+.claude/
+docs/
 wiki/
 AGENT.md
-.claude/
+AGENTS.md
+
+# Local tool output
+.kotlin/
+*.log

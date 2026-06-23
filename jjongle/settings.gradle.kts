@@ -21,6 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "jjongle"
 include(":app")
-include(":unityLibrary")
-project(":unityLibrary").projectDir = file("unityLibrary")
-include(":MainApp.androidlib")

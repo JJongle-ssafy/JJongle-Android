@@ -119,7 +119,8 @@ class FaceReidentifier(
 
         // 2) 미해결 detection에 대해 SORT 매칭 수행
         if (unresolved.isNotEmpty()) {
-            val matched = performMatching(unresolved, currentTimeMs)
+            val currentTrackingIds = detections.mapTo(mutableSetOf()) { it.trackingId }
+            val matched = performMatching(unresolved, currentTimeMs, currentTrackingIds)
             resolved.putAll(matched)
 
             // 매칭 안 된 것들은 새 참가자로 등록
@@ -184,15 +185,19 @@ class FaceReidentifier(
     private fun performMatching(
         detections: List<Detection>,
         currentTimeMs: Long,
+        currentTrackingIds: Set<Int> = detections.mapTo(mutableSetOf()) { it.trackingId },
     ): Map<Int, Int> {
-        // 매칭 후보: 최근 사라졌거나 활성 trackingId가 없는 참가자들
+        // 매칭 후보: 현재 프레임에 기존 active trackingId가 보이지 않는 참가자들
         val candidateTracks = participants.values.filter { p ->
             val timeSinceLastSeen = currentTimeMs - p.lastSeenMs
             val notExpired = timeSinceLastSeen <= expiryMs && p.kalmanTracker.timeSinceUpdate <= maxAge
-            val notActivelyMatched = p.activeTrackingId == null ||
-                    !trackingIdMap.containsKey(p.activeTrackingId) ||
-                    timeSinceLastSeen > ACTIVE_GRACE_MS
-            notExpired && notActivelyMatched
+            val activeTrackingId = p.activeTrackingId
+            val activeTrackingIdStillPresent = activeTrackingId != null &&
+                    activeTrackingId in currentTrackingIds &&
+                    trackingIdMap[activeTrackingId] == p.participantId
+            val recentActiveTrackStillPresent = activeTrackingIdStillPresent &&
+                    timeSinceLastSeen <= ACTIVE_GRACE_MS
+            notExpired && !recentActiveTrackStillPresent
         }
 
         if (candidateTracks.isEmpty()) return emptyMap()

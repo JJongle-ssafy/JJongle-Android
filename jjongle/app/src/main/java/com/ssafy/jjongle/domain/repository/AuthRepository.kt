@@ -14,6 +14,6 @@ interface AuthRepository {
     suspend fun checkAuthStatus(): AuthState
     @Deprecated("Server-issued tokens are legacy. Firebase Auth session is the active auth source.")
     fun getStoredTokens(): AuthTokens?
-    @Deprecated("Server-issued tokens are legacy. Kept for Unity/backend migration compatibility.")
+    @Deprecated("Server-issued tokens are legacy. Kept for legacy backend compatibility.")
     fun saveTokens(tokens: AuthTokens)
 }

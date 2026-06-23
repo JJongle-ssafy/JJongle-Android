@@ -3,15 +3,20 @@ package com.ssafy.jjongle.presentation.ui.layout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -19,6 +24,21 @@ import kotlin.math.min
 
 const val DESIGN_CANVAS_WIDTH_DP = 1280f
 const val DESIGN_CANVAS_HEIGHT_DP = 800f
+
+val LocalLetterboxImageResController = androidx.compose.runtime.compositionLocalOf<MutableState<Int?>?> { null }
+
+@Composable
+fun SystemBackgroundImageEffect(imageRes: Int?) {
+    val controller = LocalLetterboxImageResController.current
+    DisposableEffect(imageRes, controller) {
+        controller?.value = imageRes
+        onDispose {
+            if (controller?.value == imageRes) {
+                controller?.value = null
+            }
+        }
+    }
+}
 
 data class DesignCanvasMetrics(
     val scale: Float,
@@ -63,6 +83,16 @@ fun DesignCanvas(
         modifier = modifier.background(letterboxColor),
         contentAlignment = Alignment.Center
     ) {
+        val bgRes = LocalLetterboxImageResController.current?.value
+        if (bgRes != null) {
+            androidx.compose.foundation.Image(
+                painter = painterResource(id = bgRes),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
         val parentDensity = LocalDensity.current
         val metrics = remember(maxWidth, maxHeight, designSize) {
             calculateDesignCanvasMetrics(
