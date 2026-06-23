@@ -69,3 +69,8 @@ gradle.properties.local
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# LLM Agent & Wiki
+wiki/
+AGENT.md
+.claude
