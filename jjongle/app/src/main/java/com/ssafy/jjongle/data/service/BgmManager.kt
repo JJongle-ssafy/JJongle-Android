@@ -8,9 +8,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.BgmGroup
-import com.ssafy.jjongle.domain.repository.BgmRepository
-import com.ssafy.jjongle.domain.repository.SettingsRepository
+import com.ssafy.jjongle.common.entity.BgmGroup
+import com.ssafy.jjongle.common.domain.repository.BgmRepository
+import com.ssafy.jjongle.common.domain.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

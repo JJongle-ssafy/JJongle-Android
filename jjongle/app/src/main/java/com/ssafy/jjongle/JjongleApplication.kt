@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.ssafy.jjongle.domain.repository.BgmRepository
+import com.ssafy.jjongle.common.domain.repository.BgmRepository
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

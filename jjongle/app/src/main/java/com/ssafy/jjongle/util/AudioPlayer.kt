@@ -7,7 +7,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.util.Log
-import com.ssafy.jjongle.domain.entity.TtsAudio
+import com.ssafy.jjongle.common.entity.TtsAudio
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

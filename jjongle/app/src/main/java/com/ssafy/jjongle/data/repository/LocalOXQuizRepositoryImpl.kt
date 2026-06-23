@@ -1,7 +1,7 @@
 package com.ssafy.jjongle.data.repository
 
-import com.ssafy.jjongle.domain.entity.Quiz
-import com.ssafy.jjongle.domain.repository.OXQuizRepository
+import com.ssafy.jjongle.common.entity.Quiz
+import com.ssafy.jjongle.common.domain.repository.OXQuizRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

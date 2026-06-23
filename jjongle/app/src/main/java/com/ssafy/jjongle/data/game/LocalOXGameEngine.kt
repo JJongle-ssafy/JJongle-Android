@@ -1,15 +1,15 @@
 package com.ssafy.jjongle.data.game
 
-import com.ssafy.jjongle.domain.entity.GameStartEvent
-import com.ssafy.jjongle.domain.entity.GameScore
-import com.ssafy.jjongle.domain.entity.OX
-import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
-import com.ssafy.jjongle.domain.entity.QuizResult
-import com.ssafy.jjongle.domain.entity.Quiz
-import com.ssafy.jjongle.domain.entity.QuizSession
-import com.ssafy.jjongle.domain.entity.SubmitResultEvent
-import com.ssafy.jjongle.domain.entity.UserPosition
-import com.ssafy.jjongle.domain.repository.OXQuizRepository
+import com.ssafy.jjongle.common.entity.GameStartEvent
+import com.ssafy.jjongle.common.entity.GameScore
+import com.ssafy.jjongle.common.entity.OX
+import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.common.entity.QuizResult
+import com.ssafy.jjongle.common.entity.Quiz
+import com.ssafy.jjongle.common.entity.QuizSession
+import com.ssafy.jjongle.common.entity.SubmitResultEvent
+import com.ssafy.jjongle.common.entity.UserPosition
+import com.ssafy.jjongle.common.domain.repository.OXQuizRepository
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton

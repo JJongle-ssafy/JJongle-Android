@@ -3,7 +3,7 @@ package com.ssafy.jjongle.data.model
 import com.google.gson.annotations.SerializedName
 import com.ssafy.jjongle.data.mapping.orMissingServerCoordinate
 import com.ssafy.jjongle.data.mapping.orMissingServerId
-import com.ssafy.jjongle.domain.entity.UserPosition
+import com.ssafy.jjongle.common.entity.UserPosition
 
 /**
  * 서버와 통신하기 위한 사용자 위치 정보 DTO(Data Transfer Object)입니다.

@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.OX
-import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.common.entity.OX
+import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.ResponsiveBackgroundImage
 import com.ssafy.jjongle.presentation.viewmodel.QuizNoteState

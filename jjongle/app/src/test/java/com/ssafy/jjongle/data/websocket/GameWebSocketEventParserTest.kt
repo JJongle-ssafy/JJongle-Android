@@ -1,10 +1,10 @@
 package com.ssafy.jjongle.data.websocket
 
 import com.google.gson.Gson
-import com.ssafy.jjongle.domain.entity.GameFinishEvent
-import com.ssafy.jjongle.domain.entity.GameStartEvent
-import com.ssafy.jjongle.domain.entity.SubmitResultEvent
-import com.ssafy.jjongle.domain.entity.UnknownGameEvent
+import com.ssafy.jjongle.common.entity.GameFinishEvent
+import com.ssafy.jjongle.common.entity.GameStartEvent
+import com.ssafy.jjongle.common.entity.SubmitResultEvent
+import com.ssafy.jjongle.common.entity.UnknownGameEvent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

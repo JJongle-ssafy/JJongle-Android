@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.ssafy.jjongle.domain.entity.OX
-import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.common.entity.OX
+import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
 
 @Entity(
     tableName = "ox_wrong_answer_notes",

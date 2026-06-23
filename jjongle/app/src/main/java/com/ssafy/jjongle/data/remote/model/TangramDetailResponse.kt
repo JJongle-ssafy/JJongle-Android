@@ -1,8 +1,8 @@
 package com.ssafy.jjongle.data.remote.model
 
 import com.ssafy.jjongle.data.mapping.orMissingServerField
-import com.ssafy.jjongle.domain.entity.AnimalType
-import com.ssafy.jjongle.domain.entity.TangramDetail
+import com.ssafy.jjongle.common.entity.AnimalType
+import com.ssafy.jjongle.common.entity.TangramDetail
 
 data class TangramDetailResponse(
     val story: String? = null

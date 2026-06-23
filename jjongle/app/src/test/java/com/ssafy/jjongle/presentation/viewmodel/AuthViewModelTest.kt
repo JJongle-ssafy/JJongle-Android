@@ -1,11 +1,11 @@
 package com.ssafy.jjongle.presentation.viewmodel
 
-import com.ssafy.jjongle.domain.entity.AuthState
-import com.ssafy.jjongle.domain.entity.AuthTokens
-import com.ssafy.jjongle.domain.entity.GoogleUser
-import com.ssafy.jjongle.domain.entity.UserInfo
-import com.ssafy.jjongle.domain.repository.AuthRepository
-import com.ssafy.jjongle.domain.repository.GoogleAuthService
+import com.ssafy.jjongle.common.entity.AuthState
+import com.ssafy.jjongle.common.entity.AuthTokens
+import com.ssafy.jjongle.common.entity.GoogleUser
+import com.ssafy.jjongle.common.entity.UserInfo
+import com.ssafy.jjongle.common.domain.repository.AuthRepository
+import com.ssafy.jjongle.common.domain.repository.GoogleAuthService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

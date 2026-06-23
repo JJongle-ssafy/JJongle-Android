@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.AnimalType
+import com.ssafy.jjongle.common.entity.AnimalType
 import com.ssafy.jjongle.presentation.state.AnimalBookState
 import com.ssafy.jjongle.presentation.state.AnimalSlot
 import com.ssafy.jjongle.presentation.ui.component.BaseButton

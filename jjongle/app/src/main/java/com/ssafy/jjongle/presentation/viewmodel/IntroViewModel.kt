@@ -1,8 +1,8 @@
 package com.ssafy.jjongle.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.ssafy.jjongle.domain.entity.TtsAudio
-import com.ssafy.jjongle.domain.usecase.TTSUseCase
+import com.ssafy.jjongle.common.entity.TtsAudio
+import com.ssafy.jjongle.common.domain.usecase.TTSUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

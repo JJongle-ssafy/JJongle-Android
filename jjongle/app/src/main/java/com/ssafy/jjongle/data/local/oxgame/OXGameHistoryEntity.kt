@@ -2,7 +2,7 @@ package com.ssafy.jjongle.data.local.oxgame
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.ssafy.jjongle.domain.entity.OXGameHistory
+import com.ssafy.jjongle.common.entity.OXGameHistory
 import java.time.Instant
 import java.time.ZoneId
 

@@ -6,8 +6,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.ssafy.jjongle.domain.entity.GoogleUser
-import com.ssafy.jjongle.domain.repository.GoogleAuthService
+import com.ssafy.jjongle.common.entity.GoogleUser
+import com.ssafy.jjongle.common.domain.repository.GoogleAuthService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

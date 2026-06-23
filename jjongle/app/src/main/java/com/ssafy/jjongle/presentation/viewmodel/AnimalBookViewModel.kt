@@ -3,9 +3,9 @@ package com.ssafy.jjongle.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.AnimalType
-import com.ssafy.jjongle.domain.usecase.GetTangramDetailUseCase
-import com.ssafy.jjongle.domain.usecase.GetTangramHistoriesUseCase
+import com.ssafy.jjongle.common.entity.AnimalType
+import com.ssafy.jjongle.common.domain.usecase.GetTangramDetailUseCase
+import com.ssafy.jjongle.common.domain.usecase.GetTangramHistoriesUseCase
 import com.ssafy.jjongle.presentation.state.AnimalBookState
 import com.ssafy.jjongle.presentation.state.AnimalSlot
 import dagger.hilt.android.lifecycle.HiltViewModel

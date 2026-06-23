@@ -7,10 +7,10 @@ import com.ssafy.jjongle.data.local.AuthDataSource
 import com.ssafy.jjongle.data.model.BaseRequest
 import com.ssafy.jjongle.data.model.PositionSubmitData
 import com.ssafy.jjongle.data.model.UserPositionDto
-import com.ssafy.jjongle.domain.entity.GameConnectionState
-import com.ssafy.jjongle.domain.entity.GameErrorEvent
-import com.ssafy.jjongle.domain.entity.GameEvent
-import com.ssafy.jjongle.domain.entity.UnknownGameEvent
+import com.ssafy.jjongle.common.entity.GameConnectionState
+import com.ssafy.jjongle.common.entity.GameErrorEvent
+import com.ssafy.jjongle.common.entity.GameEvent
+import com.ssafy.jjongle.common.entity.UnknownGameEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

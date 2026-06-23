@@ -8,16 +8,16 @@ import com.ssafy.jjongle.data.firebase.UserProfileDataSource
 import com.ssafy.jjongle.data.firebase.model.UserProfileDto
 import com.ssafy.jjongle.data.firebase.model.toDomain
 import com.ssafy.jjongle.data.local.AuthDataSource
-import com.ssafy.jjongle.domain.entity.AuthException
-import com.ssafy.jjongle.domain.entity.AuthState
-import com.ssafy.jjongle.domain.entity.AuthStorageUnavailableError
-import com.ssafy.jjongle.domain.entity.AuthTokens
-import com.ssafy.jjongle.domain.entity.InvalidRefreshTokenAuthError
-import com.ssafy.jjongle.domain.entity.MissingTokenAuthError
-import com.ssafy.jjongle.domain.entity.UnknownAuthError
-import com.ssafy.jjongle.domain.entity.UserAlreadyExistsAuthError
-import com.ssafy.jjongle.domain.entity.UserInfo
-import com.ssafy.jjongle.domain.repository.AuthRepository
+import com.ssafy.jjongle.common.entity.AuthException
+import com.ssafy.jjongle.common.entity.AuthState
+import com.ssafy.jjongle.common.entity.AuthStorageUnavailableError
+import com.ssafy.jjongle.common.entity.AuthTokens
+import com.ssafy.jjongle.common.entity.InvalidRefreshTokenAuthError
+import com.ssafy.jjongle.common.entity.MissingTokenAuthError
+import com.ssafy.jjongle.common.entity.UnknownAuthError
+import com.ssafy.jjongle.common.entity.UserAlreadyExistsAuthError
+import com.ssafy.jjongle.common.entity.UserInfo
+import com.ssafy.jjongle.common.domain.repository.AuthRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

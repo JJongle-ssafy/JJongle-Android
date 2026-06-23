@@ -2,7 +2,7 @@ package com.ssafy.jjongle.presentation.ui.mapper
 
 import androidx.annotation.DrawableRes
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.AnimalType
+import com.ssafy.jjongle.common.entity.AnimalType
 
 //TODO: 도메인으로 옮겨라
 @DrawableRes

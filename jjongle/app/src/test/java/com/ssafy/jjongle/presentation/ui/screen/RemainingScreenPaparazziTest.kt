@@ -13,10 +13,10 @@ import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.ScreenOrientation
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.AnimalType
-import com.ssafy.jjongle.domain.entity.OX
-import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
-import com.ssafy.jjongle.domain.entity.TangramHistory
+import com.ssafy.jjongle.common.entity.AnimalType
+import com.ssafy.jjongle.common.entity.OX
+import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.common.entity.TangramHistory
 import com.ssafy.jjongle.presentation.model.CharacterType
 import com.ssafy.jjongle.presentation.state.AnimalBookState
 import com.ssafy.jjongle.presentation.ui.layout.DesignCanvas

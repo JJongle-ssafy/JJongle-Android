@@ -2,10 +2,10 @@ package com.ssafy.jjongle.data.repository
 
 import com.ssafy.jjongle.data.remote.TangramGameApiService
 import com.ssafy.jjongle.data.remote.model.toDomain
-import com.ssafy.jjongle.domain.entity.AnimalType
-import com.ssafy.jjongle.domain.entity.TangramDetail
-import com.ssafy.jjongle.domain.entity.TangramHistory
-import com.ssafy.jjongle.domain.repository.TangramGameRepository
+import com.ssafy.jjongle.common.entity.AnimalType
+import com.ssafy.jjongle.common.entity.TangramDetail
+import com.ssafy.jjongle.common.entity.TangramHistory
+import com.ssafy.jjongle.common.domain.repository.TangramGameRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

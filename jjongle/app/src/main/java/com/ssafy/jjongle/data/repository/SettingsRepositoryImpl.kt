@@ -1,7 +1,7 @@
 package com.ssafy.jjongle.data.repository
 
 import android.content.SharedPreferences
-import com.ssafy.jjongle.domain.repository.SettingsRepository
+import com.ssafy.jjongle.common.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

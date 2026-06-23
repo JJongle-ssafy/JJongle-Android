@@ -1,9 +1,9 @@
 package com.ssafy.jjongle.data.game
 
-import com.ssafy.jjongle.domain.entity.OX
-import com.ssafy.jjongle.domain.entity.Quiz
-import com.ssafy.jjongle.domain.entity.UserPosition
-import com.ssafy.jjongle.domain.repository.OXQuizRepository
+import com.ssafy.jjongle.common.entity.OX
+import com.ssafy.jjongle.common.entity.Quiz
+import com.ssafy.jjongle.common.entity.UserPosition
+import com.ssafy.jjongle.common.domain.repository.OXQuizRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

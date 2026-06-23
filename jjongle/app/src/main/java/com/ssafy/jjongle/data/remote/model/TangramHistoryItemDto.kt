@@ -2,8 +2,8 @@ package com.ssafy.jjongle.data.remote.model
 
 import com.ssafy.jjongle.data.mapping.orMissingServerId
 import com.ssafy.jjongle.data.mapping.orMissingServerLongId
-import com.ssafy.jjongle.domain.entity.AnimalType
-import com.ssafy.jjongle.domain.entity.TangramHistory
+import com.ssafy.jjongle.common.entity.AnimalType
+import com.ssafy.jjongle.common.entity.TangramHistory
 
 data class TangramHistoryItemDto(
     val stage: Int? = null,

@@ -3,7 +3,7 @@ package com.ssafy.jjongle.data.model
 import com.google.gson.annotations.SerializedName
 import com.ssafy.jjongle.data.mapping.orMissingServerField
 import com.ssafy.jjongle.data.mapping.orMissingServerId
-import com.ssafy.jjongle.domain.entity.Quiz
+import com.ssafy.jjongle.common.entity.Quiz
 
 data class QuizResponse(
     @SerializedName("quizId")

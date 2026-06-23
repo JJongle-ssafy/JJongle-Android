@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.data.remote.model
 
-import com.ssafy.jjongle.domain.entity.AnimalType
+import com.ssafy.jjongle.common.entity.AnimalType
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

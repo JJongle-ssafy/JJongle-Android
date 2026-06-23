@@ -7,9 +7,9 @@ import com.ssafy.jjongle.data.firebase.FirebaseAuthDataSource
 import com.ssafy.jjongle.data.firebase.UserProfileDataSource
 import com.ssafy.jjongle.data.firebase.model.UserProfileDto
 import com.ssafy.jjongle.data.local.AuthDataSource
-import com.ssafy.jjongle.domain.entity.AuthException
-import com.ssafy.jjongle.domain.entity.AuthStorageUnavailableError
-import com.ssafy.jjongle.domain.entity.UserAlreadyExistsAuthError
+import com.ssafy.jjongle.common.entity.AuthException
+import com.ssafy.jjongle.common.entity.AuthStorageUnavailableError
+import com.ssafy.jjongle.common.entity.UserAlreadyExistsAuthError
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

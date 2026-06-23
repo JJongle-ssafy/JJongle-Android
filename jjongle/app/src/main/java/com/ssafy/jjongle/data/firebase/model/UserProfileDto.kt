@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.data.firebase.model
 
-import com.ssafy.jjongle.domain.entity.UserInfo
+import com.ssafy.jjongle.common.entity.UserInfo
 
 data class UserProfileDto(
     val nickname: String? = null,

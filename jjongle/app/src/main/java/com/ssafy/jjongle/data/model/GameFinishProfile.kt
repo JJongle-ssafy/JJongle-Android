@@ -3,7 +3,7 @@ package com.ssafy.jjongle.data.model
 import com.google.gson.annotations.SerializedName
 import com.ssafy.jjongle.data.mapping.orMissingServerField
 import com.ssafy.jjongle.data.mapping.orMissingServerId
-import com.ssafy.jjongle.domain.entity.GameProfileImage
+import com.ssafy.jjongle.common.entity.GameProfileImage
 
 /**
  * GAME_FINISH 응답으로 전달되는 유저 프로필 이미지 정보

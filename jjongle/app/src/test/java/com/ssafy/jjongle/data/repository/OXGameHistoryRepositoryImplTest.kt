@@ -4,7 +4,7 @@ import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryDao
 import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryEntity
 import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryWithNotes
 import com.ssafy.jjongle.data.local.oxgame.OXWrongAnswerNoteEntity
-import com.ssafy.jjongle.domain.entity.OX
+import com.ssafy.jjongle.common.entity.OX
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test

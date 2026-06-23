@@ -63,8 +63,8 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ssafy.jjongle.R
-import com.ssafy.jjongle.domain.entity.GameConnectionState
-import com.ssafy.jjongle.domain.entity.Quiz
+import com.ssafy.jjongle.common.entity.GameConnectionState
+import com.ssafy.jjongle.common.entity.Quiz
 import com.ssafy.jjongle.presentation.state.TTSState
 import com.ssafy.jjongle.presentation.ui.component.BaseButton
 import com.ssafy.jjongle.presentation.ui.component.CameraComponent

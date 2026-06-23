@@ -8,8 +8,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.ssafy.jjongle.data.service.BgmManager
-import com.ssafy.jjongle.domain.repository.BgmRepository
-import com.ssafy.jjongle.domain.repository.SettingsRepository
+import com.ssafy.jjongle.common.domain.repository.BgmRepository
+import com.ssafy.jjongle.common.domain.repository.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

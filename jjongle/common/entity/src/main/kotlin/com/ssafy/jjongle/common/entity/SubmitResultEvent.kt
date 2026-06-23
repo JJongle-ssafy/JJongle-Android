@@ -1,0 +1,7 @@
+package com.ssafy.jjongle.common.entity
+
+data class SubmitResultEvent(
+    val quizId: Int,
+    val correctAnswer: String,
+    val correctUserPositions: List<UserPosition>
+) : GameEvent

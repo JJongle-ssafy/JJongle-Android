@@ -2,7 +2,7 @@ package com.ssafy.jjongle.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.domain.repository.NavigationStateRepository
+import com.ssafy.jjongle.common.domain.repository.NavigationStateRepository
 import dagger.hilt.android.lifecycle.HiltViewModel // Hilt 사용 시
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

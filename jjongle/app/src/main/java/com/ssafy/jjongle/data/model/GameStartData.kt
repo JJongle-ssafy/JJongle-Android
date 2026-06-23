@@ -2,7 +2,7 @@ package com.ssafy.jjongle.data.model
 
 import com.google.gson.annotations.SerializedName
 import com.ssafy.jjongle.data.mapping.orMissingServerField
-import com.ssafy.jjongle.domain.entity.QuizSession
+import com.ssafy.jjongle.common.entity.QuizSession
 
 data class GameStartData(
     @SerializedName("message")

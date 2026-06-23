@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.data.model
 
-import com.ssafy.jjongle.domain.entity.UserPosition
+import com.ssafy.jjongle.common.entity.UserPosition
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

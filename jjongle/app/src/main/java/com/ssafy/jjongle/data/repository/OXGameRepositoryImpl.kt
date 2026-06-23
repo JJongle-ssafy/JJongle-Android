@@ -5,11 +5,11 @@ import com.ssafy.jjongle.data.local.SessionDataSource
 import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryDao
 import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryEntity
 import com.ssafy.jjongle.data.local.oxgame.toEntity
-import com.ssafy.jjongle.domain.entity.GameConnectionState
-import com.ssafy.jjongle.domain.entity.GameErrorEvent
-import com.ssafy.jjongle.domain.entity.GameEvent
-import com.ssafy.jjongle.domain.entity.UserPosition
-import com.ssafy.jjongle.domain.repository.OXGameRepository
+import com.ssafy.jjongle.common.entity.GameConnectionState
+import com.ssafy.jjongle.common.entity.GameErrorEvent
+import com.ssafy.jjongle.common.entity.GameEvent
+import com.ssafy.jjongle.common.entity.UserPosition
+import com.ssafy.jjongle.common.domain.repository.OXGameRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

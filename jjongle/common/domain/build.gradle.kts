@@ -10,4 +10,6 @@ dependencies {
     api(project(":common:entity"))
     api(libs.coroutines.core)
     api(libs.javax.inject)
+
+    testImplementation(libs.junit)
 }

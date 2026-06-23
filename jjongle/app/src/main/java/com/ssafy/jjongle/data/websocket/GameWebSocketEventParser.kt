@@ -9,11 +9,11 @@ import com.ssafy.jjongle.data.mapping.orMissingServerField
 import com.ssafy.jjongle.data.mapping.orMissingServerId
 import com.ssafy.jjongle.data.model.toDomainProfiles
 import com.ssafy.jjongle.data.model.toDomain
-import com.ssafy.jjongle.domain.entity.GameFinishEvent
-import com.ssafy.jjongle.domain.entity.GameEvent
-import com.ssafy.jjongle.domain.entity.GameStartEvent
-import com.ssafy.jjongle.domain.entity.SubmitResultEvent
-import com.ssafy.jjongle.domain.entity.UnknownGameEvent
+import com.ssafy.jjongle.common.entity.GameFinishEvent
+import com.ssafy.jjongle.common.entity.GameEvent
+import com.ssafy.jjongle.common.entity.GameStartEvent
+import com.ssafy.jjongle.common.entity.SubmitResultEvent
+import com.ssafy.jjongle.common.entity.UnknownGameEvent
 import javax.inject.Inject
 
 @Deprecated("Legacy backend WebSocket event parser retained during OX serverless renewal. Use local domain events.")

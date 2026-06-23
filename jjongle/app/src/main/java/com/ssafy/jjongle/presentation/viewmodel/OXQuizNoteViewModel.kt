@@ -3,9 +3,9 @@ package com.ssafy.jjongle.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
-import com.ssafy.jjongle.domain.usecase.GetOXGameHistoriesUseCase
-import com.ssafy.jjongle.domain.usecase.GetOXGameHistoryDetailUseCase
+import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.common.domain.usecase.GetOXGameHistoriesUseCase
+import com.ssafy.jjongle.common.domain.usecase.GetOXGameHistoryDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

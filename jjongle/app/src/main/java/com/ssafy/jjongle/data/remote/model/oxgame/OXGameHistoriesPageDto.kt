@@ -1,6 +1,6 @@
 package com.ssafy.jjongle.data.remote.model.oxgame
 
-import com.ssafy.jjongle.domain.repository.OXGameHistoryPage
+import com.ssafy.jjongle.common.domain.repository.OXGameHistoryPage
 
 data class OXGameHistoriesPageDto(
     val totalPages: Int? = null,

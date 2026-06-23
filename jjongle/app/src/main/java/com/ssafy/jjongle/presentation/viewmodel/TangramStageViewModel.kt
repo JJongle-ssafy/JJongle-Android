@@ -2,9 +2,9 @@ package com.ssafy.jjongle.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.domain.entity.AuthTokens
-import com.ssafy.jjongle.domain.usecase.GetAuthTokensUseCase
-import com.ssafy.jjongle.domain.usecase.TangramGameUseCase
+import com.ssafy.jjongle.common.entity.AuthTokens
+import com.ssafy.jjongle.common.domain.usecase.GetAuthTokensUseCase
+import com.ssafy.jjongle.common.domain.usecase.TangramGameUseCase
 import com.ssafy.jjongle.presentation.state.TangramGameState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

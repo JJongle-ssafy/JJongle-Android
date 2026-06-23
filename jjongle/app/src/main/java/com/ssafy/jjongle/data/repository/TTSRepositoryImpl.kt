@@ -1,8 +1,8 @@
 package com.ssafy.jjongle.data.repository
 import com.ssafy.jjongle.data.model.TTSRequest
 import com.ssafy.jjongle.data.remote.SuperToneApiService
-import com.ssafy.jjongle.domain.entity.TtsAudio
-import com.ssafy.jjongle.domain.repository.TTSRepository
+import com.ssafy.jjongle.common.entity.TtsAudio
+import com.ssafy.jjongle.common.domain.repository.TTSRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

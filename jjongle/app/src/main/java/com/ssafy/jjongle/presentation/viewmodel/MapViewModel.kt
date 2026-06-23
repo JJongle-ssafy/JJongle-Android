@@ -3,9 +3,9 @@ package com.ssafy.jjongle.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.jjongle.domain.entity.BgmGroup
-import com.ssafy.jjongle.domain.repository.BgmRepository
-import com.ssafy.jjongle.domain.repository.SettingsRepository
+import com.ssafy.jjongle.common.entity.BgmGroup
+import com.ssafy.jjongle.common.domain.repository.BgmRepository
+import com.ssafy.jjongle.common.domain.repository.SettingsRepository
 import com.ssafy.jjongle.presentation.state.MapState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

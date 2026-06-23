@@ -2,9 +2,9 @@ package com.ssafy.jjongle.data.repository
 
 import com.ssafy.jjongle.data.local.oxgame.OXGameHistoryDao
 import com.ssafy.jjongle.data.local.oxgame.toDomain
-import com.ssafy.jjongle.domain.entity.OXGameWrongAnswerNote
-import com.ssafy.jjongle.domain.repository.OXGameHistoryPage
-import com.ssafy.jjongle.domain.repository.OXGameHistoryRepository
+import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.common.domain.repository.OXGameHistoryPage
+import com.ssafy.jjongle.common.domain.repository.OXGameHistoryRepository
 import javax.inject.Inject
 
 class OXGameHistoryRepositoryImpl @Inject constructor(

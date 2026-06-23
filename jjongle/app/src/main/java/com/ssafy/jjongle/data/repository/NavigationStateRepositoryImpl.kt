@@ -2,7 +2,7 @@ package com.ssafy.jjongle.data.repository
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.ssafy.jjongle.domain.repository.NavigationStateRepository
+import com.ssafy.jjongle.common.domain.repository.NavigationStateRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
