@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "jjongle"
 include(":app")
+include(":common:entity")
+include(":common:domain")

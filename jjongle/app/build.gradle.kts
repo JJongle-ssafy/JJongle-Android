@@ -67,6 +67,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":common:domain"))
+
     // 기존 Compose 의존성
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
