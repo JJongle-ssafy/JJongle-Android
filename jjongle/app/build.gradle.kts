@@ -6,13 +6,14 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.paparazzi)
+    alias(libs.plugins.androidx.baselineprofile)
     kotlin("kapt")
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.ssafy.jjongle"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ssafy.jjongle"
@@ -27,26 +28,32 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
-            buildConfigField("String", "WS_BASE_URL", "\"ws://10.0.2.2:8080/ws/group-game\"")
         }
 
         release {
             isMinifyEnabled = false
             buildConfigField("String", "API_BASE_URL", "\"http://i13d106.p.ssafy.io:8080/\"")
-            buildConfigField("String", "WS_BASE_URL", "\"ws://i13d106.p.ssafy.io:8080/ws/group-game\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+
+        create("benchmark") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            isProfileable = true
+        }
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -64,14 +71,36 @@ android {
     hilt {
         enableAggregatingTask = false
     }
+
+    baselineProfile {
+        automaticGenerationDuringBuild = false
+    }
+
+    composeCompiler {
+        stabilityConfigurationFile.set(rootProject.layout.projectDirectory.file("compose_stability.conf"))
+    }
 }
 
 dependencies {
+    implementation(project(":common:data"))
     implementation(project(":common:domain"))
+    implementation(project(":common:presentation"))
+    implementation(project(":main:entity"))
+    implementation(project(":main:data"))
+    implementation(project(":main:presentation"))
+    implementation(project(":oxgame:entity"))
+    implementation(project(":oxgame:domain"))
+    implementation(project(":oxgame:data"))
+    implementation(project(":oxgame:presentation"))
+    implementation(project(":tangram:entity"))
+    implementation(project(":tangram:domain"))
+    implementation(project(":tangram:data"))
+    implementation(project(":tangram:presentation"))
 
     // 기존 Compose 의존성
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -82,47 +111,21 @@ dependencies {
     // 클린 아키텍처 의존성
     // Hilt (의존성 주입)
     implementation(libs.hilt.android)
-    implementation(libs.play.services.games.v2)
-    implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.lifecycle.process)
     kapt(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.fragment)
     implementation(libs.hilt.navigation.compose)
-
-    // Room (로컬 데이터베이스)
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
-
-    // Retrofit (네트워크 통신)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
 
     // Coroutines (비동기 처리)
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.core)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.navigation3.runtime)
 
-    // ViewModel & Navigation
+    // ViewModel
     implementation(libs.viewmodel.compose)
-    implementation(libs.navigation.compose)
-
-    // Coil (이미지 로딩)
-    implementation(libs.coil.compose)
 
     // 애니메이션 의존성
     implementation(libs.androidx.compose.animation)
-
-    // CameraX (카메라)
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
-
-    // Google ML Kit Pose Detection
-    implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
-    implementation("com.google.mlkit:face-detection:16.1.7")
 
 
     // 테스트 의존성
@@ -135,20 +138,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // lottie-compose (애니메이션)
-    implementation("com.airbnb.android:lottie-compose:6.6.7") // 최신 버전 확인 필요
-    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
-
-
-    // Firebase
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
-    implementation(libs.play.services.auth)
-
-    // for background music
-    // 안정 버전 사용 (2025-07 기준 stable 1.7.1)
-    implementation("androidx.media3:media3-exoplayer:1.7.1")
-    implementation("androidx.media3:media3-session:1.7.1")
-    implementation("androidx.media3:media3-datasource:1.7.1") // RawResourceDataSource 용
     coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+    baselineProfile(project(":baselineprofile"))
 }
