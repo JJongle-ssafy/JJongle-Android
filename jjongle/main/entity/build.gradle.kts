@@ -7,5 +7,6 @@ kotlin {
 }
 
 dependencies {
-    api(libs.kotlinx.collections.immutable)
+    api(project(":common:entity"))
+    api(project(":tti"))
 }

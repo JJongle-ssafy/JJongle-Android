@@ -7,10 +7,8 @@ kotlin {
 }
 
 dependencies {
-    api(project(":common:entity"))
-    api(project(":tti"))
-    api(libs.coroutines.core)
-    api(libs.javax.inject)
+    api(project(":common:domain"))
+    api(project(":tangram:entity"))
 
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)

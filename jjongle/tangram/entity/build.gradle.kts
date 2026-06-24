@@ -7,5 +7,6 @@ kotlin {
 }
 
 dependencies {
+    api(project(":common:entity"))
     api(libs.kotlinx.collections.immutable)
 }

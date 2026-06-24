@@ -7,10 +7,9 @@ kotlin {
 }
 
 dependencies {
-    api(project(":common:entity"))
-    api(project(":tti"))
+    api(project(":oxgame:entity"))
+    api(project(":common:domain"))
     api(libs.coroutines.core)
-    api(libs.javax.inject)
 
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
