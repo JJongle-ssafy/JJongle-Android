@@ -2,11 +2,9 @@ package com.ssafy.jjongle.common.entity
 
 import com.ssafy.jjongle.common.entity.UserInfo
 
-// 로그인 상태 + 토큰 저장 상태
+// Firebase Auth + Firestore profile state.
 data class AuthState(
     val isAuthenticated: Boolean = false,
-    val accessToken: String? = null,
-    val refreshToken: String? = null,
     val user: UserInfo? = null, // firebase auth user info
     val isLoading: Boolean = false,
     val error: String? = null
