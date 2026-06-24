@@ -1,4 +1,4 @@
-package com.ssafy.jjongle.presentation.vision
+package com.ssafy.jjongle.oxgame.presentation.vision
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

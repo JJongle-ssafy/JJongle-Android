@@ -1,4 +1,4 @@
-package com.ssafy.jjongle.presentation.vision
+package com.ssafy.jjongle.oxgame.presentation.vision
 
 import android.graphics.Rect
 import org.junit.Assert.*
