@@ -10,9 +10,7 @@ class CameraScreenOrientationConfigTest {
     @Test
     fun `main activity keeps tablet landscape without runtime orientation override`() {
         val manifest = projectFile("src/main/AndroidManifest.xml").readText()
-        val mainActivity = projectFile(
-            "src/main/java/com/ssafy/jjongle/presentation/ui/activity/MainActivity.kt"
-        ).readText()
+        val mainActivity = projectFile("src/main/java/com/ssafy/jjongle/MainActivity.kt").readText()
 
         assertTrue(manifest.contains("""android:screenOrientation="landscape""""))
         assertFalse(mainActivity.contains("requestedOrientation"))
@@ -64,9 +62,12 @@ class CameraScreenOrientationConfigTest {
 
     private fun projectFile(pathFromModule: String): File {
         val userDir = File(requireNotNull(System.getProperty("user.dir")))
+        val root = generateSequence(userDir) { it.parentFile }
+            .first { it.resolve("settings.gradle.kts").exists() }
         return sequenceOf(
             userDir.resolve(pathFromModule),
-            userDir.resolve("app/$pathFromModule")
+            root.resolve("app/$pathFromModule"),
+            root.resolve("main/presentation/$pathFromModule")
         ).firstOrNull { it.exists() }
             ?: error("Cannot find $pathFromModule from ${userDir.absolutePath}")
     }

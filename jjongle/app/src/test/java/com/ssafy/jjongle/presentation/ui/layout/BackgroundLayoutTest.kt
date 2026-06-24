@@ -1,4 +1,4 @@
-package com.ssafy.jjongle.presentation.ui.layout
+package com.ssafy.jjongle.common.presentation.ui.layout
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

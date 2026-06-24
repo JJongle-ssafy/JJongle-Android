@@ -12,17 +12,20 @@ import androidx.compose.ui.res.painterResource
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.ScreenOrientation
-import com.ssafy.jjongle.R
+import com.ssafy.jjongle.main.presentation.R
 import com.ssafy.jjongle.common.entity.AnimalType
-import com.ssafy.jjongle.common.entity.OX
-import com.ssafy.jjongle.common.entity.OXGameWrongAnswerNote
-import com.ssafy.jjongle.common.entity.TangramHistory
+import com.ssafy.jjongle.oxgame.entity.OX
+import com.ssafy.jjongle.oxgame.entity.OXGameWrongAnswerNote
+import com.ssafy.jjongle.tangram.entity.TangramHistory
 import com.ssafy.jjongle.presentation.model.CharacterType
 import com.ssafy.jjongle.presentation.state.AnimalBookState
-import com.ssafy.jjongle.presentation.ui.layout.DesignCanvas
+import com.ssafy.jjongle.common.presentation.ui.layout.DesignCanvas
 import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
 import com.ssafy.jjongle.presentation.viewmodel.QuizNoteState
 import com.ssafy.jjongle.presentation.viewmodel.QuizNoteUi
+import com.ssafy.jjongle.tangram.presentation.R as TangramR
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import java.time.LocalDateTime
 import org.junit.Rule
 import org.junit.Test
@@ -163,7 +166,7 @@ private fun SettingSnapshotContent() {
 private fun QuizNoteEmptySnapshotContent() {
     RemainingRatioSnapshot {
         QuizNoteContent(
-            ui = QuizNoteState(notes = emptyList(), detail = emptyList()),
+            ui = QuizNoteState(notes = persistentListOf(), detail = persistentListOf()),
             onBackClick = {},
             onGoOXGameTitle = {},
             onNoteClick = {},
@@ -178,13 +181,13 @@ private fun QuizNoteListSnapshotContent() {
     RemainingRatioSnapshot {
         QuizNoteContent(
             ui = QuizNoteState(
-                notes = listOf(
+                notes = persistentListOf(
                     QuizNoteUi(1L, LocalDateTime.of(2026, 6, 21, 10, 30)),
                     QuizNoteUi(2L, LocalDateTime.of(2026, 6, 21, 11, 10)),
                     QuizNoteUi(3L, LocalDateTime.of(2026, 6, 21, 11, 50))
                 ),
                 hasNext = true,
-                detail = emptyList()
+                detail = persistentListOf()
             ),
             onBackClick = {},
             onGoOXGameTitle = {},
@@ -201,7 +204,7 @@ private fun AnimalBookSnapshotContent() {
         AnimalBookContent(
             ui = AnimalBookState(
                 isLoading = false,
-                unlockMap = mapOf(
+                unlockMap = persistentMapOf(
                     AnimalType.TURTLE to TangramHistory(
                         stage = 1,
                         tangramId = 1L,
@@ -238,7 +241,7 @@ private fun CameraChromeSnapshotContent() {
                 contentAlignment = Alignment.TopStart
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.tangram_logo),
+                    painter = painterResource(id = TangramR.drawable.tangram_logo),
                     contentDescription = "Tangram Logo"
                 )
             }

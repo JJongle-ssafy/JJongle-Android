@@ -10,10 +10,18 @@ import androidx.compose.ui.graphics.Color
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.ScreenOrientation
-import com.ssafy.jjongle.R
-import com.ssafy.jjongle.common.entity.Quiz
-import com.ssafy.jjongle.presentation.ui.layout.DesignCanvas
+import com.ssafy.jjongle.main.presentation.R
+import com.ssafy.jjongle.oxgame.entity.Quiz
+import com.ssafy.jjongle.common.presentation.ui.layout.DesignCanvas
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.GameResultContent
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.GameStartContent
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.OXGameTitleScreen
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.QuizExplanationContent
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.QuizGameContent
 import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
+import com.ssafy.jjongle.tangram.presentation.R as TangramR
+import com.ssafy.jjongle.tangram.presentation.ui.screen.BeforeTangramTutorialScreen
+import com.ssafy.jjongle.tangram.presentation.ui.screen.TangramTitleScreen
 import org.junit.Rule
 import org.junit.Test
 
@@ -235,8 +243,6 @@ private fun OXTitleSnapshotContent() {
     JjongleTheme {
         DesignCanvas(modifier = Modifier.fillMaxSize()) {
             OXGameTitleScreen(
-                gameName = "쫑글 O/X 대모험",
-                backgroundImageRes = R.drawable.ox_title_background,
                 onStartGameClick = {},
                 onGoMapClick = {},
                 onGameRulesClick = {}
@@ -251,7 +257,7 @@ private fun TangramTitleSnapshotContent() {
         DesignCanvas(modifier = Modifier.fillMaxSize()) {
             TangramTitleScreen(
                 gameName = "쫑글 탐험대",
-                backgroundImageRes = R.drawable.tangram_title_background,
+                backgroundImageRes = TangramR.drawable.tangram_title_background,
                 onStartGameClick = {},
                 onGoMapClick = {},
                 onGameRulesClick = {}

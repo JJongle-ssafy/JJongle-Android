@@ -7,10 +7,14 @@ import androidx.compose.ui.res.painterResource
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.resources.ScreenOrientation
-import com.ssafy.jjongle.R
+import com.ssafy.jjongle.main.presentation.R
 import com.ssafy.jjongle.presentation.model.CharacterType
-import com.ssafy.jjongle.presentation.ui.layout.DesignCanvas
+import com.ssafy.jjongle.common.presentation.ui.layout.DesignCanvas
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.OXTutorialContent
 import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
+import com.ssafy.jjongle.tangram.presentation.R as TangramR
+import com.ssafy.jjongle.tangram.presentation.ui.screen.TangramStageContent
+import com.ssafy.jjongle.tangram.presentation.ui.screen.TangramTutorialContent
 import org.junit.Rule
 import org.junit.Test
 
@@ -293,7 +297,7 @@ private fun TangramStageSnapshotContent() {
     RatioSnapshot {
         TangramStageContent(
             gameName = "쫑글 탐험대",
-            backgroundImagePainter = painterResource(id = R.drawable.tangram_stage_background),
+            backgroundImagePainter = painterResource(id = TangramR.drawable.tangram_stage_background),
             characterX = 140f,
             characterY = 250f,
             isCharacterMoving = false,
