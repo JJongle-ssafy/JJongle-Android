@@ -4,10 +4,9 @@ import com.ssafy.jjongle.common.domain.navigation.NavRoute
 import com.ssafy.jjongle.common.domain.navigation.Page
 
 /**
- * OXGamePage Navigation3에서 사용하는 페이지 계약입니다.
+ * OXGame 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: oxgame/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object OXGamePage : Page {
     const val PATH = "/ox_game"
@@ -15,10 +14,9 @@ object OXGamePage : Page {
 }
 
 /**
- * OXGameTitlePage Navigation3에서 사용하는 페이지 계약입니다.
+ * OXGame Title 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: oxgame/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object OXGameTitlePage : Page {
     const val PATH = "/ox_game_title"
@@ -26,10 +24,9 @@ object OXGameTitlePage : Page {
 }
 
 /**
- * OXGameIntroPage Navigation3에서 사용하는 페이지 계약입니다.
+ * OXGame Intro 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: oxgame/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object OXGameIntroPage : Page {
     const val PATH = "/ox_game_intro"
@@ -37,10 +34,9 @@ object OXGameIntroPage : Page {
 }
 
 /**
- * OXGameTutorialPage Navigation3에서 사용하는 페이지 계약입니다.
+ * OXGame Tutorial 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: oxgame/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object OXGameTutorialPage : Page {
     const val PATH = "/ox_game_tutorial"

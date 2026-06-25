@@ -6,10 +6,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * AuthDataSource 데이터 원본 접근을 담당합니다.
+ * Auth 데이터를 외부 서비스나 로컬 저장소에서 읽고 쓰는 data 계층 경계입니다.
  *
- * - 계층: common/data
- * - 책임: 저장소 구현이 사용할 원격 또는 로컬 데이터 작업을 캡슐화합니다.
+ * Repository가 세부 API, SDK, 저장 방식에 직접 묶이지 않도록 데이터 접근 작업을 캡슐화합니다.
  */
 @Singleton
 class AuthDataSource @Inject constructor(

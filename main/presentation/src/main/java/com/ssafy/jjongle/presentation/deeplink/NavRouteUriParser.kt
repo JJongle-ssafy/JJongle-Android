@@ -6,10 +6,9 @@ import com.ssafy.jjongle.main.domain.deeplink.RoutePattern
 import com.ssafy.jjongle.main.domain.deeplink.matchRoute
 
 /**
- * Uri 기능에서 사용하는 최상위 헬퍼입니다.
+ * Uri는 메인에서 반복되는 계산이나 변환을 담당합니다.
  *
- * - 계층: main/presentation
- * - 책임: 파일의 대표 작업을 함수 단위로 분리해 호출 지점을 단순하게 유지합니다.
+ * 호출부가 세부 구현을 직접 갖지 않도록 작은 공개 함수/값으로 분리합니다.
  */
 fun Uri.resolveRoute(
     registeredPaths: Set<String>,

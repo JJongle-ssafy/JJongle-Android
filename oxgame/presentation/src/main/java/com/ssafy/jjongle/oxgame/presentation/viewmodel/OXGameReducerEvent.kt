@@ -10,10 +10,9 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 
 /**
- * OXGameReducerEvent ViewModel 내부 상태 변경 이벤트를 정의합니다.
+ * OXGame Reducer Event는 OX 게임 진행 중 발생한 도메인 이벤트입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 비동기 결과와 사용자 입력을 reducer가 처리할 수 있는 이벤트로 정리합니다.
+ * 이벤트 종류를 타입으로 나눠 ViewModel이나 엔진이 문자열 분기 없이 게임 흐름을 처리하게 합니다.
  */
 sealed interface OXGameReducerEvent : ReducerEvent {
     data class ConnectionStateChanged(val connectionState: GameConnectionState) : OXGameReducerEvent

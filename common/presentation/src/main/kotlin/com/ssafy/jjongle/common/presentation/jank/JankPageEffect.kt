@@ -14,10 +14,9 @@ import androidx.metrics.performance.JankStats
 import androidx.metrics.performance.PerformanceMetricsState
 
 /**
- * JankPageEffect Compose UI를 구성합니다.
+ * Compose 화면이 표시되는 동안 JankStats 관찰 대상을 현재 페이지로 연결하는 side effect입니다.
  *
- * - 계층: common/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 화면 진입과 이탈에 맞춰 페이지 태그를 갱신해 jank 로그가 어떤 화면에서 발생했는지 추적합니다.
  */
 @Composable
 fun JankPageEffect(

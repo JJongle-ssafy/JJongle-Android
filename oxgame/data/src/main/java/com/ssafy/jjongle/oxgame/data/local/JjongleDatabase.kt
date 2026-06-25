@@ -13,10 +13,9 @@ import androidx.room.RoomDatabase
 )
 
 /**
- * JjongleDatabase Room 데이터베이스 구성을 정의합니다.
+ * OX 게임 기록과 오답 노트를 저장하는 Room 데이터베이스입니다.
  *
- * - 계층: oxgame/data
- * - 책임: 로컬 entity와 DAO 구성을 data 계층에 묶어 둡니다.
+ * 게임 플레이 결과를 로컬에 남기고 히스토리/오답 노트 화면에서 다시 조회할 수 있게 합니다.
  */
 abstract class JjongleDatabase : RoomDatabase() {
     abstract fun oxGameHistoryDao(): OXGameHistoryDao

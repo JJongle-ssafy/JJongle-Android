@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.tti
 
 /**
- * TTIHelperImpl TTI 계측에 필요한 값을 정의합니다.
+ * TTIHelper가 받은 화면별 성능 이벤트를 시간순 로그로 누적하는 기본 구현입니다.
  *
- * - 계층: tti
- * - 책임: 화면 진입부터 최초 상호작용 가능 시점까지의 성능 측정을 보조합니다.
+ * 앱 화면은 측정 저장 방식에 의존하지 않고 TTIHelper 계약만 호출합니다.
  */
 class TTIHelperImpl(
     private val clockMillis: () -> Long = System::currentTimeMillis,

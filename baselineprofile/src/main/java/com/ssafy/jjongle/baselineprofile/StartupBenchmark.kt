@@ -12,10 +12,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * StartupBenchmark 기준 프로파일 수집 시나리오를 정의합니다.
+ * Startup Benchmark는 앱 시작 성능을 측정하거나 baseline profile 생성을 자동화합니다.
  *
- * - 계층: baselineprofile
- * - 책임: 앱 시작과 주요 경로의 런타임 최적화 데이터를 생성합니다.
+ * 프로필 기반 최적화가 깨지지 않도록 실제 앱 실행 경로를 테스트 코드로 기록합니다.
  */
 @RunWith(AndroidJUnit4::class)
 class StartupBenchmark {

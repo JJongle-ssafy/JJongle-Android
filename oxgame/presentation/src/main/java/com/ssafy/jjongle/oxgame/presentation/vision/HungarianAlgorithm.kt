@@ -3,10 +3,9 @@ package com.ssafy.jjongle.oxgame.presentation.vision
 import kotlin.math.min
 
 /**
- * HungarianAlgorithm 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ * 얼굴 추적 결과와 이전 프레임의 객체를 최소 비용으로 매칭하는 Hungarian Algorithm 구현입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ * 카메라 프레임마다 감지 순서가 바뀌어도 같은 참여자를 안정적으로 이어 붙이기 위해 사용합니다.
  */
 object HungarianAlgorithm {
 

@@ -5,10 +5,9 @@ import com.ssafy.jjongle.common.entity.UserInfo
 // Firebase Auth + Firestore profile state.
 
 /**
- * AuthState 앱 내부에서 공유하는 도메인 값을 표현합니다.
+ * 공통 기반 화면을 렌더링하는 데 필요한 값을 담는 상태 스냅샷입니다.
  *
- * - 계층: common/entity
- * - 책임: 불변 값과 도메인 의미를 계층 사이에 전달합니다.
+ * 여러 값을 화면에서 따로 수집하지 않도록 한 모델로 묶어, 상태 변경 지점을 ViewModel 안에서 추적할 수 있게 합니다.
  */
 data class AuthState(
     val isAuthenticated: Boolean = false,

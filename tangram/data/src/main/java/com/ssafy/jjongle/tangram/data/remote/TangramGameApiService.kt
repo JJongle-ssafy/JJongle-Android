@@ -9,10 +9,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * TangramGameApiService 원격 API 엔드포인트를 정의합니다.
+ * Tangram Game API 호출을 Retrofit 메서드로 정의하는 네트워크 계약입니다.
  *
- * - 계층: tangram/data
- * - 책임: Retrofit 호출 계약을 data 계층 안에 모아 외부 통신 경계를 분리합니다.
+ * HTTP 경로와 요청/응답 DTO 형태를 data 계층 안에 모아 domain 모델이 서버 스키마에 직접 의존하지 않게 합니다.
  */
 interface TangramGameApiService {
     @GET("/single-game/histories")

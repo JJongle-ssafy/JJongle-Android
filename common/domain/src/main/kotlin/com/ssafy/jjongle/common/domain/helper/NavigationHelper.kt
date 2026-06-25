@@ -7,10 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
- * NavigationHelper Navigation3 라우팅 계약을 표현합니다.
+ * Navigation Helper는 여러 계층에서 반복되는 작업을 추상화한 helper 계약입니다.
  *
- * - 계층: common/domain
- * - 책임: 앱 셸과 기능 모듈 사이의 화면 이동 경계를 정의합니다.
+ * 호출자는 Android framework나 Compose 구현을 직접 알지 않고 필요한 동작만 요청합니다.
  */
 interface NavigationHelper {
     /**
@@ -39,8 +38,10 @@ interface NavigationHelper {
     fun navigateToBack()
 
     /**
-     * 테스트나 preview처럼 실제 navigation 처리가 필요 없는 환경에서 사용하는 빈 구현체입니다.
-     */
+ * No Op는 공통 흐름에서 허용되는 상태나 이벤트 종류를 제한합니다.
+ *
+ * 문자열이나 숫자 상수 대신 타입 분기로 처리해 잘못된 값이 전달되는 일을 줄입니다.
+ */
     object NoOp : NavigationHelper {
         override val navigationFlow: Flow<NavSignal> = emptyFlow()
 

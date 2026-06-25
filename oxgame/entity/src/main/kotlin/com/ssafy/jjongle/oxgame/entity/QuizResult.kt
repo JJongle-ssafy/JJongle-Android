@@ -3,10 +3,9 @@ package com.ssafy.jjongle.oxgame.entity
 import kotlinx.collections.immutable.ImmutableList
 
 /**
- * QuizResult 앱 내부에서 공유하는 도메인 값을 표현합니다.
+ * Quiz Result는 OX 게임 처리 결과를 다음 계층으로 전달하는 값입니다.
  *
- * - 계층: oxgame/entity
- * - 책임: 불변 값과 도메인 의미를 계층 사이에 전달합니다.
+ * 성공/실패나 점수 계산 결과를 명시적인 타입으로 남겨 호출부의 의미를 분명하게 합니다.
  */
 data class QuizResult(
     val quizId: Int,

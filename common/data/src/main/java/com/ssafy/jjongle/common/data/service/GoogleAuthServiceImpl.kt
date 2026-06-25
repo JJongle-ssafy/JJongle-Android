@@ -16,10 +16,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * GoogleAuthServiceImpl 외부 서비스 연동을 담당합니다.
+ * Google Auth Service Impl은 외부 SDK나 platform API를 앱 내부 계약에 맞게 연결하는 구현체입니다.
  *
- * - 계층: common/data
- * - 책임: 플랫폼 또는 SDK 호출을 계층 경계 안에서 캡슐화합니다.
+ * 상위 계층은 구체 구현 대신 interface에 의존하고, 이 타입이 변환과 오류 처리를 담당합니다.
  */
 @Singleton
 class GoogleAuthServiceImpl @Inject constructor(

@@ -15,10 +15,9 @@ import java.util.*
 import javax.inject.Inject
 
 /**
- * StagePosition 모듈 기능을 표현하는 class 선언입니다.
+ * Stage Position는 탱그램에서 사용하는 위치 정보를 담는 값입니다.
  *
- * - 계층: tangram/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 좌표를 Pair나 원시 숫자로 흩뿌리지 않고 의미 있는 도메인 값으로 전달합니다.
  */
 data class StagePosition(
     val stageId: Int,
@@ -27,10 +26,9 @@ data class StagePosition(
 )
 
 /**
- * TangramStageUiState 화면이 구독하는 상태 모델입니다.
+ * 탱그램 화면을 렌더링하는 데 필요한 값을 담는 상태 스냅샷입니다.
  *
- * - 계층: tangram/presentation
- * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ * 여러 값을 화면에서 따로 수집하지 않도록 한 모델로 묶어, 상태 변경 지점을 ViewModel 안에서 추적할 수 있게 합니다.
  */
 data class TangramStageUiState(
     val currentStage: Int = 5,
@@ -47,20 +45,18 @@ data class TangramStageUiState(
 }
 
 /**
- * TangramStageIntent 화면에서 ViewModel로 전달되는 사용자 입력을 정의합니다.
+ * 탱그램 화면에서 ViewModel로 전달되는 사용자 입력과 화면 이벤트입니다.
  *
- * - 계층: tangram/presentation
- * - 책임: UI 이벤트를 MVI intent로 분리해 상태 변경 진입점을 명확히 합니다.
+ * 버튼 클릭, 화면 진입, 선택 변경 같은 입력을 타입으로 분리해 상태 변경의 시작점을 명확히 남깁니다.
  */
 sealed interface TangramStageIntent : MviIntent {
     data class MoveToStage(val stageId: Int) : TangramStageIntent
 }
 
 /**
- * TangramStageReducerEvent ViewModel 내부 상태 변경 이벤트를 정의합니다.
+ * Tangram Stage Reducer Event는 탱그램 진행 중 발생한 도메인 이벤트입니다.
  *
- * - 계층: tangram/presentation
- * - 책임: 비동기 결과와 사용자 입력을 reducer가 처리할 수 있는 이벤트로 정리합니다.
+ * 이벤트 종류를 타입으로 나눠 ViewModel이나 엔진이 문자열 분기 없이 게임 흐름을 처리하게 합니다.
  */
 sealed interface TangramStageReducerEvent : ReducerEvent {
     data class ChallengeStageLoaded(
@@ -84,10 +80,9 @@ sealed interface TangramStageReducerEvent : ReducerEvent {
 }
 
 /**
- * TangramStageViewModel 화면 상태와 이벤트를 처리하는 ViewModel입니다.
+ * Tangram Stage 화면의 사용자 입력과 비동기 결과를 UI 상태로 변환하는 ViewModel입니다.
  *
- * - 계층: tangram/presentation
- * - 책임: 유스케이스를 호출하고 UI가 구독할 상태 흐름을 제공합니다.
+ * UseCase 호출, 오류 처리, 상태 전이를 한곳에 모아 Compose 화면은 상태 구독과 Intent 전달에 집중하도록 합니다.
  */
 @HiltViewModel
 class TangramStageViewModel @Inject constructor(

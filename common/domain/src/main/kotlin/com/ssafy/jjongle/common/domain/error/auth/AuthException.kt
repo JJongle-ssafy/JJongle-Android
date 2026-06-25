@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.common.domain.error.auth
 
 /**
- * AuthException 모듈 기능을 표현하는 class 선언입니다.
+ * Auth Exception은 인증 흐름에서 발생한 domain 오류를 예외로 전달합니다.
  *
- * - 계층: common/domain
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 화면과 UseCase가 Firebase/HTTP 세부 예외 대신 앱에서 정의한 오류 타입을 처리하도록 합니다.
  */
 class AuthException(
     val error: AuthError,

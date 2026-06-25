@@ -3,10 +3,10 @@ package com.ssafy.jjongle.common.presentation.ui.layout
 import kotlin.math.min
 
 /**
- * BackgroundLayout Compose UI를 구성합니다.
+ * 원본 배경 이미지의 px 좌표를 현재 Compose 컨테이너의 dp 좌표로 변환하는 배치 기준입니다.
  *
- * - 계층: common/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 지도, 탱그램 스테이지, OX 결과 화면처럼 배경 위에 패널/캐릭터/터치 영역을 올리는 화면에서
+ * 배경 이미지와 오버레이 컴포넌트가 같은 좌표계를 공유하도록 x/y 좌표와 크기 스케일을 제공합니다.
  */
 data class BackgroundLayout(
     val scale: Float,
@@ -25,6 +25,12 @@ data class BackgroundLayout(
     fun topForCenter(centerY: Float, height: Float): Float = y(centerY) - scale(height) / 2f
 }
 
+/**
+ * 배경 이미지를 컨테이너 전체에 맞춰 채울 때 사용할 좌표 변환 값을 계산합니다.
+ *
+ * `imageWidth`와 `imageHeight`는 원본 배경 이미지의 기준 크기이며, 반환된 [BackgroundLayout]은
+ * 그 원본 좌표를 현재 화면 크기에 맞춘 위치와 크기로 변환합니다.
+ */
 fun calculateFillBoundsBackgroundLayout(
     containerWidth: Float,
     containerHeight: Float,

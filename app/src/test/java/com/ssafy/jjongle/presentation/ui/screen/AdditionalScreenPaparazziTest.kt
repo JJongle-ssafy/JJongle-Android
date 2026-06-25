@@ -19,10 +19,9 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * AdditionalScreenTablet의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ * Additional Screen Tablet Paparazzi Test 회귀를 막기 위한 테스트입니다.
  *
- * - 계층: test
- * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ * 리팩터링이나 모듈 이동 중에도 기존 동작, 아키텍처 경계, 오류 처리 계약이 유지되는지 확인합니다.
  */
 class AdditionalScreenTabletPaparazziTest {
 
@@ -78,10 +77,9 @@ class AdditionalScreenTabletPaparazziTest {
 }
 
 /**
- * AdditionalScreenPhone의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ * Additional Screen Phone Paparazzi Test 회귀를 막기 위한 테스트입니다.
  *
- * - 계층: test
- * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ * 리팩터링이나 모듈 이동 중에도 기존 동작, 아키텍처 경계, 오류 처리 계약이 유지되는지 확인합니다.
  */
 class AdditionalScreenPhonePaparazziTest {
 
@@ -139,10 +137,9 @@ class AdditionalScreenPhonePaparazziTest {
 }
 
 /**
- * AdditionalScreenWidePhone의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ * Additional Screen Wide Phone Paparazzi Test 회귀를 막기 위한 테스트입니다.
  *
- * - 계층: test
- * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ * 리팩터링이나 모듈 이동 중에도 기존 동작, 아키텍처 경계, 오류 처리 계약이 유지되는지 확인합니다.
  */
 class AdditionalScreenWidePhonePaparazziTest {
 

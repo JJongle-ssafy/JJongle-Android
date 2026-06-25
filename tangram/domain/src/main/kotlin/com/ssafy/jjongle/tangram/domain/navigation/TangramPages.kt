@@ -4,10 +4,9 @@ import com.ssafy.jjongle.common.domain.navigation.NavRoute
 import com.ssafy.jjongle.common.domain.navigation.Page
 
 /**
- * TangramTitlePage Navigation3에서 사용하는 페이지 계약입니다.
+ * Tangram Title 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: tangram/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object TangramTitlePage : Page {
     const val PATH = "/tangram_title"
@@ -15,10 +14,9 @@ object TangramTitlePage : Page {
 }
 
 /**
- * TangramIntroPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Tangram Intro 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: tangram/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object TangramIntroPage : Page {
     const val PATH = "/tangram_intro"
@@ -26,10 +24,9 @@ object TangramIntroPage : Page {
 }
 
 /**
- * TangramStagePage Navigation3에서 사용하는 페이지 계약입니다.
+ * Tangram Stage 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: tangram/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object TangramStagePage : Page {
     const val PATH = "/tangram_stage"
@@ -37,10 +34,9 @@ object TangramStagePage : Page {
 }
 
 /**
- * BeforeTangramTutorialPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Before Tangram Tutorial 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: tangram/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object BeforeTangramTutorialPage : Page {
     const val PATH = "/before_tangram_tutorial"
@@ -48,10 +44,9 @@ object BeforeTangramTutorialPage : Page {
 }
 
 /**
- * TangramTutorialPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Tangram Tutorial 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: tangram/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object TangramTutorialPage : Page {
     const val PATH = "/tangram_tutorial"

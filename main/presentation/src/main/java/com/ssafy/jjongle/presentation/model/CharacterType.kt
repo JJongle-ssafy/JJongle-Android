@@ -4,10 +4,9 @@ import androidx.annotation.DrawableRes
 import com.ssafy.jjongle.main.presentation.R
 
 /**
- * CharacterType 모듈 기능을 표현하는 class 선언입니다.
+ * 메인 기능 흐름에서 허용되는 Character Type 값의 집합입니다.
  *
- * - 계층: main/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 분기 가능한 상태나 이벤트를 타입으로 제한해 잘못된 문자열/숫자 값이 계층 사이로 전달되지 않게 합니다.
  */
 enum class CharacterType(
     val displayName: String,

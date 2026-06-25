@@ -19,10 +19,9 @@ import com.ssafy.jjongle.common.presentation.ui.component.ArchiText
 import kotlinx.coroutines.flow.collectLatest
 
 /**
- * MessageEffectHost Compose UI를 구성합니다.
+ * MessageEffectBus에 들어온 전역 메시지 효과를 실제 Compose UI로 표시하는 호스트입니다.
  *
- * - 계층: common/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 앱 루트에 한 번 배치해 화면별 ViewModel이 Snackbar/Dialog 구현을 직접 알지 않도록 합니다.
  */
 @Composable
 fun MessageEffectHost(

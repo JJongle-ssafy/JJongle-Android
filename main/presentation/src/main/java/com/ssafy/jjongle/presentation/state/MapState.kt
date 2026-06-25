@@ -3,10 +3,9 @@ package com.ssafy.jjongle.presentation.state
 import com.ssafy.jjongle.common.presentation.mvi.UiState
 
 /**
- * MapState 화면이 구독하는 상태 모델입니다.
+ * 메인 기능 화면을 렌더링하는 데 필요한 값을 담는 상태 스냅샷입니다.
  *
- * - 계층: main/presentation
- * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ * 여러 값을 화면에서 따로 수집하지 않도록 한 모델로 묶어, 상태 변경 지점을 ViewModel 안에서 추적할 수 있게 합니다.
  */
 data class MapState(
     val characterX: Float = 371.875f,

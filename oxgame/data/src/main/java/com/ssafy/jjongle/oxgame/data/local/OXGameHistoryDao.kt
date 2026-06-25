@@ -6,10 +6,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 
 /**
- * OXGameHistoryDao Room 데이터 접근 계약을 정의합니다.
+ * OX 게임 기록과 오답 노트 테이블을 조회하고 저장하는 Room DAO입니다.
  *
- * - 계층: oxgame/data
- * - 책임: 로컬 저장소 쿼리와 변경 작업을 타입 안전하게 제공합니다.
+ * Repository가 SQL 쿼리 세부사항을 알지 않고 히스토리 목록과 상세 데이터를 가져오도록 합니다.
  */
 @Dao
 interface OXGameHistoryDao {

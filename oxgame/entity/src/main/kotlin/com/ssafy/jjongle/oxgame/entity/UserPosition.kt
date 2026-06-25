@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.oxgame.entity
 
 /**
- * UserPosition 앱 내부에서 공유하는 도메인 값을 표현합니다.
+ * User Position는 OX 게임에서 사용하는 위치 정보를 담는 값입니다.
  *
- * - 계층: oxgame/entity
- * - 책임: 불변 값과 도메인 의미를 계층 사이에 전달합니다.
+ * 좌표를 Pair나 원시 숫자로 흩뿌리지 않고 의미 있는 도메인 값으로 전달합니다.
  */
 data class UserPosition(
     val userId: Int,

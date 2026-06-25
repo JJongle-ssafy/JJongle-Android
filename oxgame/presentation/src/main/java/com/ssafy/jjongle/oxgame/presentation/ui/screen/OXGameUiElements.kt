@@ -18,10 +18,9 @@ import com.ssafy.jjongle.common.presentation.ui.component.ArchiText
 import com.ssafy.jjongle.common.presentation.ui.theme.ArchiThemeImpl
 
 /**
- * OXFeatureBackgroundImage Compose UI를 구성합니다.
+ * OX 기능 화면의 공통 배경 이미지를 지정된 ContentScale로 채우는 Compose helper입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 타이틀, 튜토리얼, 게임 화면이 같은 방식으로 배경을 그리도록 중복 코드를 줄입니다.
  */
 @Composable
 internal fun OXFeatureBackgroundImage(imageRes: Int) {

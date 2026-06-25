@@ -16,10 +16,9 @@ import javax.inject.Singleton
 import kotlinx.collections.immutable.toPersistentList
 
 /**
- * LocalOXGameEngine 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ * 서버 없이 OX 퀴즈 세션을 진행하는 로컬 게임 엔진입니다.
  *
- * - 계층: oxgame/data
- * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ * 문제 시작, 답안 제출, 점수 갱신, 종료 이벤트를 한곳에서 만들어 ViewModel의 게임 진행 로직을 단순화합니다.
  */
 @Singleton
 class LocalOXGameEngine @Inject constructor(

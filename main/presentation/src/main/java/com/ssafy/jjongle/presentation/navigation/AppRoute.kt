@@ -4,10 +4,9 @@ import androidx.compose.runtime.Composable
 import com.ssafy.jjongle.common.entity.BgmGroup
 
 /**
- * AppRoute Navigation3 라우팅 계약을 표현합니다.
+ * App Route는 메인 흐름에서 계층 사이로 전달되는 도메인 값입니다.
  *
- * - 계층: main/presentation
- * - 책임: 앱 셸과 기능 모듈 사이의 화면 이동 경계를 정의합니다.
+ * 원시 값 여러 개를 그대로 넘기지 않고 이름 있는 타입으로 묶어 호출 의도를 명확히 합니다.
  */
 data class AppRoute(
     val path: String,
@@ -20,10 +19,9 @@ data class AppRoute(
 )
 
 /**
- * AppRouteNavigator Navigation3 라우팅 계약을 표현합니다.
+ * App Route Navigator는 메인 흐름에서 사용하는 타입입니다.
  *
- * - 계층: main/presentation
- * - 책임: 앱 셸과 기능 모듈 사이의 화면 이동 경계를 정의합니다.
+ * 호출부가 구현 세부보다 역할이 드러나는 타입에 의존하도록 분리합니다.
  */
 interface AppRouteNavigator {
     /**

@@ -803,10 +803,9 @@ private fun RankedProfile(
 }
 
 /**
- * OXRankFrameStyle Compose UI를 구성합니다.
+ * OXRank Frame Style는 OX 게임 흐름에서 계층 사이로 전달되는 도메인 값입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 원시 값 여러 개를 그대로 넘기지 않고 이름 있는 타입으로 묶어 호출 의도를 명확히 합니다.
  */
 private data class OXRankFrameStyle(
     val outerColor: Color,
@@ -857,10 +856,9 @@ private const val OX_RESULT_THIRD_PROFILE_CENTER_Y = 910f
 private const val OX_RESULT_THIRD_PROFILE_SIZE = 290f
 
 /**
- * OXGameBackgroundLayout Compose UI를 구성합니다.
+ * OX 결과 배경 이미지의 원본 좌표를 현재 화면 좌표로 바꾸는 전용 배치 기준입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 순위 프로필 이미지를 배경의 메달 위치에 맞추기 위해 중심 좌표와 크기를 같은 배율로 변환합니다.
  */
 private data class OXGameBackgroundLayout(
     val scale: Float,

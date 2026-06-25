@@ -4,10 +4,9 @@ import android.graphics.Rect
 import android.os.SystemClock
 
 /**
- * FaceReidentifier 모듈 기능을 표현하는 class 선언입니다.
+ * 프레임 사이에서 얼굴 특징과 위치를 비교해 같은 참여자를 다시 식별합니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * ML Kit 감지 결과의 순서가 바뀌거나 잠시 누락되어도 점수와 프로필을 같은 사용자에게 연결합니다.
  */
 class FaceReidentifier(
     /** IoU 임계값 — 이 값 이상이어야 매칭 허용 */

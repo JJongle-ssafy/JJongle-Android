@@ -43,10 +43,9 @@ import com.ssafy.jjongle.tangram.presentation.ui.screen.TangramTutorialScreen
 import com.ssafy.jjongle.tangram.presentation.R as TangramR
 
 /**
- * AppRoutePaths Navigation3 라우팅 계약을 표현합니다.
+ * App Route Paths는 메인 흐름에서 허용되는 상태나 이벤트 종류를 제한합니다.
  *
- * - 계층: main/presentation
- * - 책임: 앱 셸과 기능 모듈 사이의 화면 이동 경계를 정의합니다.
+ * 문자열이나 숫자 상수 대신 타입 분기로 처리해 잘못된 값이 전달되는 일을 줄입니다.
  */
 object AppRoutePaths {
     const val SPLASH = SplashPage.PATH

@@ -4,10 +4,9 @@ import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 
 /**
- * FirebaseAuthDataSourceImpl 데이터 원본 접근을 담당합니다.
+ * Firebase Auth Data Source Impl은 외부 SDK나 platform API를 앱 내부 계약에 맞게 연결하는 구현체입니다.
  *
- * - 계층: common/data
- * - 책임: 저장소 구현이 사용할 원격 또는 로컬 데이터 작업을 캡슐화합니다.
+ * 상위 계층은 구체 구현 대신 interface에 의존하고, 이 타입이 변환과 오류 처리를 담당합니다.
  */
 class FirebaseAuthDataSourceImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth

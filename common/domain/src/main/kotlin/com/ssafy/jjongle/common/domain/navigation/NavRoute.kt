@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.common.domain.navigation
 
 /**
- * NavRoute Navigation3 라우팅 계약을 표현합니다.
+ * Nav Route는 공통 흐름에서 계층 사이로 전달되는 도메인 값입니다.
  *
- * - 계층: common/domain
- * - 책임: 앱 셸과 기능 모듈 사이의 화면 이동 경계를 정의합니다.
+ * 원시 값 여러 개를 그대로 넘기지 않고 이름 있는 타입으로 묶어 호출 의도를 명확히 합니다.
  */
 data class NavRoute(
     val path: String,
@@ -12,10 +11,9 @@ data class NavRoute(
 )
 
 /**
- * Page Navigation3에서 사용하는 페이지 계약입니다.
+ * Page 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: common/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 interface Page {
     /**

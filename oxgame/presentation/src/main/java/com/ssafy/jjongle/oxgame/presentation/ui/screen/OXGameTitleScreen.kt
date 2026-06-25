@@ -17,10 +17,9 @@ import com.ssafy.jjongle.common.presentation.ui.theme.ArchiThemeImpl
 import com.ssafy.jjongle.oxgame.presentation.R
 
 /**
- * OXGameTitleScreen Compose UI를 구성합니다.
+ * OX 게임의 OXGame Title 화면을 렌더링하는 Compose 진입점입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 전달받은 상태를 화면 요소로 배치하고, 사용자의 주요 액션은 콜백이나 ViewModel Intent로 넘겨 화면과 상태 변경 책임을 분리합니다.
  */
 @Composable
 fun OXGameTitleScreen(

@@ -30,10 +30,9 @@ import com.ssafy.jjongle.main.presentation.R
 import com.ssafy.jjongle.tangram.presentation.R as TangramR
 
 /**
- * IntroPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Intro 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/presentation
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 data class IntroPage(
     val title: String,
@@ -196,10 +195,9 @@ fun IntroScreenPreview() {
 // 게임별 페이지 데이터
 
 /**
- * IntroPages Navigation3에서 사용하는 페이지 계약입니다.
+ * Intro Pages 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/presentation
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object IntroPages {
     val oxGamePages = listOf(

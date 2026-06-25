@@ -8,10 +8,9 @@ import com.ssafy.jjongle.common.domain.helper.ResourceHelper
 import com.ssafy.jjongle.tti.TTIHelper
 
 /**
- * BaseUseCase 비즈니스 시나리오를 실행하는 유스케이스입니다.
+ * Base 시나리오를 실행하는 domain 계층 유스케이스입니다.
  *
- * - 계층: common/domain
- * - 책임: ViewModel이 필요한 domain 작업을 단일 진입점으로 제공합니다.
+ * ViewModel이 repository 세부 구현을 알지 않고 하나의 사용자 흐름이나 비즈니스 작업만 호출하도록 합니다.
  */
 abstract class BaseUseCase(
     protected val resourceHelper: ResourceHelper,

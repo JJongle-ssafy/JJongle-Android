@@ -33,10 +33,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
- * 쫑글 앱의 Android Activity 진입점을 구성합니다.
+ * Android 생명주기와 Compose 앱 셸을 연결하는 단일 Activity입니다.
  *
- * - 계층: app
- * - 책임: Compose 루트 화면과 앱 셸을 Android 생명주기에 연결합니다.
+ * 앱 루트 테마, 전역 메시지 호스트, Navigation host를 구성해 기능 모듈 화면을 표시합니다.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

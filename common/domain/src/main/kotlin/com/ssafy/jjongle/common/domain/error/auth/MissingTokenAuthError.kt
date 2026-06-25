@@ -1,9 +1,8 @@
 package com.ssafy.jjongle.common.domain.error.auth
 
 /**
- * MissingTokenAuthError 모듈 기능을 표현하는 object 선언입니다.
+ * 공통 기반 UI에서 공유하는 Missing Token Auth Error 디자인 기준입니다.
  *
- * - 계층: common/domain
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 화면별 색상, 타이포그래피, 크기 값을 직접 흩뿌리지 않고 공통 토큰을 통해 일관되게 사용합니다.
  */
 data object MissingTokenAuthError : AuthError

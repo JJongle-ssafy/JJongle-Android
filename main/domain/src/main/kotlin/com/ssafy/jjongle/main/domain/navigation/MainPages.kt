@@ -4,10 +4,9 @@ import com.ssafy.jjongle.common.domain.navigation.NavRoute
 import com.ssafy.jjongle.common.domain.navigation.Page
 
 /**
- * SplashPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Splash 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object SplashPage : Page {
     const val PATH = "/splash"
@@ -15,10 +14,9 @@ object SplashPage : Page {
 }
 
 /**
- * LoginPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Login 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object LoginPage : Page {
     const val PATH = "/login"
@@ -26,10 +24,9 @@ object LoginPage : Page {
 }
 
 /**
- * SignupPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Signup 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 data class SignupPage(
     val idToken: String,
@@ -43,10 +40,9 @@ data class SignupPage(
 }
 
 /**
- * MapPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Map 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object MapPage : Page {
     const val PATH = "/map"
@@ -54,10 +50,9 @@ object MapPage : Page {
 }
 
 /**
- * MyPagePage Navigation3에서 사용하는 페이지 계약입니다.
+ * My Page 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object MyPagePage : Page {
     const val PATH = "/my_page"
@@ -65,10 +60,9 @@ object MyPagePage : Page {
 }
 
 /**
- * QuizNotePage Navigation3에서 사용하는 페이지 계약입니다.
+ * Quiz Note 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object QuizNotePage : Page {
     const val PATH = "/quiz_note"
@@ -76,10 +70,9 @@ object QuizNotePage : Page {
 }
 
 /**
- * AnimalBookPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Animal Book 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object AnimalBookPage : Page {
     const val PATH = "/animal_book"
@@ -87,10 +80,9 @@ object AnimalBookPage : Page {
 }
 
 /**
- * SettingPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Setting 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 object SettingPage : Page {
     const val PATH = "/setting"
@@ -98,10 +90,9 @@ object SettingPage : Page {
 }
 
 /**
- * CameraPage Navigation3에서 사용하는 페이지 계약입니다.
+ * Camera 화면을 타입 안전하게 표현하는 라우팅 값입니다.
  *
- * - 계층: main/domain
- * - 책임: 기능 모듈의 화면 목적지를 타입 안전한 라우팅 값으로 표현합니다.
+ * 문자열 경로와 인자를 객체 안에 모아 Navigation host와 기능 모듈이 같은 이동 계약을 공유하게 합니다.
  */
 data class CameraPage(
     val animal: String,

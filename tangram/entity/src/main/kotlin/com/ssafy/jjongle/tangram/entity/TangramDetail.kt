@@ -3,10 +3,9 @@ package com.ssafy.jjongle.tangram.entity
 import com.ssafy.jjongle.common.entity.AnimalType
 
 /**
- * TangramDetail 앱 내부에서 공유하는 도메인 값을 표현합니다.
+ * Tangram Detail는 탱그램 흐름에서 계층 사이로 전달되는 도메인 값입니다.
  *
- * - 계층: tangram/entity
- * - 책임: 불변 값과 도메인 의미를 계층 사이에 전달합니다.
+ * 원시 값 여러 개를 그대로 넘기지 않고 이름 있는 타입으로 묶어 호출 의도를 명확히 합니다.
  */
 data class TangramDetail(
     val tangramId: Long = TangramHistory.MISSING_SERVER_LONG_ID,

@@ -11,10 +11,9 @@ import com.ssafy.jjongle.main.presentation.R
 // 기본 Jalnan 폰트 설정
 
 /**
- * JalnanFont Compose UI를 구성합니다.
+ * 메인 기능 UI에서 공유하는 Jalnan Font 디자인 기준입니다.
  *
- * - 계층: main/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 화면별 색상, 타이포그래피, 크기 값을 직접 흩뿌리지 않고 공통 토큰을 통해 일관되게 사용합니다.
  */
 val JalnanFont = FontFamily(
     Font(R.font.jalnan2)

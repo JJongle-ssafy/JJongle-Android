@@ -12,10 +12,9 @@ import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 /**
- * HttpLogLevel 모듈 기능을 표현하는 class 선언입니다.
+ * 공통 기반 흐름에서 허용되는 Http Log Level 값의 집합입니다.
  *
- * - 계층: common/data
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 분기 가능한 상태나 이벤트를 타입으로 제한해 잘못된 문자열/숫자 값이 계층 사이로 전달되지 않게 합니다.
  */
 enum class HttpLogLevel {
     VERBOSE,
@@ -32,10 +31,9 @@ fun interface HttpLogger {
 }
 
 /**
- * PrettyHttpLoggingInterceptor 모듈 기능을 표현하는 class 선언입니다.
+ * 개발 중 HTTP 요청과 응답 본문을 읽기 쉬운 형태로 출력하는 OkHttp Interceptor입니다.
  *
- * - 계층: common/data
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 운영 로직과 분리된 네트워크 진단 도구로, API 계약 확인과 디버깅에만 사용합니다.
  */
 class PrettyHttpLoggingInterceptor(
     private val logger: HttpLogger = HttpLogger.NoOp,

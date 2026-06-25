@@ -219,10 +219,9 @@ private fun CameraPreview(
 }
 
 /**
- * OXFaceFrameAnalyzer Compose UI를 구성합니다.
+ * OXFace Frame Analyzer는 OX 게임 흐름에서 사용하는 타입입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ * 호출부가 구현 세부보다 역할이 드러나는 타입에 의존하도록 분리합니다.
  */
 @ExperimentalGetImage
 private class OXFaceFrameAnalyzer(

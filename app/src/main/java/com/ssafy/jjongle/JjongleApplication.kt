@@ -9,10 +9,9 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 /**
- * 쫑글 앱의 Application 진입점을 구성합니다.
+ * Hilt 애플리케이션 그래프를 시작하는 앱 전역 Application 클래스입니다.
  *
- * - 계층: app
- * - 책임: 전역 초기화와 앱 수준 의존성 설정의 시작점을 제공합니다.
+ * 프로세스 생성 시 한 번 초기화되어 앱 전체에서 사용할 의존성 주입 컨테이너의 루트가 됩니다.
  */
 @HiltAndroidApp
 class JjongleApplication : Application(), DefaultLifecycleObserver {

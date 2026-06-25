@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.common.domain.helper
 
 /**
- * ResourceHelper 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ * Resource Helper는 여러 계층에서 반복되는 작업을 추상화한 helper 계약입니다.
  *
- * - 계층: common/domain
- * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ * 호출자는 Android framework나 Compose 구현을 직접 알지 않고 필요한 동작만 요청합니다.
  */
 interface ResourceHelper {
     /**

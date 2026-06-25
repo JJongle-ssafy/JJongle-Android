@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.tti
 
 /**
- * TTITimelineCategory TTI 계측에 필요한 값을 정의합니다.
+ * TTITimeline Category는 TTI 흐름에서 허용되는 상태나 이벤트 종류를 제한합니다.
  *
- * - 계층: tti
- * - 책임: 화면 진입부터 최초 상호작용 가능 시점까지의 성능 측정을 보조합니다.
+ * 문자열이나 숫자 상수 대신 타입 분기로 처리해 잘못된 값이 전달되는 일을 줄입니다.
  */
 enum class TTITimelineCategory {
     API_REQUEST_READY_TIME,
@@ -15,10 +14,9 @@ enum class TTITimelineCategory {
 }
 
 /**
- * TTIMetadata TTI 계측에 필요한 값을 정의합니다.
+ * TTIMetadata는 TTI 흐름에서 허용되는 상태나 이벤트 종류를 제한합니다.
  *
- * - 계층: tti
- * - 책임: 화면 진입부터 최초 상호작용 가능 시점까지의 성능 측정을 보조합니다.
+ * 문자열이나 숫자 상수 대신 타입 분기로 처리해 잘못된 값이 전달되는 일을 줄입니다.
  */
 enum class TTIMetadata {
     PAGE_NAME,

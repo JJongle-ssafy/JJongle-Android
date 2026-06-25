@@ -3,10 +3,9 @@ package com.ssafy.jjongle.tangram.data.remote.model
 import kotlinx.serialization.Serializable
 
 /**
- * SingleGameDTO 외부 데이터 응답을 표현하는 DTO입니다.
+ * Single Game 원격 응답의 필드 구조를 보존하는 DTO입니다.
  *
- * - 계층: tangram/data
- * - 책임: data 계층에서 외부 데이터 형태를 보존하고 domain/entity 모델로 변환합니다.
+ * 서버 필드명, null 가능성, 페이징 형태를 data 계층 안에 가두고 repository에서 앱 내부 모델로 변환합니다.
  */
 @Serializable
 data class SingleGameDTO(

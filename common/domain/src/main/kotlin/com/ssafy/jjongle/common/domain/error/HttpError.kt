@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.common.domain.error
 
 /**
- * HttpResponseStatus 모듈 기능을 표현하는 class 선언입니다.
+ * 공통 기반 흐름에서 허용되는 Http Response Status 값의 집합입니다.
  *
- * - 계층: common/domain
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 분기 가능한 상태나 이벤트를 타입으로 제한해 잘못된 문자열/숫자 값이 계층 사이로 전달되지 않게 합니다.
  */
 enum class HttpResponseStatus(val code: Int, val msg: String) {
     Unauthorized(401, "unauthorized"),
@@ -14,10 +13,9 @@ enum class HttpResponseStatus(val code: Int, val msg: String) {
 }
 
 /**
- * HttpErrorType 모듈 기능을 표현하는 interface 선언입니다.
+ * Http Error Type는 공통 흐름에서 사용하는 타입입니다.
  *
- * - 계층: common/domain
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 호출부가 구현 세부보다 역할이 드러나는 타입에 의존하도록 분리합니다.
  */
 interface HttpErrorType {
     /**
@@ -37,10 +35,9 @@ interface HttpErrorType {
 }
 
 /**
- * HttpResponseException 모듈 기능을 표현하는 class 선언입니다.
+ * Http Response Exception은 인증 흐름에서 발생한 domain 오류를 예외로 전달합니다.
  *
- * - 계층: common/domain
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 화면과 UseCase가 Firebase/HTTP 세부 예외 대신 앱에서 정의한 오류 타입을 처리하도록 합니다.
  */
 class HttpResponseException(
     val status: HttpResponseStatus,

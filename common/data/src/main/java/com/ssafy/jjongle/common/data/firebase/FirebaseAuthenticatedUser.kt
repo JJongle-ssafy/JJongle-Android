@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.common.data.firebase
 
 /**
- * FirebaseAuthenticatedUser 모듈 기능을 표현하는 class 선언입니다.
+ * Firebase Authenticated User는 공통 흐름에서 계층 사이로 전달되는 도메인 값입니다.
  *
- * - 계층: common/data
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 원시 값 여러 개를 그대로 넘기지 않고 이름 있는 타입으로 묶어 호출 의도를 명확히 합니다.
  */
 data class FirebaseAuthenticatedUser(
     val uid: String,

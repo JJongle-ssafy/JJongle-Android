@@ -7,10 +7,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 /**
- * MessageEffect 모듈 기능을 표현하는 interface 선언입니다.
+ * 공통 기반 흐름에서 허용되는 Message Effect 값의 집합입니다.
  *
- * - 계층: common/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 분기 가능한 상태나 이벤트를 타입으로 제한해 잘못된 문자열/숫자 값이 계층 사이로 전달되지 않게 합니다.
  */
 sealed interface MessageEffect {
     /**
@@ -38,10 +37,9 @@ sealed interface MessageEffect {
 }
 
 /**
- * MessageEffectBus 모듈 기능을 표현하는 class 선언입니다.
+ * Snackbar나 Dialog처럼 한 번만 소비되어야 하는 전역 메시지 효과를 전달하는 버스입니다.
  *
- * - 계층: common/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * domain 계층의 MessageHelper 호출을 Compose 표시와 분리해, 화면 전환 중에도 메시지 이벤트를 앱 루트에서 일관되게 처리합니다.
  */
 class MessageEffectBus : MessageHelper {
     private val mutableEffects = MutableSharedFlow<MessageEffect>(

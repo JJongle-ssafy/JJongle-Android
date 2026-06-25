@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.oxgame.presentation.vision
 
 /**
- * OXAnswerArea 모듈 기능을 표현하는 class 선언입니다.
+ * OX 게임 흐름에서 허용되는 OXAnswer Area 값의 집합입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 분기 가능한 상태나 이벤트를 타입으로 제한해 잘못된 문자열/숫자 값이 계층 사이로 전달되지 않게 합니다.
  */
 enum class OXAnswerArea {
     O,
@@ -12,10 +11,9 @@ enum class OXAnswerArea {
 }
 
 /**
- * OXTrackedFace 모듈 기능을 표현하는 class 선언입니다.
+ * OXTracked Face는 OX 게임 흐름에서 계층 사이로 전달되는 도메인 값입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ * 원시 값 여러 개를 그대로 넘기지 않고 이름 있는 타입으로 묶어 호출 의도를 명확히 합니다.
  */
 data class OXTrackedFace(
     val participantId: Int,
@@ -26,10 +24,9 @@ data class OXTrackedFace(
 )
 
 /**
- * OXFacePositionClassifier 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ * 추적된 얼굴의 화면 위치를 O/X 선택 영역으로 분류합니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ * 아이들이 몸을 움직여 답을 선택하는 게임 규칙을 카메라 좌표 기반 판정으로 변환합니다.
  */
 class OXFacePositionClassifier(
     private val splitX: Double = DEFAULT_SPLIT_X

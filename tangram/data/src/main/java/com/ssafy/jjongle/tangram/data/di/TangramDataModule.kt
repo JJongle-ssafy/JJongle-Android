@@ -12,10 +12,9 @@ import retrofit2.Retrofit
 import javax.inject.Singleton
 
 /**
- * TangramDataBindingModule에서 사용하는 Hilt 의존성 바인딩을 제공합니다.
+ * Tangram Data Binding 관련 구현체를 Hilt 그래프에 연결하는 DI 모듈입니다.
  *
- * - 계층: tangram/data
- * - 책임: 구현체 생성과 주입 범위를 모듈 단위로 모읍니다.
+ * 인터페이스와 구현체의 바인딩 위치를 한곳에 모아 feature 모듈이 생성 방식에 직접 의존하지 않게 합니다.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -29,10 +28,9 @@ abstract class TangramDataBindingModule {
 }
 
 /**
- * TangramApiModule에서 사용하는 Hilt 의존성 바인딩을 제공합니다.
+ * Tangram Api 관련 구현체를 Hilt 그래프에 연결하는 DI 모듈입니다.
  *
- * - 계층: tangram/data
- * - 책임: 구현체 생성과 주입 범위를 모듈 단위로 모읍니다.
+ * 인터페이스와 구현체의 바인딩 위치를 한곳에 모아 feature 모듈이 생성 방식에 직접 의존하지 않게 합니다.
  */
 @Module
 @InstallIn(SingletonComponent::class)

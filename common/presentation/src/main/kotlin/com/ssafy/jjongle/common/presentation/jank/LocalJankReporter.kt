@@ -3,9 +3,8 @@ package com.ssafy.jjongle.common.presentation.jank
 import androidx.compose.runtime.staticCompositionLocalOf
 
 /**
- * LocalJankReporter에서 공유하는 최상위 값을 제공합니다.
+ * Local Jank Reporter는 공통에서 반복되는 계산이나 변환을 담당합니다.
  *
- * - 계층: common/presentation
- * - 책임: 모듈 내부에서 반복 사용되는 설정이나 상태 기준을 한곳에 둡니다.
+ * 호출부가 세부 구현을 직접 갖지 않도록 작은 공개 함수/값으로 분리합니다.
  */
 val LocalJankReporter = staticCompositionLocalOf<JankReporter> { DebugJankReporter }

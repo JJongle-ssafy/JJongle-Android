@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.oxgame.presentation.vision
 
 /**
- * OXParticipantProfileCache 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ * OX 게임 참여자별 프로필 이미지를 게임 진행 중 임시로 보관합니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ * 결과 화면에서 순위별 얼굴 이미지를 빠르게 표시하고, 세션 단위 데이터가 화면 밖으로 새지 않게 합니다.
  */
 class OXParticipantProfileCache {
     private val profiles = linkedMapOf<Int, String>()

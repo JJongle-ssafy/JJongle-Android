@@ -1,10 +1,9 @@
 package com.ssafy.jjongle.oxgame.presentation.vision
 
 /**
- * KalmanBoxTracker 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ * 카메라 프레임 사이에서 얼굴 박스 위치를 예측하고 보정하는 Kalman tracker입니다.
  *
- * - 계층: oxgame/presentation
- * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ * 일시적인 감지 흔들림에도 참여자 위치가 급격히 튀지 않도록 추적 상태를 유지합니다.
  */
 class KalmanBoxTracker(
     initialBox: FloatArray, // [cx, cy, w, h]
