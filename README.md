@@ -1,15 +1,15 @@
 # JJongle Android
 
-쫑글은 아이들이 퀴즈와 퍼즐을 통해 동물 콘텐츠를 경험하는 Android 애플리케이션입니다. 이 저장소는 Jetpack Compose 기반 UI, 기능 단위 멀티 모듈 구조, MVI 상태 관리, Navigation3 스타일 라우팅, Firebase/Room/Retrofit 데이터 경계를 중심으로 구성되어 있습니다.
+쫑글은 아이들이 퀴즈와 퍼즐을 통해 동물 콘텐츠를 경험하는 Android 애플리케이션입니다. 
 
-이 README는 포트폴리오 리뷰어가 프로젝트를 처음 열었을 때 전체 구조와 핵심 설계 포인트를 빠르게 이해할 수 있도록 공개 가능한 내용만 정리합니다.
+이 README는 프로젝트 전체 구조와 핵심 설계 포인트를 빠르게 이해할 수 있도록 아키텍처를 정리합니다.
 
 ## 주요 기능
 
 - Google/Firebase 기반 로그인, 회원가입, 프로필 관리
 - 지도 화면과 동물 도감 중심의 메인 앱 셸
 - OX 퀴즈 게임, 얼굴 위치 판별, 오답 노트/히스토리 관리
-- 탱그램 퍼즐 스테이지와 히스토리 조회
+- 칠교놀이 퍼즐 스테이지와 히스토리 조회
 - 전역 메시지 효과, 디자인 토큰, 반응형 레이아웃
 - TTI, JankStats, Baseline Profile 기반 성능 관찰 지점
 
@@ -147,34 +147,6 @@ Snackbar/Dialog 같은 일회성 UI 효과는 [MessageEffectBus](common/presenta
 - Android SDK 36
 - Firebase 설정 파일: `app/google-services.json`
 
-### 빌드
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-### 주요 테스트
-
-```bash
-./gradlew :common:domain:test
-./gradlew :common:data:testDebugUnitTest
-./gradlew :common:presentation:testDebugUnitTest
-./gradlew :main:domain:test
-./gradlew :oxgame:domain:test
-./gradlew :oxgame:data:testDebugUnitTest
-./gradlew :oxgame:presentation:testDebugUnitTest
-./gradlew :tangram:domain:test
-./gradlew :tangram:data:testDebugUnitTest
-./gradlew :tangram:presentation:testDebugUnitTest
-./gradlew :tti:test
-```
-
-Android Studio 모델과 androidTest classpath까지 확인하려면 아래 명령을 사용할 수 있습니다.
-
-```bash
-./gradlew :app:compileDebugAndroidTestKotlin
-```
-
 ## 문서 읽는 순서
 
 1. 이 README에서 전체 구조를 확인합니다.
@@ -185,9 +157,8 @@ Android Studio 모델과 androidTest classpath까지 확인하려면 아래 명�
 
 ## 포트폴리오 관점의 구현 포인트
 
-- 기존 단일 앱 중심 구조를 기능 단위 멀티 모듈 구조로 분리
+- 기존 단일 모듈 앱 중심 구조를 기능 단위 멀티 모듈 구조로 분리
 - Navigation3 스타일의 typed route와 앱 라우트 레지스트리 구성
 - MVI ViewModel 공통 기반과 화면별 Intent/State/ReducerEvent 정리
 - DTO, Room Entity, domain/entity 모델 경계 정리
-- Firebase BOM 전파 범위 문제를 해결해 Android Studio/Gradle Sync 안정화
 - KDoc 형식을 통일해 클래스/인터페이스의 역할과 계층을 빠르게 파악할 수 있게 정리
