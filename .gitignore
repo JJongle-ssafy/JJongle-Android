@@ -81,4 +81,5 @@ AGENTS.md
 
 # Local tool output
 .kotlin/
+qa-screenshots/
 *.log
