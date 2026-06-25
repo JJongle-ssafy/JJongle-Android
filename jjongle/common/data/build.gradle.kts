@@ -50,7 +50,7 @@ dependencies {
     api(libs.retrofit)
     api(libs.retrofit.converter.kotlinx.serialization)
     api(libs.kotlinx.serialization.json)
-    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+    api(platform("com.google.firebase:firebase-bom:34.0.0"))
     api(libs.firebase.auth)
     api(libs.firebase.firestore)
     api(libs.play.services.auth)
