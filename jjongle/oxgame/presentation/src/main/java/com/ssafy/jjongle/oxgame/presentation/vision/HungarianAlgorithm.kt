@@ -3,12 +3,10 @@ package com.ssafy.jjongle.oxgame.presentation.vision
 import kotlin.math.min
 
 /**
- * 헝가리안 알고리즘 (Munkres Assignment Algorithm)의 순수 Kotlin 구현입니다.
+ * HungarianAlgorithm 관련 도메인 작업을 보조하는 컴포넌트입니다.
  *
- * 비용 행렬(cost matrix)이 주어졌을 때, 전체 비용을 최소화하는
- * 최적의 1:1 매칭을 찾습니다.
- *
- * DeepSORT/SORT에서 detection-track 매칭에 사용됩니다.
+ * - 계층: oxgame/presentation
+ * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
  */
 object HungarianAlgorithm {
 

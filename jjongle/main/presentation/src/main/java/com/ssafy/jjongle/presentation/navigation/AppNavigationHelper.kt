@@ -10,6 +10,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * AppNavigationHelper Navigation3 라우팅 계약을 표현합니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 앱 셸과 기능 모듈 사이의 화면 이동 경계를 정의합니다.
+ */
 @Singleton
 class AppNavigationHelper @Inject constructor() : NavigationHelper {
     private val signals = MutableSharedFlow<NavSignal>(extraBufferCapacity = 64)

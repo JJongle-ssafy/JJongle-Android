@@ -9,6 +9,12 @@ import com.ssafy.jjongle.common.domain.repository.AuthRepository
 import com.ssafy.jjongle.common.entity.AuthState
 import javax.inject.Inject
 
+/**
+ * AuthUseCase 비즈니스 시나리오를 실행하는 유스케이스입니다.
+ *
+ * - 계층: common/domain
+ * - 책임: ViewModel이 필요한 domain 작업을 단일 진입점으로 제공합니다.
+ */
 class AuthUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     resourceHelper: ResourceHelper,

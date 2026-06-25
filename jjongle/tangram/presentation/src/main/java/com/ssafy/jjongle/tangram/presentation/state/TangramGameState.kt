@@ -5,6 +5,12 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
+/**
+ * TangramGameState 화면이 구독하는 상태 모델입니다.
+ *
+ * - 계층: tangram/presentation
+ * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ */
 data class TangramGameState(
     val isGameActive: Boolean = false,
     val isGameFinished: Boolean = false,

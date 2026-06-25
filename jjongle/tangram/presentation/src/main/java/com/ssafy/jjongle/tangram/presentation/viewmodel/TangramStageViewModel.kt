@@ -14,12 +14,24 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+/**
+ * StagePosition 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: tangram/presentation
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 data class StagePosition(
     val stageId: Int,
     val x: Float,
     val y: Float
 )
 
+/**
+ * TangramStageUiState 화면이 구독하는 상태 모델입니다.
+ *
+ * - 계층: tangram/presentation
+ * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ */
 data class TangramStageUiState(
     val currentStage: Int = 5,
     val currentChallengeStageId: Int = 1,
@@ -34,10 +46,22 @@ data class TangramStageUiState(
     }
 }
 
+/**
+ * TangramStageIntent 화면에서 ViewModel로 전달되는 사용자 입력을 정의합니다.
+ *
+ * - 계층: tangram/presentation
+ * - 책임: UI 이벤트를 MVI intent로 분리해 상태 변경 진입점을 명확히 합니다.
+ */
 sealed interface TangramStageIntent : MviIntent {
     data class MoveToStage(val stageId: Int) : TangramStageIntent
 }
 
+/**
+ * TangramStageReducerEvent ViewModel 내부 상태 변경 이벤트를 정의합니다.
+ *
+ * - 계층: tangram/presentation
+ * - 책임: 비동기 결과와 사용자 입력을 reducer가 처리할 수 있는 이벤트로 정리합니다.
+ */
 sealed interface TangramStageReducerEvent : ReducerEvent {
     data class ChallengeStageLoaded(
         val stageId: Int,
@@ -59,6 +83,12 @@ sealed interface TangramStageReducerEvent : ReducerEvent {
     data object MovementFinished : TangramStageReducerEvent
 }
 
+/**
+ * TangramStageViewModel 화면 상태와 이벤트를 처리하는 ViewModel입니다.
+ *
+ * - 계층: tangram/presentation
+ * - 책임: 유스케이스를 호출하고 UI가 구독할 상태 흐름을 제공합니다.
+ */
 @HiltViewModel
 class TangramStageViewModel @Inject constructor(
     private val tangramGameUseCase: TangramGameUseCase,

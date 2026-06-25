@@ -17,6 +17,12 @@ import com.ssafy.jjongle.presentation.viewmodel.AuthViewModel
 import com.ssafy.jjongle.presentation.viewmodel.ProfileIntent
 import com.ssafy.jjongle.presentation.viewmodel.ProfileViewModel
 
+/**
+ * SignupScreen Compose UI를 구성합니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ */
 @Composable
 fun SignupScreen(
     idToken: String,

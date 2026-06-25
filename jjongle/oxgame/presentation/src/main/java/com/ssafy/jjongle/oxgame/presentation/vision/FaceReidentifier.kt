@@ -4,17 +4,10 @@ import android.graphics.Rect
 import android.os.SystemClock
 
 /**
- * ML Kit의 trackingId가 변경되더라도, 칼만 필터 예측 + IoU 매칭을 통해
- * 동일 인물에게 기존 participantId를 재할당하는 SORT 기반 추적기입니다.
+ * FaceReidentifier 모듈 기능을 표현하는 class 선언입니다.
  *
- * ## 동작 원리 (SORT 알고리즘 기반)
- * 1. 각 참가자에 대해 칼만 필터로 다음 프레임 위치를 **예측**
- * 2. 예측된 위치와 새로 감지된 얼굴들 간의 **IoU 비용 행렬** 생성
- * 3. **헝가리안 알고리즘**으로 최적 1:1 매칭
- * 4. 매칭된 참가자는 칼만 필터 **업데이트**, 미매칭은 grace period 동안 유지
- *
- * 아이들이 빠르게 움직이거나 카메라에서 잠시 벗어나도
- * 기존 점수 정보를 유지할 수 있습니다.
+ * - 계층: oxgame/presentation
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
  */
 class FaceReidentifier(
     /** IoU 임계값 — 이 값 이상이어야 매칭 허용 */

@@ -5,6 +5,12 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 
+/**
+ * OXGameHistoryDao Room 데이터 접근 계약을 정의합니다.
+ *
+ * - 계층: oxgame/data
+ * - 책임: 로컬 저장소 쿼리와 변경 작업을 타입 안전하게 제공합니다.
+ */
 @Dao
 interface OXGameHistoryDao {
     @Insert

@@ -19,12 +19,24 @@ import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * AnimalBookIntent 화면에서 ViewModel로 전달되는 사용자 입력을 정의합니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: UI 이벤트를 MVI intent로 분리해 상태 변경 진입점을 명확히 합니다.
+ */
 sealed interface AnimalBookIntent : MviIntent {
     data object LoadHistories : AnimalBookIntent
     data class SelectAnimal(val animal: AnimalType) : AnimalBookIntent
     data object CloseDetail : AnimalBookIntent
 }
 
+/**
+ * AnimalBookReducerEvent ViewModel 내부 상태 변경 이벤트를 정의합니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 비동기 결과와 사용자 입력을 reducer가 처리할 수 있는 이벤트로 정리합니다.
+ */
 sealed interface AnimalBookReducerEvent : ReducerEvent {
     data object LoadingStarted : AnimalBookReducerEvent
     data class HistoriesLoaded(
@@ -38,6 +50,12 @@ sealed interface AnimalBookReducerEvent : ReducerEvent {
     data class Failed(val message: String?) : AnimalBookReducerEvent
 }
 
+/**
+ * AnimalBookViewModel 화면 상태와 이벤트를 처리하는 ViewModel입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 유스케이스를 호출하고 UI가 구독할 상태 흐름을 제공합니다.
+ */
 @HiltViewModel
 class AnimalBookViewModel @Inject constructor(
     private val getHistories: GetTangramHistoriesUseCase,

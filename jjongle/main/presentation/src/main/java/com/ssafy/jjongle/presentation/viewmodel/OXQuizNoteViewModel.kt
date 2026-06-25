@@ -16,8 +16,20 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
 
+/**
+ * QuizNoteUi 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 data class QuizNoteUi(val id: Long, val recordedAt: LocalDateTime)
 
+/**
+ * QuizNoteState 화면이 구독하는 상태 모델입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ */
 data class QuizNoteState(
     val notes: ImmutableList<QuizNoteUi> = persistentListOf(),
     val page: Int = 0,
@@ -31,12 +43,24 @@ data class QuizNoteState(
     }
 }
 
+/**
+ * QuizNoteIntent 화면에서 ViewModel로 전달되는 사용자 입력을 정의합니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: UI 이벤트를 MVI intent로 분리해 상태 변경 진입점을 명확히 합니다.
+ */
 sealed interface QuizNoteIntent : MviIntent {
     data class LoadPage(val page: Int) : QuizNoteIntent
     data class OpenDetail(val historyId: Long) : QuizNoteIntent
     data object CloseDetail : QuizNoteIntent
 }
 
+/**
+ * QuizNoteReducerEvent ViewModel 내부 상태 변경 이벤트를 정의합니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 비동기 결과와 사용자 입력을 reducer가 처리할 수 있는 이벤트로 정리합니다.
+ */
 sealed interface QuizNoteReducerEvent : ReducerEvent {
     data object LoadingStarted : QuizNoteReducerEvent
     data class PageLoaded(
@@ -50,6 +74,12 @@ sealed interface QuizNoteReducerEvent : ReducerEvent {
     data class Failed(val message: String?) : QuizNoteReducerEvent
 }
 
+/**
+ * QuizNoteViewModel 화면 상태와 이벤트를 처리하는 ViewModel입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 유스케이스를 호출하고 UI가 구독할 상태 흐름을 제공합니다.
+ */
 @HiltViewModel
 class QuizNoteViewModel @Inject constructor(
     private val histories: GetOXGameHistoriesUseCase,

@@ -1,12 +1,10 @@
 package com.ssafy.jjongle.oxgame.presentation.vision
 
 /**
- * 바운딩 박스 추적을 위한 칼만 필터입니다.
+ * KalmanBoxTracker 관련 도메인 작업을 보조하는 컴포넌트입니다.
  *
- * 상태 벡터: 각 차원(cx, cy, w, h)에 대해 독립적인 1D 칼만 필터(위치, 속도)를 적용합니다.
- * 기존의 단순화된 대각 공분산의 버그를 수정하여 위치 관측으로부터 속도가 
- * 정상적으로 추정되고 업데이트되도록 행렬 연산을 구현하였습니다.
- * 이를 통해 SORT 알고리즘의 본래 의도대로 움직이는 물체의 다음 위치를 정확히 예측합니다.
+ * - 계층: oxgame/presentation
+ * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
  */
 class KalmanBoxTracker(
     initialBox: FloatArray, // [cx, cy, w, h]

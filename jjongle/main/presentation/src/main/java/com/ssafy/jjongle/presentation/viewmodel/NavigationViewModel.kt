@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * NavigationViewModel 화면 상태와 이벤트를 처리하는 ViewModel입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 유스케이스를 호출하고 UI가 구독할 상태 흐름을 제공합니다.
+ */
 @HiltViewModel // Hilt 사용 시
 class NavigationViewModel @Inject constructor( // Hilt 사용 시 @Inject
     private val navigationStateRepository: NavigationStateRepository

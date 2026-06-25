@@ -14,7 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 /**
- * 게임 중 액션들을 처리하는 Use Case
+ * GameActionUseCase 비즈니스 시나리오를 실행하는 유스케이스입니다.
+ *
+ * - 계층: oxgame/domain
+ * - 책임: ViewModel이 필요한 domain 작업을 단일 진입점으로 제공합니다.
  */
 class GameActionUseCase @Inject constructor(
     private val oxGameRepository: OXGameRepository,

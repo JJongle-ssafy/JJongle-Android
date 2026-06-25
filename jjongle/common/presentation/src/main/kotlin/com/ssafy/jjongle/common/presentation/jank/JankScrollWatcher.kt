@@ -37,6 +37,12 @@ fun JankScrollWatcher(
     }
 }
 
+/**
+ * ScrollSessionState 화면이 구독하는 상태 모델입니다.
+ *
+ * - 계층: common/presentation
+ * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ */
 private class ScrollSessionState {
     var hasScrolled: Boolean = false
 }

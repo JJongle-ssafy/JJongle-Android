@@ -9,6 +9,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 
 
+/**
+ * AnimalSlot 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 data class AnimalSlot(
     val id: String,
     val name: String,
@@ -16,6 +22,12 @@ data class AnimalSlot(
     val imageRes: Int?     // 잠금이면 null
 )
 
+/**
+ * AnimalBookState 화면이 구독하는 상태 모델입니다.
+ *
+ * - 계층: main/presentation
+ * - 책임: 렌더링에 필요한 값을 한곳에 모아 UI와 상태 변경 로직을 분리합니다.
+ */
 data class AnimalBookState(
     val isLoading: Boolean = true,
     val slots: ImmutableList<AnimalSlot> = persistentListOf(),

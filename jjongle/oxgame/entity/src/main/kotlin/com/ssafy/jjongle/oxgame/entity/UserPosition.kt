@@ -1,7 +1,10 @@
 package com.ssafy.jjongle.oxgame.entity
 
 /**
- * 사용자 위치 정보를 나타내는 도메인 엔티티입니다.
+ * UserPosition 앱 내부에서 공유하는 도메인 값을 표현합니다.
+ *
+ * - 계층: oxgame/entity
+ * - 책임: 불변 값과 도메인 의미를 계층 사이에 전달합니다.
  */
 data class UserPosition(
     val userId: Int,

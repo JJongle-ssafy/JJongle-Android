@@ -21,6 +21,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * BgmManager 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ *
+ * - 계층: common/data
+ * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ */
 @Singleton
 class BgmManager @Inject constructor(
     private val app: Context,

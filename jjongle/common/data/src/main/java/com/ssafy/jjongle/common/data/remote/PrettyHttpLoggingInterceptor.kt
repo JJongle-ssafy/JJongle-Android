@@ -11,6 +11,12 @@ import org.json.JSONObject
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
+/**
+ * HttpLogLevel 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: common/data
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 enum class HttpLogLevel {
     VERBOSE,
     INFO,
@@ -25,6 +31,12 @@ fun interface HttpLogger {
     }
 }
 
+/**
+ * PrettyHttpLoggingInterceptor 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: common/data
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 class PrettyHttpLoggingInterceptor(
     private val logger: HttpLogger = HttpLogger.NoOp,
 ) : Interceptor {

@@ -1,10 +1,22 @@
 package com.ssafy.jjongle.oxgame.presentation.vision
 
+/**
+ * OXAnswerArea 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: oxgame/presentation
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 enum class OXAnswerArea {
     O,
     X
 }
 
+/**
+ * OXTrackedFace 모듈 기능을 표현하는 class 선언입니다.
+ *
+ * - 계층: oxgame/presentation
+ * - 책임: 소속 계층의 역할을 타입으로 분리해 호출 경계를 명확히 합니다.
+ */
 data class OXTrackedFace(
     val participantId: Int,
     val x: Double,
@@ -13,6 +25,12 @@ data class OXTrackedFace(
     val profileImageBase64: String? = null
 )
 
+/**
+ * OXFacePositionClassifier 관련 도메인 작업을 보조하는 컴포넌트입니다.
+ *
+ * - 계층: oxgame/presentation
+ * - 책임: 반복되는 판단, 변환, 계산 로직을 별도 책임으로 분리합니다.
+ */
 class OXFacePositionClassifier(
     private val splitX: Double = DEFAULT_SPLIT_X
 ) {

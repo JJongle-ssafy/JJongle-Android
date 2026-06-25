@@ -8,6 +8,12 @@ import com.ssafy.jjongle.tti.TTIHelper
 import com.ssafy.jjongle.tangram.domain.repository.TangramGameRepository
 import javax.inject.Inject
 
+/**
+ * TangramGameUseCase 비즈니스 시나리오를 실행하는 유스케이스입니다.
+ *
+ * - 계층: tangram/domain
+ * - 책임: ViewModel이 필요한 domain 작업을 단일 진입점으로 제공합니다.
+ */
 class TangramGameUseCase @Inject constructor(
     private val tangramGameRepository: TangramGameRepository,
     resourceHelper: ResourceHelper,

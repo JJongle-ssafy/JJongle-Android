@@ -1,5 +1,11 @@
 package com.ssafy.jjongle.tti
 
+/**
+ * TTIHelperImpl TTI 계측에 필요한 값을 정의합니다.
+ *
+ * - 계층: tti
+ * - 책임: 화면 진입부터 최초 상호작용 가능 시점까지의 성능 측정을 보조합니다.
+ */
 class TTIHelperImpl(
     private val clockMillis: () -> Long = System::currentTimeMillis,
     private val logger: (String) -> Unit = {},

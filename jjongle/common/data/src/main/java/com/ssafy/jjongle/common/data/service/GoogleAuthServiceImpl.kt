@@ -15,6 +15,12 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * GoogleAuthServiceImpl 외부 서비스 연동을 담당합니다.
+ *
+ * - 계층: common/data
+ * - 책임: 플랫폼 또는 SDK 호출을 계층 경계 안에서 캡슐화합니다.
+ */
 @Singleton
 class GoogleAuthServiceImpl @Inject constructor(
     @ApplicationContext private val context: Context

@@ -9,6 +9,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * BaselineProfileGenerator 기준 프로파일 수집 시나리오를 정의합니다.
+ *
+ * - 계층: baselineprofile
+ * - 책임: 앱 시작과 주요 경로의 런타임 최적화 데이터를 생성합니다.
+ */
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
 

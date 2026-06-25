@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * SettingsRepositoryImpl 저장소 계약의 data 계층 구현입니다.
+ *
+ * - 계층: common/data
+ * - 책임: 데이터 원본을 조합하고 domain 계층이 기대하는 모델로 반환합니다.
+ */
 @Singleton
 class SettingsRepositoryImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,

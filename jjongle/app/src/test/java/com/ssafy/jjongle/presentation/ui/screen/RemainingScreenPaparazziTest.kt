@@ -30,6 +30,12 @@ import java.time.LocalDateTime
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * RemainingScreenTablet의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ *
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ */
 class RemainingScreenTabletPaparazziTest {
 
     @get:Rule
@@ -63,6 +69,12 @@ class RemainingScreenTabletPaparazziTest {
     }
 }
 
+/**
+ * RemainingScreenPhone의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ *
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ */
 class RemainingScreenPhonePaparazziTest {
 
     @get:Rule
@@ -98,6 +110,12 @@ class RemainingScreenPhonePaparazziTest {
     }
 }
 
+/**
+ * RemainingScreenWidePhone의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ *
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ */
 class RemainingScreenWidePhonePaparazziTest {
 
     @get:Rule

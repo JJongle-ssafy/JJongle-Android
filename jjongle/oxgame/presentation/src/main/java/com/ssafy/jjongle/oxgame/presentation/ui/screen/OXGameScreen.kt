@@ -802,6 +802,12 @@ private fun RankedProfile(
     }
 }
 
+/**
+ * OXRankFrameStyle Compose UI를 구성합니다.
+ *
+ * - 계층: oxgame/presentation
+ * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ */
 private data class OXRankFrameStyle(
     val outerColor: Color,
     val innerGlow: Color,
@@ -850,6 +856,12 @@ private const val OX_RESULT_THIRD_PROFILE_CENTER_X = 940.625f
 private const val OX_RESULT_THIRD_PROFILE_CENTER_Y = 910f
 private const val OX_RESULT_THIRD_PROFILE_SIZE = 290f
 
+/**
+ * OXGameBackgroundLayout Compose UI를 구성합니다.
+ *
+ * - 계층: oxgame/presentation
+ * - 책임: 상태를 표시하고 사용자 이벤트를 상위 콜백이나 ViewModel로 전달합니다.
+ */
 private data class OXGameBackgroundLayout(
     val scale: Float,
     val originX: Float,

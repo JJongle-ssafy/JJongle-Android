@@ -32,6 +32,12 @@ import com.ssafy.jjongle.presentation.viewmodel.NavigationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/**
+ * 쫑글 앱의 Android Activity 진입점을 구성합니다.
+ *
+ * - 계층: app
+ * - 책임: Compose 루트 화면과 앱 셸을 Android 생명주기에 연결합니다.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

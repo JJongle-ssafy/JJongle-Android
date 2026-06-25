@@ -5,9 +5,10 @@ import org.junit.Test
 import org.junit.Assert.*
 
 /**
- * Example local unit test, which will execute on the development machine (host).
+ * ExampleUnit의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
  *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
  */
 class ExampleUnitTest {
     @Test

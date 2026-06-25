@@ -8,6 +8,12 @@ import com.ssafy.jjongle.common.domain.repository.BgmRepository
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
+/**
+ * 쫑글 앱의 Application 진입점을 구성합니다.
+ *
+ * - 계층: app
+ * - 책임: 전역 초기화와 앱 수준 의존성 설정의 시작점을 제공합니다.
+ */
 @HiltAndroidApp
 class JjongleApplication : Application(), DefaultLifecycleObserver {
 

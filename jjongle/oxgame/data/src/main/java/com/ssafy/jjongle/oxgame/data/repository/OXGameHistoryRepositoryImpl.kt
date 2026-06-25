@@ -9,6 +9,12 @@ import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
+/**
+ * OXGameHistoryRepositoryImpl 저장소 계약의 data 계층 구현입니다.
+ *
+ * - 계층: oxgame/data
+ * - 책임: 데이터 원본을 조합하고 domain 계층이 기대하는 모델로 반환합니다.
+ */
 class OXGameHistoryRepositoryImpl @Inject constructor(
     private val historyDao: OXGameHistoryDao
 ) : OXGameHistoryRepository {
