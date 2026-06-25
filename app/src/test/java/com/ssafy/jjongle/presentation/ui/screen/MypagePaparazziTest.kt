@@ -1,0 +1,365 @@
+package com.ssafy.jjongle.presentation.ui.screen
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import app.cash.paparazzi.DeviceConfig
+import app.cash.paparazzi.Paparazzi
+import com.android.resources.ScreenOrientation
+import com.ssafy.jjongle.main.presentation.R
+import com.ssafy.jjongle.oxgame.entity.Quiz
+import com.ssafy.jjongle.common.presentation.ui.layout.DesignCanvas
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.GameResultContent
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.GameStartContent
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.OXGameTitleScreen
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.QuizExplanationContent
+import com.ssafy.jjongle.oxgame.presentation.ui.screen.QuizGameContent
+import com.ssafy.jjongle.presentation.ui.theme.JjongleTheme
+import com.ssafy.jjongle.tangram.presentation.R as TangramR
+import com.ssafy.jjongle.tangram.presentation.ui.screen.BeforeTangramTutorialScreen
+import com.ssafy.jjongle.tangram.presentation.ui.screen.TangramTitleScreen
+import org.junit.Rule
+import org.junit.Test
+
+/**
+ * MypageTablet의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ *
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ */
+class MypageTabletPaparazziTest {
+
+    @get:Rule
+    val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfig.NEXUS_10
+    )
+
+    @Test
+    fun mypage_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            MypageSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_title_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            OXTitleSnapshotContent()
+        }
+    }
+
+    @Test
+    fun tangram_title_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            TangramTitleSnapshotContent()
+        }
+    }
+
+    @Test
+    fun before_tangram_tutorial_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            BeforeTangramTutorialSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_start_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            OXGameStartSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_quiz_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            OXGameQuizSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_explanation_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            OXGameExplanationSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_result_tablet_reference_ratio() {
+        paparazzi.snapshot {
+            OXGameResultSnapshotContent()
+        }
+    }
+}
+
+/**
+ * MypagePhone의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ *
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ */
+class MypagePhonePaparazziTest {
+
+    @get:Rule
+    val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfig.PIXEL_5.copy(
+            orientation = ScreenOrientation.LANDSCAPE
+        )
+    )
+
+    @Test
+    fun mypage_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            MypageSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_title_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXTitleSnapshotContent()
+        }
+    }
+
+    @Test
+    fun tangram_title_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            TangramTitleSnapshotContent()
+        }
+    }
+
+    @Test
+    fun before_tangram_tutorial_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            BeforeTangramTutorialSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_start_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameStartSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_quiz_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameQuizSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_explanation_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameExplanationSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_result_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameResultSnapshotContent()
+        }
+    }
+}
+
+/**
+ * MypageWidePhone의 아키텍처 또는 동작 계약을 검증하는 테스트입니다.
+ *
+ * - 계층: test
+ * - 책임: 회귀를 막는 대표 시나리오와 모듈 경계 조건을 실행합니다.
+ */
+class MypageWidePhonePaparazziTest {
+
+    @get:Rule
+    val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfig.PIXEL_6_PRO.copy(
+            orientation = ScreenOrientation.LANDSCAPE
+        )
+    )
+
+    @Test
+    fun mypage_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            MypageSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_title_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXTitleSnapshotContent()
+        }
+    }
+
+    @Test
+    fun tangram_title_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            TangramTitleSnapshotContent()
+        }
+    }
+
+    @Test
+    fun before_tangram_tutorial_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            BeforeTangramTutorialSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_start_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameStartSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_quiz_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameQuizSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_explanation_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameExplanationSnapshotContent()
+        }
+    }
+
+    @Test
+    fun ox_game_result_wide_phone_keeps_tablet_ratio() {
+        paparazzi.snapshot {
+            OXGameResultSnapshotContent()
+        }
+    }
+}
+
+@Composable
+private fun MypageSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            MypageContent(
+                nickname = "사용자",
+                profileImageRes = R.drawable.profile_mongi,
+                onAnimalBookClick = {},
+                onQuizNoteClick = {},
+                onSettingClick = {},
+                onGoMapClick = {},
+                onLogoutClick = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun OXTitleSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            OXGameTitleScreen(
+                onStartGameClick = {},
+                onGoMapClick = {},
+                onGameRulesClick = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun TangramTitleSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            TangramTitleScreen(
+                gameName = "쫑글 탐험대",
+                backgroundImageRes = TangramR.drawable.tangram_title_background,
+                onStartGameClick = {},
+                onGoMapClick = {},
+                onGameRulesClick = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun BeforeTangramTutorialSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            BeforeTangramTutorialScreen(
+                onStartTutorial = {},
+                onSkipTutorial = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun OXGameStartSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            GameStartContent(onStartQuiz = {})
+        }
+    }
+}
+
+@Composable
+private fun OXGameExplanationSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            QuizExplanationContent(
+                quiz = sampleQuiz,
+                quizIndex = 0,
+                totalQuizzes = 3,
+                isAnswerSubmitted = true,
+                onNextQuiz = {}
+            )
+        }
+    }
+}
+
+@Composable
+private fun OXGameQuizSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            QuizGameContent(
+                quiz = sampleQuiz,
+                quizIndex = 0,
+                totalQuizzes = 3,
+                timeLeft = 7,
+                onFacePositionsChanged = {},
+                showCorrectAnimation = false,
+                correctAnswer = null,
+                cameraContent = { modifier ->
+                    Box(
+                        modifier = modifier.background(Color(0xFF1F2328)),
+                        contentAlignment = Alignment.Center
+                    ) {}
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun OXGameResultSnapshotContent() {
+    JjongleTheme {
+        DesignCanvas(modifier = Modifier.fillMaxSize()) {
+            GameResultContent(
+                top3Rankings = listOf(1 to 3, 2 to 2, 3 to 1),
+                profiles = emptyMap(),
+                onRestartGame = {},
+                onBackToMenu = {}
+            )
+        }
+    }
+}
+
+private val sampleQuiz = Quiz(
+    id = 1,
+    question = "바나나는 노란색일까요?",
+    answer = "O",
+    description = "맞아요. 익은 바나나는 보통 노란색이에요."
+)
